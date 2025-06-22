@@ -1,27 +1,46 @@
 import { PropsWithChildren } from 'react';
 import styled from 'styled-components';
+import { media } from 'utils/media';
 
-type ButtonProps = PropsWithChildren<{ transparent?: boolean }>;
+export interface ButtonProps {
+  transparent?: boolean;
+  disabled?: boolean;
+  as?: any;
+  type?: 'submit' | 'button' | 'reset';
+}
 
-const Button = styled.a<ButtonProps>`
+export default function Button({
+  children,
+  transparent,
+  disabled,
+  as,
+  type,
+  ...buttonProps
+}: PropsWithChildren<ButtonProps & { [key: string]: any }>) {
+  return (
+    <ButtonWrapper as={as} type={type} transparent={transparent} disabled={disabled} {...buttonProps}>
+      {children}
+    </ButtonWrapper>
+  );
+}
+
+const ButtonWrapper = styled.button<ButtonProps>`
   border: none;
-  background: none;
+  background: ${(p) => (p.transparent ? 'transparent' : 'rgb(var(--primary))')};
   display: inline-block;
   text-decoration: none;
   text-align: center;
-  background: ${(p) => (p.transparent ? 'transparent' : 'rgb(var(--primary))')};
   padding: 1.75rem 2.25rem;
   font-size: 1.2rem;
+  font-weight: bold;
   color: ${(p) => (p.transparent ? 'rgb(var(--text))' : 'rgb(var(--textSecondary))')};
   text-transform: uppercase;
   font-family: var(--font);
-  font-weight: bold;
-  border-radius: 0.4rem;
-  border: ${(p) => (p.transparent ? 'none' : '2px solid rgb(var(--primary))')};
   transition: transform 0.3s;
   backface-visibility: hidden;
   will-change: transform;
   cursor: pointer;
+  border-radius: 0.4rem;
 
   span {
     margin-left: 2rem;
@@ -30,6 +49,15 @@ const Button = styled.a<ButtonProps>`
   &:hover {
     transform: scale(1.025);
   }
-`;
 
-export default Button;
+  &:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+    transform: none;
+  }
+
+  ${media('<=tablet')} {
+    font-size: 1.1rem;
+    padding: 1.5rem 2rem;
+  }
+`;

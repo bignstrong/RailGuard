@@ -84,8 +84,8 @@ export default function CatalogSection() {
         <ProductCard
           id="fto-cr-standard"
           title="Фильтр FTO-CR Standard"
-          price="8 500₽"
-          oldPrice="9 500₽"
+          price="13 000₽"
+          oldPrice="16 000₽"
           description="Базовый фильтр высокого давления для Common Rail систем"
           image="/Filter.png"
           inStock={true}

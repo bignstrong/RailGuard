@@ -52,14 +52,31 @@ const EmptyCartMessage = styled.p`
 
 const formatPhoneNumber = (value: string) => {
   if (!value) return value;
-  const phoneNumber = value.replace(/[^\d]/g, '');
-  const phoneNumberLength = phoneNumber.length;
 
-  if (phoneNumberLength < 1) return '';
-  if (phoneNumberLength < 4) return `+7 (${phoneNumber}`;
-  if (phoneNumberLength < 7) return `+7 (${phoneNumber.slice(0, 3)}) ${phoneNumber.slice(3)}`;
-  if (phoneNumberLength < 9) return `+7 (${phoneNumber.slice(0, 3)}) ${phoneNumber.slice(3, 6)}-${phoneNumber.slice(6)}`;
-  return `+7 (${phoneNumber.slice(0, 3)}) ${phoneNumber.slice(3, 6)}-${phoneNumber.slice(6, 8)}-${phoneNumber.slice(8, 10)}`;
+  // Удаляем все нецифровые символы, кроме +
+  const phoneNumber = value.replace(/[^\d+]/g, '');
+
+  // Если первый символ не +7, добавляем его
+  let normalizedNumber = phoneNumber;
+  if (!phoneNumber.startsWith('+7')) {
+    if (phoneNumber.startsWith('7')) {
+      normalizedNumber = '+' + phoneNumber;
+    } else if (phoneNumber.startsWith('8')) {
+      normalizedNumber = '+7' + phoneNumber.slice(1);
+    } else if (!phoneNumber.startsWith('+')) {
+      normalizedNumber = '+7' + phoneNumber;
+    }
+  }
+
+  // Убираем все символы кроме цифр для дальнейшего форматирования
+  const digits = normalizedNumber.replace(/[^\d]/g, '');
+  const phoneNumberLength = digits.length;
+
+  if (phoneNumberLength <= 1) return normalizedNumber;
+  if (phoneNumberLength < 4) return `+7 (${digits.slice(1)}`;
+  if (phoneNumberLength < 7) return `+7 (${digits.slice(1, 4)}) ${digits.slice(4)}`;
+  if (phoneNumberLength < 9) return `+7 (${digits.slice(1, 4)}) ${digits.slice(4, 7)}-${digits.slice(7)}`;
+  return `+7 (${digits.slice(1, 4)}) ${digits.slice(4, 7)}-${digits.slice(7, 9)}-${digits.slice(9, 11)}`;
 };
 
 const PhoneIcon = () => (
@@ -91,6 +108,7 @@ export default function Cart() {
 
   const handlePhoneChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const formatted = formatPhoneNumber(e.target.value);
+    if (formatted && formatted.length > 18) return; // Prevent input longer than +7 (999) 999-99-99
     setForm((prev) => ({ ...prev, phone: formatted }));
   }, []);
 
@@ -98,8 +116,18 @@ export default function Cart() {
     setForm((prev) => ({ ...prev, email: e.target.value }));
   }, []);
 
+  const validatePhoneNumber = (phone: string) => {
+    const digits = phone.replace(/[^\d]/g, '');
+    return digits.length === 11; // +7 and 10 digits
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (!validatePhoneNumber(form.phone)) {
+      showToast('Пожалуйста, введите корректный номер телефона', 'error');
+      return;
+    }
 
     try {
       const orderData = {
@@ -247,31 +275,32 @@ export default function Cart() {
                       <span>Telegram</span>
                     </ContactOption>
                   </ContactOptions>
-                  <InputGroup>
-                    <Label htmlFor="phone">Номер телефона</Label>
-                    <PhoneInput
-                      id="phone"
-                      type="tel"
-                      value={form.phone}
-                      onChange={handlePhoneChange}
-                      placeholder="+7 (___) ___-__-__"
-                      required
-                    />
-                  </InputGroup>
-                  <InputGroup>
-                    <Label htmlFor="email">Email</Label>
-                    <EmailInput
-                      id="email"
-                      type="email"
-                      value={form.email}
-                      onChange={handleEmailChange}
-                      placeholder="example@mail.com"
-                      required
-                    />
-                  </InputGroup>
                 </FormGroup>
-
-                <SubmitButton>Оформить заказ</SubmitButton>
+                <FormGroup>
+                  <Label htmlFor="phone">Номер телефона</Label>
+                  <PhoneInput
+                    id="phone"
+                    type="tel"
+                    value={form.phone}
+                    onChange={handlePhoneChange}
+                    placeholder="+7 (999) 999-99-99"
+                    required
+                  />
+                </FormGroup>
+                <FormGroup>
+                  <Label htmlFor="email">Email</Label>
+                  <EmailInput
+                    id="email"
+                    type="email"
+                    value={form.email}
+                    onChange={handleEmailChange}
+                    placeholder="example@mail.com"
+                    required
+                  />
+                </FormGroup>
+                <SubmitButton as="button" type="submit">
+                  Оформить заказ
+                </SubmitButton>
               </CheckoutForm>
             </>
           )}
@@ -697,7 +726,8 @@ const PhoneInput = styled(Input)`
   border-radius: 10px;
   border: 2px solid rgb(var(--border));
   transition: all 0.3s ease;
-  letter-spacing: 0.5px;
+  letter-spacing: 1px;
+  font-family: monospace;
 
   &:focus {
     border-color: rgb(var(--primary));
@@ -707,6 +737,7 @@ const PhoneInput = styled(Input)`
   &::placeholder {
     color: rgba(var(--text), 0.4);
     letter-spacing: normal;
+    font-family: inherit;
   }
 `;
 
@@ -726,14 +757,22 @@ const EmailInput = styled(Input)`
     color: rgba(var(--text), 0.4);
   }
 `;
-
 const SubmitButton = styled(Button)`
   width: 100%;
   margin-top: 2rem;
   padding: 1.4rem;
   font-size: 1.6rem;
   border-radius: 0.8rem;
+  background: rgb(var(--primary));
+  color: rgb(var(--textSecondary));
+  text-transform: none;
+  font-weight: 600;
   transition: all 0.2s ease;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(var(--primary), 0.3);
+  }
 
   ${media('<=tablet')} {
     position: fixed;

@@ -16,6 +16,9 @@ module.exports = withBundleAnalyzer({
   compiler: {
     styledComponents: true,
   },
+  experimental: {
+    serverComponents: false,
+  },
   webpack: (config, { buildId, dev, isServer, defaultLoaders, webpack }) => {
     config.module.rules.push({
       test: /\.svg$/,

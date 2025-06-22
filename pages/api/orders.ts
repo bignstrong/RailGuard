@@ -1,33 +1,28 @@
 import { PrismaClient } from '@prisma/client';
-import rateLimit from 'express-rate-limit';
 import { NextApiRequest, NextApiResponse } from 'next';
 import { z } from 'zod';
 import prisma from '../../lib/prisma';
 
-// Rate limiting configuration
-const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 5, // limit each IP to 5 requests per windowMs
-  message: { message: 'Too many requests, please try again later.' },
+// Validation schema for cart items
+const CartItemSchema = z.object({
+  id: z.string(),
+  title: z.string(),
+  price: z.number().positive(),
+  quantity: z.number().int().positive(),
+  image: z.string(),
 });
 
-// Validation schema
+// Validation schema for contact information
+const ContactSchema = z.object({
+  phone: z.string(),
+  email: z.string().email(),
+  preferredContact: z.enum(['phone', 'whatsapp', 'telegram']),
+});
+
+// Main order schema
 const OrderSchema = z.object({
-  items: z
-    .array(
-      z.object({
-        id: z.string(),
-        title: z.string(),
-        price: z.number().positive(),
-        quantity: z.number().int().positive(),
-        image: z.string().url(),
-      }),
-    )
-    .nonempty(),
-  contact: z.object({
-    phone: z.string().regex(/^\+7\s?\(\d{3}\)\s?\d{3}-\d{2}-\d{2}$/),
-    preferredContact: z.enum(['phone', 'whatsapp', 'telegram']),
-  }),
+  items: z.array(CartItemSchema).nonempty(),
+  contact: ContactSchema,
   totalPrice: z.number().positive(),
 });
 
@@ -44,9 +39,18 @@ interface OrderData extends OrderSchemaType {
 }
 
 async function sendTelegramNotification(order: OrderData) {
+  console.log('Telegram configuration:', {
+    botTokenExists: !!TELEGRAM_BOT_TOKEN,
+    chatIdExists: !!TELEGRAM_CHAT_ID,
+    chatId: TELEGRAM_CHAT_ID,
+  });
+
   if (!TELEGRAM_BOT_TOKEN || !TELEGRAM_CHAT_ID) {
-    throw new Error('Telegram configuration is missing');
+    console.warn('Telegram configuration is missing');
+    return;
   }
+
+  const chatId = TELEGRAM_CHAT_ID.startsWith('@') ? TELEGRAM_CHAT_ID : `${TELEGRAM_CHAT_ID}`;
 
   const getContactInfo = (contact: OrderData['contact']) => {
     const phone = contact.phone;
@@ -66,11 +70,18 @@ async function sendTelegramNotification(order: OrderData) {
 🛍 Новый заказ!
 
 ${getContactInfo(order.contact)}
+📧 Email: ${order.contact.email}
 💰 Сумма: ${order.totalPrice.toLocaleString('ru-RU')}₽
 
 Товары:
 ${order.items.map((item) => `- ${item.title} (${item.quantity} шт.)`).join('\n')}
 `;
+
+  console.log('Attempting to send Telegram message:', {
+    url: TELEGRAM_API_URL,
+    chatId,
+    messageLength: message.length,
+  });
 
   try {
     const response = await fetch(TELEGRAM_API_URL, {
@@ -79,41 +90,47 @@ ${order.items.map((item) => `- ${item.title} (${item.quantity} шт.)`).join('\n
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        chat_id: TELEGRAM_CHAT_ID,
+        chat_id: chatId,
         text: message,
         parse_mode: 'HTML',
       }),
     });
 
+    const responseData = await response.json();
+    console.log('Telegram API response:', responseData);
+
     if (!response.ok) {
-      const error = await response.json();
-      throw new Error(`Failed to send Telegram notification: ${JSON.stringify(error)}`);
+      console.error('Failed to send Telegram notification:', responseData);
+      console.log('Troubleshooting steps:');
+      console.log('1. Verify that the bot token is correct');
+      console.log('2. Make sure the bot is added to the chat/channel');
+      console.log('3. If using a channel, ensure the chat_id starts with "@"');
+      console.log('4. If using a private chat, get the correct chat_id from the @userinfobot');
     }
   } catch (error) {
     console.error('Error sending Telegram notification:', error);
-    throw error;
   }
 }
 
-// Apply rate limiting to the API route
-const applyRateLimit = (req: NextApiRequest, res: NextApiResponse) =>
-  new Promise((resolve, reject) => {
-    limiter(req, res, (result: any) => (result instanceof Error ? reject(result) : resolve(result)));
+export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+  console.log('Received order request:', {
+    method: req.method,
+    headers: {
+      'content-type': req.headers['content-type'],
+    },
   });
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+  if (req.method !== 'POST') {
+    return res.status(405).json({ message: 'Method not allowed' });
+  }
+
   try {
-    // Check method
-    if (req.method !== 'POST') {
-      return res.status(405).json({ message: 'Method not allowed' });
-    }
+    const data = typeof req.body === 'string' ? JSON.parse(req.body) : req.body;
+    console.log('Parsed request body:', data);
 
-    // Apply rate limiting
-    await applyRateLimit(req, res);
-
-    // Validate request body
-    const validationResult = OrderSchema.safeParse(req.body);
+    const validationResult = OrderSchema.safeParse(data);
     if (!validationResult.success) {
+      console.error('Validation error:', validationResult.error);
       return res.status(400).json({
         message: 'Invalid request data',
         errors: validationResult.error.errors,
@@ -122,8 +139,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     // Verify total price calculation
     const calculatedTotal = validationResult.data.items.reduce((sum, item) => sum + item.price * item.quantity, 0);
+
     if (Math.abs(calculatedTotal - validationResult.data.totalPrice) > 0.01) {
-      return res.status(400).json({ message: 'Invalid total price' });
+      return res.status(400).json({
+        message: 'Invalid total price',
+        expected: calculatedTotal,
+        received: validationResult.data.totalPrice,
+      });
     }
 
     const orderData: OrderData = {
@@ -132,8 +154,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       createdAt: new Date(),
     };
 
-    // Save order to database within a transaction
+    // Save order to database using a transaction
     const savedOrder = await prisma.$transaction(async (tx: PrismaClient) => {
+      // Create the order
       const order = await tx.order.create({
         data: {
           items: orderData.items,
@@ -143,10 +166,15 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         },
       });
 
-      // Send Telegram notification
-      await sendTelegramNotification(orderData);
+      // Log the created order
+      console.log('Order created in database:', order);
 
       return order;
+    });
+
+    // Send Telegram notification (don't wait for it)
+    sendTelegramNotification(orderData).catch((error) => {
+      console.error('Failed to send Telegram notification:', error);
     });
 
     return res.status(200).json({
@@ -155,10 +183,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     });
   } catch (error) {
     console.error('Error processing order:', error);
-
-    // Don't expose internal error details to the client
     return res.status(500).json({
       message: 'An error occurred while processing your order. Please try again later.',
+      error: error instanceof Error ? error.message : 'Unknown error',
     });
   }
 }
