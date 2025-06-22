@@ -1,12 +1,15 @@
-import styled from 'styled-components';
 import Page from 'components/Page';
+import styled from 'styled-components';
 import { media } from 'utils/media';
 import FormSection from 'views/ContactPage/FormSection';
 import InformationSection from 'views/ContactPage/InformationSection';
 
 export default function ContactPage() {
   return (
-    <Page title="Contact" description="Minim sint aliquip nostrud excepteur cupidatat amet do laborum exercitation cupidatat ea proident.">
+    <Page
+      title="Контакты"
+      description="Свяжитесь с нами для заказа фильтров RailGuard, получения технической консультации или по вопросам сотрудничества."
+    >
       <ContactContainer>
         <InformationSection />
         <FormSection />

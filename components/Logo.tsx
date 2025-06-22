@@ -1,7 +1,7 @@
 // components/Logo.tsx
 
-import Image from 'next/image'
-import styled from 'styled-components'
+import Image from 'next/image';
+import styled from 'styled-components';
 
 export default function Logo() {
   return (
@@ -16,6 +16,7 @@ const LogoWrapper = styled.div`
   display: flex;
   align-items: center;
   gap: 1rem;
+  text-decoration: none;
 `;
 
 const BrandName = styled.span`
@@ -24,6 +25,7 @@ const BrandName = styled.span`
   letter-spacing: 0.05em;
   color: var(--logoColor, #222);
   transition: color 0.2s;
+  text-decoration: none;
 
   html[data-theme='dark'] & {
     color: #fff;

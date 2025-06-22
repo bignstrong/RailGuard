@@ -10,25 +10,7 @@ export interface ArticleCardProps {
   description: string;
 }
 
-export default function ArticleCard({ title, slug, imageUrl, description }: ArticleCardProps) {
-  return (
-    <NextLink href={'/blog/' + slug} passHref>
-      <ArticleCardWrapper className="article-card-wrapper">
-        <HoverEffectContainer>
-          <ImageContainer>
-            <NextImage src={imageUrl} layout="fill" objectFit="cover" alt={title} />
-          </ImageContainer>
-          <Content>
-            <Title>{title}</Title>
-            <Description>{description}</Description>
-          </Content>
-        </HoverEffectContainer>
-      </ArticleCardWrapper>
-    </NextLink>
-  );
-}
-
-const ArticleCardWrapper = styled.a`
+const StyledLink = styled(NextLink)`
   display: flex;
   flex-direction: column;
   height: 45rem;
@@ -40,6 +22,22 @@ const ArticleCardWrapper = styled.a`
   cursor: pointer;
   color: rgb(var(--text));
 `;
+
+export default function ArticleCard({ title, slug, imageUrl, description }: ArticleCardProps) {
+  return (
+    <StyledLink href={'/blog/' + slug} className="article-card-wrapper">
+      <HoverEffectContainer>
+        <ImageContainer>
+          <NextImage src={imageUrl} layout="fill" objectFit="cover" alt={title} />
+        </ImageContainer>
+        <Content>
+          <Title>{title}</Title>
+          <Description>{description}</Description>
+        </Content>
+      </HoverEffectContainer>
+    </StyledLink>
+  );
+}
 
 const HoverEffectContainer = styled.div`
   transition: transform 0.3s;

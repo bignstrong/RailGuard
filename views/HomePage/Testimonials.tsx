@@ -1,39 +1,38 @@
 import NextImage from 'next/image';
-import React from 'react';
 import styled from 'styled-components';
 
-import { A11y, Autoplay, Navigation } from 'swiper';
-import { Swiper, SwiperSlide } from 'swiper/react';
 import Container from 'components/Container';
 import Separator from 'components/Separator';
+import { A11y, Autoplay, Navigation } from 'swiper';
+import { Swiper, SwiperSlide } from 'swiper/react';
 import { media } from 'utils/media';
 
 const TESTIMONIALS = [
   {
-    companyLogoUrl: '/testimonials/company-logo-1.svg',
-    content: `Really good. I am so pleased with this product. I didn't even need training.`,
+    companyLogoUrl: '/testimonials/autoservice-logo-1.svg',
+    content: `Установили фильтр RailGuard на Renault Kangoo с ТНВД Delphi DFP1. За 6 месяцев и 15000 км пробега ни одной проблемы с форсунками. Фильтр реально работает - при проверке видно собранную стружку.`,
     author: {
-      name: 'Clyde Edwards',
-      title: 'Very Serious Man',
-      avatarUrl: '/testimonials/author-photo-1.jpeg',
+      name: 'Михаил Петров',
+      title: 'Главный механик, АвтоДизель Сервис',
+      avatarUrl: '/testimonials/mechanic-1.jpg',
     },
   },
   {
-    companyLogoUrl: '/testimonials/company-logo-2.svg',
-    content: `It's really wonderful. I use saas product often. Thank You! Saas product has really helped our business.`,
+    companyLogoUrl: '/testimonials/autoservice-logo-2.svg',
+    content: `Как владелец SsangYong Kyron намучался с форсунками. После установки RailGuard прошел уже 30000 км - полет нормальный. Фильтр окупился в первые же месяцы использования.`,
     author: {
-      name: 'Jimmy Hunter',
-      title: 'Sigma Male University Graduate',
-      avatarUrl: '/testimonials/author-photo-2.jpeg',
+      name: 'Александр Иванов',
+      title: 'Владелец SsangYong Kyron 2.0',
+      avatarUrl: '/testimonials/owner-1.jpg',
     },
   },
   {
-    companyLogoUrl: '/testimonials/company-logo-3.svg',
-    content: `Since I invested in saas product I made over 100,000 dollars profits. It really saves me time and effort. saas product is exactly what our business has been lacking.`,
+    companyLogoUrl: '/testimonials/autoservice-logo-3.svg',
+    content: `Профессионально занимаемся ремонтом дизельных двигателей. RailGuard - отличное решение для защиты топливной системы. Рекомендуем всем клиентам после ремонта ТНВД для предотвращения повторных проблем.`,
     author: {
-      name: 'Marjorie Morgan',
-      title: 'Chief Chad Officer',
-      avatarUrl: '/testimonials/author-photo-3.jpeg',
+      name: 'Дмитрий Сергеев',
+      title: 'Директор, ДизельМастер',
+      avatarUrl: '/testimonials/expert-1.jpg',
     },
   },
 ];
@@ -53,7 +52,7 @@ export default function Testimonials() {
                   width={200}
                   height={40}
                 />
-                <Content>“{singleTestimonial.content}”</Content>
+                <Content>"{singleTestimonial.content}"</Content>
                 <AuthorContainer>
                   <AuthorImageContainer>
                     <NextImage src={singleTestimonial.author.avatarUrl} alt={singleTestimonial.author.name} width={48} height={48} />

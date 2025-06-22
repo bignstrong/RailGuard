@@ -1,4 +1,4 @@
-import { createGlobalStyle } from 'styled-components'
+import { createGlobalStyle } from 'styled-components';
 
 // default breakpoints
 // {
@@ -23,7 +23,8 @@ export const GlobalStyle = createGlobalStyle`
   --inputBackground: 255,255,255;
   --navbarBackground: 255,255,255;
   --modalBackground: 251,251,253;
-  --errorColor: 207,34,46;
+  --error: 207,34,46;
+  --success: 34, 197, 94;
   --logoColor:rgb(0, 0, 0);
 }
 
@@ -39,7 +40,8 @@ export const GlobalStyle = createGlobalStyle`
   --inputBackground: 45,55,72;
   --navbarBackground: 45,55,72;
   --modalBackground: 26,32,44;
-  --errorColor: 207,34,46;
+  --error: 207,34,46;
+  --success: 34, 197, 94;
   --logoColor: #fff;
 }
 
@@ -158,4 +160,24 @@ select {
     scroll-behavior: auto !important;
   }
 
-}`;
+}
+
+a, a:visited, a:active, a:focus, a:hover {
+  text-decoration: none !important;
+}
+
+@keyframes badgePop {
+  0% {
+    transform: scale(0);
+    opacity: 0;
+  }
+  70% {
+    transform: scale(1.2);
+    opacity: 0.7;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+`;

@@ -1,11 +1,11 @@
-import NextImage from 'next/image';
-import React, { useState } from 'react';
-import styled from 'styled-components';
 import Collapse from 'components/Collapse';
 import Container from 'components/Container';
 import OverTitle from 'components/OverTitle';
 import SectionTitle from 'components/SectionTitle';
 import ThreeLayersCircle from 'components/ThreeLayersCircle';
+import NextImage from 'next/image';
+import { useState } from 'react';
+import styled from 'styled-components';
 import { media } from 'utils/media';
 
 const TABS = [
@@ -76,8 +76,8 @@ export default function FeaturesGallery() {
   return (
     <FeaturesGalleryWrapper>
       <Content>
-        <OverTitle>features</OverTitle>
-        <SectionTitle>What are you signing in for?</SectionTitle>
+        <OverTitle>характеристики</OverTitle>
+        <SectionTitle>Наши преимущества</SectionTitle>
       </Content>
       <GalleryWrapper>
         <TabsContainer>{tabsMarkup}</TabsContainer>

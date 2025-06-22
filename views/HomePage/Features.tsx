@@ -1,73 +1,33 @@
-import React from 'react';
-import styled from 'styled-components';
 import AutofitGrid from 'components/AutofitGrid';
 import BasicCard from 'components/BasicCard';
 import Container from 'components/Container';
+import styled from 'styled-components';
 import { media } from 'utils/media';
 
-const FEATURES = [
+const CHARACTERISTICS = [
   {
     imageUrl: '/grid-icons/asset-1.svg',
-    title: 'Lorem ipsum dolor sit amet.',
-    description:
-      'Lorem ipsum dolor sit amet consectetur adipisicing elit. Omnis error dolorem ipsa dolore facere est consequuntur aut, eos doloribus voluptate?',
+    title: 'Тонкая фильтрация',
+    description: 'Фильтрация 2-12 мкм против 70-150 мкм у аналогов. Эффективная защита форсунок.',
   },
   {
     imageUrl: '/grid-icons/asset-2.svg',
-    title: 'Lorem ipsum dolor sit amet.',
-    description:
-      'Lorem ipsum dolor sit amet consectetur adipisicing elit. Omnis error dolorem ipsa dolore facere est consequuntur aut, eos doloribus voluptate?',
+    title: 'Большая площадь',
+    description: 'Площадь фильтрующего элемента 1850-2000 мм² - в 2-3 раза больше конкурентов.',
   },
   {
     imageUrl: '/grid-icons/asset-3.svg',
-    title: 'Lorem ipsum dolor sit amet.',
-    description:
-      'Lorem ipsum dolor sit amet consectetur adipisicing elit. Omnis error dolorem ipsa dolore facere est consequuntur aut, eos doloribus voluptate?',
-  },
-  {
-    imageUrl: '/grid-icons/asset-4.svg',
-    title: 'Lorem ipsum dolor sit amet.',
-    description:
-      'Lorem ipsum dolor sit amet consectetur adipisicing elit. Omnis error dolorem ipsa dolore facere est consequuntur aut, eos doloribus voluptate?',
-  },
-  {
-    imageUrl: '/grid-icons/asset-5.svg',
-    title: 'Lorem ipsum dolor sit amet.',
-    description:
-      'Lorem ipsum dolor sit amet consectetur adipisicing elit. Omnis error dolorem ipsa dolore facere est consequuntur aut, eos doloribus voluptate?',
-  },
-  {
-    imageUrl: '/grid-icons/asset-6.svg',
-    title: 'Lorem ipsum dolor sit amet.',
-    description:
-      'Lorem ipsum dolor sit amet consectetur adipisicing elit. Omnis error dolorem ipsa dolore facere est consequuntur aut, eos doloribus voluptate?',
-  },
-  {
-    imageUrl: '/grid-icons/asset-7.svg',
-    title: 'Lorem ipsum dolor sit amet.',
-    description:
-      'Lorem ipsum dolor sit amet consectetur adipisicing elit. Omnis error dolorem ipsa dolore facere est consequuntur aut, eos doloribus voluptate?',
-  },
-  {
-    imageUrl: '/grid-icons/asset-8.svg',
-    title: 'Lorem ipsum dolor sit amet.',
-    description:
-      'Lorem ipsum dolor sit amet consectetur adipisicing elit. Omnis error dolorem ipsa dolore facere est consequuntur aut, eos doloribus voluptate?',
-  },
-  {
-    imageUrl: '/grid-icons/asset-9.svg',
-    title: 'Lorem ipsum dolor sit amet.',
-    description:
-      'Lorem ipsum dolor sit amet consectetur adipisicing elit. Omnis error dolorem ipsa dolore facere est consequuntur aut, eos doloribus voluptate?',
+    title: 'Производительность',
+    description: 'До 100 л/ч без перегрузки. Подходит для двигателей до 3.0л.',
   },
 ];
 
-export default function Features() {
+export default function Characteristics() {
   return (
     <Container>
       <CustomAutofitGrid>
-        {FEATURES.map((singleFeature, idx) => (
-          <BasicCard key={singleFeature.title} {...singleFeature} />
+        {CHARACTERISTICS.map((singleCharacteristic, idx) => (
+          <BasicCard key={singleCharacteristic.title} {...singleCharacteristic} />
         ))}
       </CustomAutofitGrid>
     </Container>

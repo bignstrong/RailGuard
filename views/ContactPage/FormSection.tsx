@@ -1,14 +1,15 @@
+import Button from 'components/Button';
+import Input from 'components/Input';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import styled from 'styled-components';
-import Button from 'components/Button';
-import Input from 'components/Input';
 import { media } from 'utils/media';
 import MailSentState from '../../components/MailSentState';
 
 interface EmailPayload {
   name: string;
   email: string;
+  phone: string;
   description: string;
 }
 
@@ -25,7 +26,7 @@ export default function FormSection() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ subject: 'Email from contact form', ...payload }),
+        body: JSON.stringify({ subject: 'Сообщение с формы контактов', ...payload }),
       });
 
       if (res.status !== 204) {
@@ -49,30 +50,38 @@ export default function FormSection() {
 
   return (
     <Wrapper>
+      <Title>Напишите нам</Title>
+      <Description>
+        Заполните форму, и мы свяжемся с вами в ближайшее время. Также вы можете связаться с нами напрямую по контактам слева.
+      </Description>
       <Form onSubmit={handleSubmit(onSubmit)}>
-        {hasErrored && <ErrorMessage>Couldn&apos;t send email. Please try again.</ErrorMessage>}
+        {hasErrored && <ErrorMessage>Не удалось отправить сообщение. Пожалуйста, попробуйте еще раз.</ErrorMessage>}
         <InputGroup>
           <InputStack>
-            {errors.name && <ErrorMessage>Name is required</ErrorMessage>}
-            <Input placeholder="Your Name" id="name" disabled={isDisabled} {...register('name', { required: true })} />
+            {errors.name && <ErrorMessage>Укажите ваше имя</ErrorMessage>}
+            <Input placeholder="Ваше имя" id="name" disabled={isDisabled} {...register('name', { required: true })} />
           </InputStack>
           <InputStack>
-            {errors.email && <ErrorMessage>Email is required</ErrorMessage>}
-            <Input placeholder="Your Email" id="email" disabled={isDisabled} {...register('email', { required: true })} />
+            {errors.email && <ErrorMessage>Укажите email</ErrorMessage>}
+            <Input placeholder="Ваш email" id="email" disabled={isDisabled} {...register('email', { required: true })} />
           </InputStack>
         </InputGroup>
         <InputStack>
-          {errors.description && <ErrorMessage>Description is required</ErrorMessage>}
+          {errors.phone && <ErrorMessage>Укажите телефон</ErrorMessage>}
+          <Input placeholder="+7 (___) ___-__-__" id="phone" disabled={isDisabled} {...register('phone', { required: true })} />
+        </InputStack>
+        <InputStack>
+          {errors.description && <ErrorMessage>Введите сообщение</ErrorMessage>}
           <Textarea
             as="textarea"
-            placeholder="Enter Your Message..."
+            placeholder="Ваше сообщение..."
             id="description"
             disabled={isDisabled}
             {...register('description', { required: true })}
           />
         </InputStack>
         <Button as="button" type="submit" disabled={isSubmitDisabled}>
-          Send Message
+          Отправить сообщение
         </Button>
       </Form>
     </Wrapper>
@@ -81,6 +90,36 @@ export default function FormSection() {
 
 const Wrapper = styled.div`
   flex: 2;
+  padding: 2rem;
+  background: rgb(var(--background));
+  border-radius: 0.6rem;
+  box-shadow: var(--shadow-sm);
+
+  ${media('<=tablet')} {
+    padding: 1.5rem;
+  }
+`;
+
+const Title = styled.h2`
+  font-size: 3rem;
+  margin-bottom: 1.5rem;
+  color: rgb(var(--text));
+
+  ${media('<=tablet')} {
+    font-size: 2.4rem;
+    margin-bottom: 1rem;
+  }
+`;
+
+const Description = styled.p`
+  font-size: 1.6rem;
+  color: rgb(var(--text-secondary));
+  margin-bottom: 3rem;
+
+  ${media('<=tablet')} {
+    font-size: 1.4rem;
+    margin-bottom: 2rem;
+  }
 `;
 
 const Form = styled.form`

@@ -1,11 +1,10 @@
-import NextLink from 'next/link';
-import React from 'react';
-import styled from 'styled-components';
 import Button from 'components/Button';
 import ButtonGroup from 'components/ButtonGroup';
 import Container from 'components/Container';
 import OverTitle from 'components/OverTitle';
 import SectionTitle from 'components/SectionTitle';
+import NextLink from 'next/link';
+import styled from 'styled-components';
 import { media } from 'utils/media';
 
 export default function Cta() {
@@ -13,22 +12,22 @@ export default function Cta() {
     <CtaWrapper>
       <Container>
         <Stack>
-          <OverTitle>Lorem ipsum dolor sit amet</OverTitle>
-          <SectionTitle>Lorem ipsum dolor, sit amet consectetur adipisicing elit. Temporibus delectus?</SectionTitle>
+          <OverTitle>Защита вашего двигателя</OverTitle>
+          <SectionTitle>Сэкономьте до 500$ на ремонте форсунок с фильтром RailGuard</SectionTitle>
           <Description>
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Assumenda beatae accusamus deleniti nihil quas tempora numquam, vitae
-            culpa.
+            Профессиональный фильтр с тонкостью фильтрации 2-10 мкм и рабочим давлением до 2200 бар. Увеличьте ресурс форсунок до 300 000 км
+            и забудьте о дорогостоящем ремонте. Универсальное решение для всех систем Common Rail.
           </Description>
           <ButtonGroup>
-            <NextLink href="#early-access" passHref>
+            <NextLink href="/pricing">
               <Button>
-                Subscribe to the newsletter <span>&rarr;</span>
+                Заказать сейчас<span>&rarr;</span>
               </Button>
             </NextLink>
-            <NextLink href="#whitepaper" passHref>
-              <OutlinedButton transparent>
-                Features <span>&rarr;</span>
-              </OutlinedButton>
+            <NextLink href="/specifications">
+              <Button>
+                Узнать характеристики <span>&rarr;</span>
+              </Button>
             </NextLink>
           </ButtonGroup>
         </Stack>

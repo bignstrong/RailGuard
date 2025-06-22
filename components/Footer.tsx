@@ -1,7 +1,6 @@
-import NextLink from 'next/link';
-import { FacebookIcon, LinkedinIcon, TwitterIcon } from 'react-share';
-import styled from 'styled-components';
 import Container from 'components/Container';
+import NextLink from 'next/link';
+import styled from 'styled-components';
 import { media } from 'utils/media';
 
 type SingleFooterListItem = { title: string; href: string };
@@ -11,37 +10,27 @@ type FooterItems = SingleFooterList[];
 
 const footerItems: FooterItems = [
   {
-    title: 'Company',
+    title: 'Компания',
     items: [
-      { title: 'Privacy Policy', href: '/privacy-policy' },
-      { title: 'Cookies Policy', href: '/cookies-policy' },
+      { title: 'Характеристики', href: '/specifications' },
+      { title: 'Каталог', href: '/pricing' },
+      { title: 'Контакты', href: '/contact' },
     ],
   },
+  // {
+  //   title: 'Ресурсы',
+  //   items: [
+  //     { title: 'Блог', href: '/blog' },
+  //     { title: 'Поддержка', href: '/support' },
+  //     { title: 'Документация', href: '/docs' },
+  //   ],
+  // },
   {
-    title: 'Product',
+    title: 'Правовая информация',
     items: [
-      { title: 'Features', href: '/features' },
-      { title: 'Something', href: '/something' },
-      { title: 'Something else', href: '/something-else' },
-      { title: 'And something else', href: '/and-something-else' },
-    ],
-  },
-  {
-    title: 'Knowledge',
-    items: [
-      { title: 'Blog', href: '/blog' },
-      { title: 'Contact', href: '/contact' },
-      { title: 'FAQ', href: '/faq' },
-      { title: 'Help Center', href: '/help-center' },
-    ],
-  },
-  {
-    title: 'Something',
-    items: [
-      { title: 'Features2', href: '/features2' },
-      { title: 'Something2', href: '/something2' },
-      { title: 'Something else2', href: '/something-else2' },
-      { title: 'And something else2', href: '/and-something-else2' },
+      { title: 'Политика конфиденциальности', href: '/privacy-policy' },
+      { title: 'Условия использования', href: '/terms' },
+      { title: 'Политика cookies', href: '/cookies-policy' },
     ],
   },
 ];
@@ -56,26 +45,20 @@ export default function Footer() {
           ))}
         </ListContainer>
         <BottomBar>
-          <ShareBar>
-            <NextLink href="https://www.twitter.com/my-saas-startup" passHref>
-              <a>
-                <TwitterIcon size={50} round={true} />
-              </a>
+          {/* <ShareBar>
+            <NextLink href="https://www.twitter.com/my-saas-startup">
+              <TwitterIcon size={50} round={true} />
             </NextLink>
 
-            <NextLink href="https://www.facebook.com/my-saas-startup" passHref>
-              <a>
-                <FacebookIcon size={50} round={true} />
-              </a>
+            <NextLink href="https://www.facebook.com/my-saas-startup">
+              <FacebookIcon size={50} round={true} />
             </NextLink>
 
-            <NextLink href="https://www.linkedin.com/my-saas-startup" passHref>
-              <a>
-                <LinkedinIcon size={50} round={true} />
-              </a>
+            <NextLink href="https://www.linkedin.com/my-saas-startup">
+              <LinkedinIcon size={50} round={true} />
             </NextLink>
-          </ShareBar>
-          <Copyright>&copy; Copyright 2021 My Saas Startup</Copyright>
+          </ShareBar> */}
+          <Copyright>&copy; Copyright 2025 RailGuard</Copyright>
         </BottomBar>
       </Container>
     </FooterWrapper>
@@ -96,9 +79,7 @@ function FooterList({ title, items }: SingleFooterList) {
 function ListItem({ title, href }: SingleFooterListItem) {
   return (
     <ListItemWrapper>
-      <NextLink href={href} passHref>
-        <a>{title}</a>
-      </NextLink>
+      <NextLink href={href}>{title}</NextLink>
     </ListItemWrapper>
   );
 }

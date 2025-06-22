@@ -1,5 +1,5 @@
 import NextImage from 'next/image';
-import React, { PropsWithChildren } from 'react';
+import { PropsWithChildren, ReactNode } from 'react';
 import styled from 'styled-components';
 import { media } from 'utils/media';
 import Container from './Container';
@@ -7,17 +7,26 @@ import OverTitle from './OverTitle';
 import RichText from './RichText';
 
 export interface BasicSectionProps {
-  imageUrl: string;
+  imageUrl?: string;
+  imageComponent?: ReactNode;
   title: string;
   overTitle: string;
   reversed?: boolean;
 }
 
-export default function BasicSection({ imageUrl, title, overTitle, reversed, children }: PropsWithChildren<BasicSectionProps>) {
+export default function BasicSection({
+  imageUrl,
+  imageComponent,
+  title,
+  overTitle,
+  reversed,
+  children,
+}: PropsWithChildren<BasicSectionProps>) {
   return (
     <BasicSectionWrapper reversed={reversed}>
       <ImageContainer>
-        <NextImage src={imageUrl} alt={title} layout="fill" objectFit="cover" />
+        {imageUrl && <NextImage src={imageUrl} alt={title} layout="fill" objectFit="cover" />}
+        {imageComponent}
       </ImageContainer>
       <ContentContainer>
         <CustomOverTitle>{overTitle}</CustomOverTitle>
@@ -47,30 +56,20 @@ const CustomOverTitle = styled(OverTitle)`
 
 const ImageContainer = styled.div`
   flex: 1;
-
   position: relative;
-  &:before {
-    display: block;
-    content: '';
-    width: 100%;
-    padding-top: calc((9 / 16) * 100%);
-  }
-
-  & > div {
-    position: absolute;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    left: 0;
-  }
 
   ${media('<=desktop')} {
     width: 100%;
+    order: 2;
   }
 `;
 
 const ContentContainer = styled.div`
   flex: 1;
+
+  ${media('<=desktop')} {
+    order: 1;
+  }
 `;
 
 type Props = Pick<BasicSectionProps, 'reversed'>;
@@ -87,7 +86,7 @@ const BasicSectionWrapper = styled(Container)`
     flex-direction: column;
 
     ${ImageContainer} {
-      margin: 0 0 2.5rem 0;
+      margin: 2.5rem 0 0 0;
     }
   }
 `;

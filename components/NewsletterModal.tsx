@@ -1,8 +1,8 @@
+import { EnvVars } from 'env';
+import useEscClose from 'hooks/useEscKey';
 import React, { useState } from 'react';
 import MailchimpSubscribe, { DefaultFormFields } from 'react-mailchimp-subscribe';
 import styled from 'styled-components';
-import { EnvVars } from 'env';
-import useEscClose from 'hooks/useEscKey';
 import { media } from 'utils/media';
 import Button from './Button';
 import CloseIcon from './CloseIcon';
@@ -43,16 +43,25 @@ export default function NewsletterModal({ onClose }: NewsletterModalProps) {
                 {hasSignedUp && <MailSentState />}
                 {!hasSignedUp && (
                   <>
-                    <Title>Are you ready to enroll to the best newsletter ever?</Title>
+                    <Title>Получайте первыми новости о скидках и специальных предложениях!</Title>
+                    <Description>
+                      Подпишитесь на нашу рассылку и получите:
+                      <ul>
+                        <li>Скидку 5% на первый заказ</li>
+                        <li>Эксклюзивные технические обзоры</li>
+                        <li>Советы по обслуживанию топливной системы</li>
+                        <li>Приоритетный доступ к новым продуктам</li>
+                      </ul>
+                    </Description>
                     <Row>
                       <CustomInput
                         value={email}
                         onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEmail(e.target.value)}
-                        placeholder="Enter your email..."
+                        placeholder="Введите ваш email..."
                         required
                       />
                       <CustomButton as="button" type="submit" disabled={hasSignedUp}>
-                        Submit
+                        Подписаться
                       </CustomButton>
                     </Row>
                     {message && <ErrorMessage dangerouslySetInnerHTML={{ __html: message as string }} />}
@@ -143,8 +152,42 @@ const CustomButton = styled(Button)`
 
 const CustomInput = styled(Input)`
   width: 60%;
+  color: rgb(var(--text));
+
+  &::placeholder {
+    color: rgb(var(--text-secondary));
+    opacity: 0.8;
+  }
 
   ${media('<=tablet')} {
     width: 100%;
+  }
+`;
+
+const Description = styled.div`
+  font-size: 1.7rem;
+  margin: 2.5rem 0 1.5rem 0;
+  text-align: center;
+  color: rgb(var(--text));
+  ul {
+    margin: 1.2rem 0 0 0;
+    padding: 0;
+    list-style: none;
+    text-align: left;
+    display: inline-block;
+  }
+  li {
+    font-size: 1.5rem;
+    margin-bottom: 0.5rem;
+    position: relative;
+    padding-left: 1.5em;
+  }
+  li:before {
+    content: '•';
+    color: rgb(255, 107, 0);
+    position: absolute;
+    left: 0;
+    font-size: 1.5em;
+    line-height: 1;
   }
 `;

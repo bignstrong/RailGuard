@@ -1,46 +1,74 @@
-import styled from 'styled-components';
 import Accordion from 'components/Accordion';
 import SectionTitle from 'components/SectionTitle';
+import styled from 'styled-components';
 
 export default function FaqSection() {
   return (
     <Wrapper>
-      <SectionTitle>Frequently asked question</SectionTitle>
-      <Accordion title="Eiusmod eu laboris qui minim incididunt et id in elit veniam Lorem nulla ullamco.">
-        Voluptate ad aliquip in adipisicing incididunt officia. Aliqua consectetur id commodo fugiat sunt dolor minim. Aliqua ut deserunt
-        sit irure tempor esse labore elit commodo pariatur in nisi minim culpa. Exercitation eu in mollit tempor cillum excepteur
-        adipisicing cillum do et dolor est deserunt dolor. Deserunt reprehenderit nulla commodo quis et consectetur deserunt ea eiusmod
-        reprehenderit aliqua. Cupidatat commodo do ad ullamco ad enim sint sint irure amet culpa. Consequat sit Lorem sint culpa.
-      </Accordion>
-      <Accordion title="Minim eiusmod aliquip in ea mollit fugiat ullamco veniam enim sint exercitation.">
-        Lorem laboris ullamco labore consectetur duis amet excepteur esse labore sunt pariatur do aliqua amet. Enim exercitation labore
-        nostrud consectetur veniam eiusmod pariatur do commodo dolore pariatur amet veniam. Irure do et ut dolor quis reprehenderit anim
-        aute sint deserunt tempor sunt nostrud. Deserunt et aute non dolor.
-      </Accordion>
-      <Accordion title="Commodo officia dolore anim occaecat.">
-        Enim ea cillum pariatur incididunt incididunt sunt ea exercitation nisi aliquip. Cillum deserunt ut esse Lorem non qui labore labore
-        eiusmod magna incididunt ut quis. Nulla excepteur adipisicing ipsum do non occaecat.
-      </Accordion>
-      <Accordion title="Irure Lorem proident esse enim.">
-        Ipsum laboris sit minim occaecat nisi qui. Tempor eiusmod fugiat occaecat labore. Exercitation do cillum cillum laborum velit
-        laborum ea magna duis laborum in anim. Enim laboris dolore laboris consectetur enim duis deserunt consequat excepteur ipsum
-        excepteur. Non dolor magna et est cillum sint eiusmod sit eiusmod veniam id. Aliqua non non labore amet laborum fugiat ad nostrud ex
-        officia exercitation.
-      </Accordion>
-      <Accordion title="Ea quis consequat sunt sint aute pariatur aliquip minim voluptate.">
-        Sint eiusmod aute nulla ut esse sunt fugiat nulla exercitation duis pariatur. Magna anim incididunt magna id quis irure laborum sint
-        voluptate tempor esse elit dolore. Elit exercitation pariatur adipisicing aute. Nisi deserunt enim consequat anim adipisicing
-        laborum sint occaecat elit. Consequat officia cupidatat magna incididunt nisi in sunt duis reprehenderit ullamco in amet cillum.
-        Dolor nisi proident ipsum aute velit aliquip magna fugiat reprehenderit. Enim ex aliqua et velit exercitation reprehenderit veniam
-        do eu exercitation ad duis.
-      </Accordion>
+      <SectionTitle>Часто задаваемые вопросы</SectionTitle>
+      <AccordionContainer>
+        <Accordion title="Зачем нужен дополнительный фильтр, если в машине уже есть штатный?">
+          Штатная система фильтрации не всегда справляется с загрязнениями в современном топливе, особенно в системах Common Rail,
+          работающих под высоким давлением. Наш фильтр устанавливается после штатного и обеспечивает дополнительную защиту форсунок и ТНВД
+          от мельчайших частиц, которые могут привести к преждевременному износу или поломке дорогостоящих компонентов.
+        </Accordion>
+
+        <Accordion title="Как часто нужно менять фильтрующий элемент?">
+          Рекомендуемый интервал замены картриджа - каждые 15-20 тысяч километров. Однако, реальный срок службы зависит от качества
+          используемого топлива. При использовании топлива сомнительного качества может потребоваться более частая замена. Наш фильтрующий
+          элемент имеет увеличенную площадь фильтрации и возможность очистки, что существенно продлевает срок службы.
+        </Accordion>
+
+        <Accordion title="Повлияет ли установка фильтра на гарантию автомобиля?">
+          Установка дополнительного фильтра не влияет на гарантию автомобиля, так как это съемное устройство, которое не вносит необратимых
+          изменений в топливную систему. Более того, наш фильтр помогает защитить компоненты топливной системы, что может предотвратить
+          дорогостоящий ремонт даже после окончания гарантийного срока.
+        </Accordion>
+
+        <Accordion title="Подойдет ли фильтр для моего автомобиля?">
+          Наши фильтры совместимы со всеми современными дизельными двигателями, оборудованными системой Common Rail. Монтажный комплект
+          включает универсальные переходники и фитинги для различных диаметров топливных магистралей. При необходимости наши специалисты
+          помогут подобрать правильную комплектацию для вашего автомобиля.
+        </Accordion>
+
+        <Accordion title="Сложно ли установить фильтр самостоятельно?">
+          Установка фильтра доступна для выполнения в домашних условиях при наличии базовых навыков работы с автомобилем. В комплект входит
+          подробная инструкция по монтажу. Тем не менее, мы рекомендуем производить установку в специализированных сервисных центрах,
+          особенно если у вас нет опыта работы с топливной системой.
+        </Accordion>
+
+        <Accordion title="Что делать, если фильтр засорился?">
+          Наши фильтрующие элементы имеют возможность многократной промывки специальным составом, что позволяет восстановить их
+          работоспособность. Если промывка не помогает, картридж легко заменяется на новый без необходимости замены всего корпуса фильтра. В
+          экстренном случае фильтр можно быстро демонтировать, вернув систему в штатное состояние.
+        </Accordion>
+
+        <Accordion title="Предоставляете ли вы гарантию?">
+          Да, мы предоставляем гарантию 12 месяцев на корпус фильтра и 6 месяцев на фильтрующий элемент при условии соблюдения рекомендаций
+          по установке и обслуживанию. При покупке комплекта "Профи-Старт" гарантия расширяется до 24 месяцев. Гарантия распространяется на
+          заводские дефекты и материалы.
+        </Accordion>
+
+        <Accordion title="Есть ли у вас специальные предложения для автосервисов?">
+          Да, для автосервисов мы предлагаем оптовые наборы с существенной скидкой, включающие комплект фильтров и расходных материалов.
+          Также мы проводим обучение персонала и предоставляем статус авторизованного установщика, что дает дополнительные преимущества и
+          маркетинговую поддержку.
+        </Accordion>
+      </AccordionContainer>
     </Wrapper>
   );
 }
 
 const Wrapper = styled.div`
-  margin-top: 15rem;
-  & > *:not(:first-child) {
-    margin-top: 3rem;
+  margin-top: 8rem;
+  margin-bottom: 8rem;
+`;
+
+const AccordionContainer = styled.div`
+  max-width: 80rem;
+  margin: 0 auto;
+
+  & > * {
+    margin-bottom: 2rem;
   }
 `;

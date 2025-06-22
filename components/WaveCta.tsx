@@ -1,10 +1,9 @@
-import NextLink from 'next/link';
-import styled from 'styled-components';
 import Button from 'components/Button';
 import ButtonGroup from 'components/ButtonGroup';
 import Container from 'components/Container';
 import SectionTitle from 'components/SectionTitle';
 import { useNewsletterModalContext } from 'contexts/newsletter-modal.context';
+import styled from 'styled-components';
 import { media } from 'utils/media';
 
 export default function WaveCta() {
@@ -21,16 +20,25 @@ export default function WaveCta() {
       </svg>
       <CtaWrapper>
         <Container>
-          <Title>Lorem ipsum dolor, sit amet consectetur adipisicing elit. Temporibus delectus?</Title>
+          <Title>Получайте первыми новости о скидках и специальных предложениях!</Title>
+          <Description>
+            Подпишитесь на нашу рассылку и получите:
+            <BenefitsList>
+              <li>Скидку 5% на первый заказ</li>
+              <li>Эксклюзивные технические обзоры</li>
+              <li>Советы по обслуживанию топливной системы</li>
+              <li>Приоритетный доступ к новым продуктам</li>
+            </BenefitsList>
+          </Description>
           <CustomButtonGroup>
             <Button onClick={() => setIsModalOpened(true)}>
-              Subscribe to the newsletter <span>&rarr;</span>
+              Подписаться на рассылку <span>&rarr;</span>
             </Button>
-            <NextLink href="/features" passHref>
+            {/* <NextLink href="/features">
               <OutlinedButton transparent>
-                Features <span>&rarr;</span>
+                Узнать больше <span>&rarr;</span>
               </OutlinedButton>
-            </NextLink>
+            </NextLink> */}
           </CustomButtonGroup>
         </Container>
       </CtaWrapper>
@@ -50,7 +58,32 @@ const CtaWrapper = styled.div`
 
 const Title = styled(SectionTitle)`
   color: rgb(var(--textSecondary));
-  margin-bottom: 4rem;
+  margin-bottom: 2rem;
+`;
+
+const Description = styled.div`
+  font-size: 1.8rem;
+  color: rgb(var(--textSecondary));
+  text-align: center;
+  margin-bottom: 3rem;
+`;
+
+const BenefitsList = styled.ul`
+  list-style: none;
+  padding: 0;
+  margin: 2rem 0;
+
+  li {
+    margin: 1rem 0;
+    font-size: 1.6rem;
+    color: rgba(var(--textSecondary), 0.8);
+
+    &:before {
+      content: '✓';
+      margin-right: 1rem;
+      color: rgb(var(--primary));
+    }
+  }
 `;
 
 const OutlinedButton = styled(Button)`

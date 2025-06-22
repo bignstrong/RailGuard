@@ -1,20 +1,13 @@
-import NextImage from 'next/image';
+import React from 'react';
 import styled from 'styled-components';
 
 interface BasicCardProps {
-  title: string;
-  description: string;
-  imageUrl: string;
+  className?: string;
+  children?: React.ReactNode;
 }
 
-export default function BasicCard({ title, description, imageUrl }: BasicCardProps) {
-  return (
-    <Card>
-      <NextImage src={imageUrl} width={128} height={128} alt={title} />
-      <Title>{title}</Title>
-      <Description>{description}</Description>
-    </Card>
-  );
+export default function BasicCard({ className, children }: BasicCardProps) {
+  return <Card className={className}>{children}</Card>;
 }
 
 const Card = styled.div`
@@ -22,11 +15,6 @@ const Card = styled.div`
   padding: 2.5rem;
   background: rgb(var(--cardBackground));
   box-shadow: var(--shadow-md);
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  text-align: center;
-  width: 100%;
   border-radius: 0.6rem;
   color: rgb(var(--text));
   font-size: 1.6rem;
@@ -34,12 +22,4 @@ const Card = styled.div`
   & > *:not(:first-child) {
     margin-top: 1rem;
   }
-`;
-
-const Title = styled.div`
-  font-weight: bold;
-`;
-
-const Description = styled.div`
-  opacity: 0.6;
 `;

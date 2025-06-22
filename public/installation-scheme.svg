@@ -1,0 +1,55 @@
+<svg width="900" height="200" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Схема потока топлива через фильтр RailGuard">
+  <!-- Определение маркера стрелки -->
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="10" refY="5" markerUnits="strokeWidth" markerWidth="8" markerHeight="6" orient="auto">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#2196F3"/>
+    </marker>
+  </defs>
+
+  <!-- Стили -->
+  <style>
+    .node { rx: 10; ry: 10; stroke-width: 2; font-family: Arial, sans-serif; font-size: 12px; text-anchor: middle; dominant-baseline: middle; }
+    .normal { fill: #E3F2FD; stroke: #2196F3; color: #0D47A1; }
+    .highlight { fill: #FF5722; stroke: #BF360C; stroke-width: 4; color: #FFFFFF; }
+    .label { pointer-events: none; }
+    .arrow-line { fill: none; stroke: #2196F3; stroke-width: 2; marker-end: url(#arrow); }
+  </style>
+
+  <!-- Узлы -->
+  <rect x="20"  y="50"  width="100" height="50" class="node normal"/>
+  <text x="70"  y="75" class="label" fill="#0D47A1">Бак</text>
+
+  <rect x="150" y="50"  width="120" height="50" class="node normal"/>
+  <text x="210" y="75" class="label" fill="#0D47A1">Основной<br/>фильтр</text>
+
+  <rect x="310" y="50"  width="80"  height="50" class="node normal"/>
+  <text x="350" y="75" class="label" fill="#0D47A1">ТНВД</text>
+
+  <rect x="420" y="50"  width="120" height="50" class="node highlight"/>
+  <text x="480" y="75" class="label" fill="#FFFFFF">RailGuard<br/>8–12 мкм</text>
+
+  <rect x="580" y="50"  width="120" height="50" class="node normal"/>
+  <text x="640" y="75" class="label" fill="#0D47A1">Топливная<br/>рампа</text>
+
+  <rect x="740" y="50"  width="100" height="50" class="node normal"/>
+  <text x="790" y="75" class="label" fill="#0D47A1">Форсунки</text>
+
+  <!-- Стрелки с подписями -->
+  <path d="M120,75 L150,75" class="arrow-line"/>
+  <text x="135" y="65" class="label" fill="#0D47A1">Топливо</text>
+
+  <path d="M270,75 L310,75" class="arrow-line"/>
+  <text x="290" y="65" class="label" fill="#0D47A1">Предварительно<br/>очищенное</text>
+  <text x="290" y="80" class="label" fill="#0D47A1">топливо</text>
+
+  <path d="M390,75 L420,75" class="arrow-line"/>
+  <text x="405" y="65" class="label" fill="#0D47A1">Высокое<br/>давление</text>
+  <text x="405" y="80" class="label" fill="#0D47A1">топлива</text>
+
+  <path d="M540,75 L580,75" class="arrow-line"/>
+  <text x="560" y="65" class="label" fill="#0D47A1">Окончательно<br/>очищенное</text>
+  <text x="560" y="80" class="label" fill="#0D47A1">топливо</text>
+
+  <path d="M700,75 L740,75" class="arrow-line"/>
+  <!-- без подписи -->
+</svg>

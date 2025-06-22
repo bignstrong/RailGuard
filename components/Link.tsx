@@ -6,15 +6,7 @@ export interface LinkProps {
   href: string;
 }
 
-export default function Link({ href, children }: PropsWithChildren<LinkProps>) {
-  return (
-    <NextLink href={href} passHref>
-      <Anchor>{children}</Anchor>
-    </NextLink>
-  );
-}
-
-const Anchor = styled.a`
+const StyledLink = styled(NextLink)`
   display: inline;
   width: fit-content;
   text-decoration: none;
@@ -38,3 +30,7 @@ const Anchor = styled.a`
     background-size: 100% 100%;
   }
 `;
+
+export default function Link({ href, children }: PropsWithChildren<LinkProps>) {
+  return <StyledLink href={href}>{children}</StyledLink>;
+}

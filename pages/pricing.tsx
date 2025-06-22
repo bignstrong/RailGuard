@@ -1,15 +1,18 @@
-import styled from 'styled-components';
 import Page from 'components/Page';
+import styled from 'styled-components';
+import CatalogSection from 'views/PricingPage/CatalogSection';
 import FaqSection from 'views/PricingPage/FaqSection';
-import PricingTablesSection from 'views/PricingPage/PricingTablesSection';
+// import PricingTablesSection from 'views/PricingPage/PricingTablesSection';
 
 export default function PricingPage() {
   return (
-    <Page title="Pricing" description="Cupidatat et reprehenderit ullamco aute ullamco anim tempor.">
-      <Wrapper>
-        <PricingTablesSection />
-        <FaqSection />
-      </Wrapper>
+    <Page
+      title="Полный каталог RailGuard"
+      description="Откройте для себя наш ассортимент топливных фильтров и аксессуаров премиум-класса. Каждое изделие создано для обеспечения максимальной защиты, эффективности и долговечности вашего двигателя. Выбирайте решения, которым доверяют профессионалы."
+    >
+      <CatalogSection />
+      {/* <PricingTablesSection /> */}
+      <FaqSection />
     </Page>
   );
 }

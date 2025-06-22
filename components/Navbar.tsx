@@ -1,13 +1,15 @@
+import { useLightbox } from 'contexts/lightbox.context';
+import { useNewsletterModalContext } from 'contexts/newsletter-modal.context';
+import { ScrollPositionEffectProps, useScrollPosition } from 'hooks/useScrollPosition';
 import dynamic from 'next/dynamic';
 import NextLink from 'next/link';
 import { useRouter } from 'next/router';
-import React, { useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 import styled from 'styled-components';
-import { useNewsletterModalContext } from 'contexts/newsletter-modal.context';
-import { ScrollPositionEffectProps, useScrollPosition } from 'hooks/useScrollPosition';
 import { NavItems, SingleNavItem } from 'types';
 import { media } from 'utils/media';
 import Button from './Button';
+import CartIcon from './Cart/CartIcon';
 import Container from './Container';
 import Drawer from './Drawer';
 import { HamburgerIcon } from './HamburgerIcon';
@@ -19,10 +21,15 @@ type NavbarProps = { items: NavItems };
 type ScrollingDirections = 'up' | 'down' | 'none';
 type NavbarContainerProps = { hidden: boolean; transparent: boolean };
 
+interface NavItemLinkProps {
+  outlined?: boolean;
+}
+
 export default function Navbar({ items }: NavbarProps) {
   const router = useRouter();
   const { toggle } = Drawer.useDrawer();
   const [scrollingDirection, setScrollingDirection] = useState<ScrollingDirections>('none');
+  const { imageUrl } = useLightbox();
 
   let lastScrollY = useRef(0);
   const lastRoute = useRef('');
@@ -61,28 +68,38 @@ export default function Navbar({ items }: NavbarProps) {
     lastScrollY.current = currentScrollY;
   }
 
-  const isNavbarHidden = scrollingDirection === 'down';
-  const isTransparent = scrollingDirection === 'none';
+  const isNavbarHidden = scrollingDirection === 'down' || !!imageUrl;
+  const isTransparent = scrollingDirection === 'none' && !imageUrl;
 
   return (
     <NavbarContainer hidden={isNavbarHidden} transparent={isTransparent}>
       <Content>
-        <NextLink href="/" passHref>
-          <LogoWrapper>
-            <Logo />
-          </LogoWrapper>
-        </NextLink>
-        <NavItemList>
-          {items.map((singleItem) => (
-            <NavItem key={singleItem.href} {...singleItem} />
-          ))}
-        </NavItemList>
-        <ColorSwitcherContainer>
-          <ColorSwitcher />
-        </ColorSwitcherContainer>
-        <HamburgerMenuWrapper>
-          <HamburgerIcon aria-label="Toggle menu" onClick={toggle} />
-        </HamburgerMenuWrapper>
+        <Left>
+          <NextLink href="/" passHref legacyBehavior>
+            <LogoAnchor>
+              <Logo />
+            </LogoAnchor>
+          </NextLink>
+        </Left>
+        <Right>
+          <NavItemList>
+            {items.map((singleItem) => (
+              <NavItem key={singleItem.href} {...singleItem} />
+            ))}
+          </NavItemList>
+          <NavActions>
+            <ColorSwitcherContainer>
+              <ColorSwitcher />
+            </ColorSwitcherContainer>
+            <CartIconWrapper>
+              <CartIcon />
+            </CartIconWrapper>
+
+            <HamburgerMenuWrapper>
+              <HamburgerIcon aria-label="Toggle menu" onClick={toggle} />
+            </HamburgerMenuWrapper>
+          </NavActions>
+        </Right>
       </Content>
     </NavbarContainer>
   );
@@ -101,8 +118,8 @@ function NavItem({ href, title, outlined }: SingleNavItem) {
 
   return (
     <NavItemWrapper outlined={outlined}>
-      <NextLink href={href} passHref>
-        <a>{title}</a>
+      <NextLink href={href} passHref legacyBehavior>
+        <NavItemAnchor outlined={outlined}>{title}</NavItemAnchor>
       </NextLink>
     </NavItemWrapper>
   );
@@ -128,12 +145,21 @@ const HamburgerMenuWrapper = styled.div`
   }
 `;
 
-const LogoWrapper = styled.a`
+const LogoAnchor = styled.a`
   display: flex;
   margin-right: auto;
-  text-decoration: none;
-
+  text-decoration: none !important;
   color: rgb(var(--logoColor));
+  border-bottom: none !important;
+  background: none !important;
+  box-shadow: none !important;
+  span,
+  img {
+    text-decoration: none !important;
+    border-bottom: none !important;
+    background: none !important;
+    box-shadow: none !important;
+  }
 `;
 
 const NavItemWrapper = styled.li<Partial<SingleNavItem>>`
@@ -148,18 +174,18 @@ const NavItemWrapper = styled.li<Partial<SingleNavItem>>`
     transition: background-color 0.2s;
   }
 
-  a {
-    display: flex;
-    color: ${(p) => (p.outlined ? 'rgb(var(--textSecondary))' : 'rgb(var(--text), 0.75)')};
-    letter-spacing: 0.025em;
-    text-decoration: none;
-    padding: 0.75rem 1.5rem;
-    font-weight: 700;
-  }
-
   &:not(:last-child) {
     margin-right: 2rem;
   }
+`;
+
+const NavItemAnchor = styled.a<NavItemLinkProps>`
+  display: flex;
+  color: ${(p) => (p.outlined ? 'rgb(var(--textSecondary))' : 'rgb(var(--text), 0.75)')};
+  letter-spacing: 0.025em;
+  text-decoration: none;
+  padding: 0.75rem 1.5rem;
+  font-weight: 700;
 `;
 
 const NavbarContainer = styled.div<NavbarContainerProps>`
@@ -183,11 +209,43 @@ const NavbarContainer = styled.div<NavbarContainerProps>`
 
 const Content = styled(Container)`
   display: flex;
-  justify-content: flex-end;
   align-items: center;
+  justify-content: space-between;
+`;
+
+const Left = styled.div`
+  display: flex;
+  align-items: center;
+  flex: 1;
+
+  ${LogoAnchor} {
+    margin-right: auto;
+  }
+`;
+
+const Right = styled.div`
+  display: flex;
+  align-items: center;
+  margin-left: auto;
+`;
+
+const NavActions = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+`;
+
+const CartIconWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
 `;
 
 const ColorSwitcherContainer = styled.div`
   width: 4rem;
   margin: 0 1rem;
+
+  ${media('<desktop')} {
+    display: none;
+  }
 `;
