@@ -29,7 +29,7 @@ const footerItems: FooterItems = [
     title: 'Правовая информация',
     items: [
       { title: 'Политика конфиденциальности', href: '/privacy-policy' },
-      { title: 'Условия использования', href: '/terms' },
+      { title: 'Условия использования', href: '/terms-of-use' },
       { title: 'Политика cookies', href: '/cookies-policy' },
     ],
   },

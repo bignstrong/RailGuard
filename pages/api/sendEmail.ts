@@ -1,30 +1,22 @@
 import { NextApiRequest, NextApiResponse } from 'next';
+import prisma from '../../lib/prisma';
 
-const sgMail = require('@sendgrid/mail');
+export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+  const { email } = req.body;
 
-export default async function SendEmail(req: NextApiRequest, res: NextApiResponse) {
-  sgMail.setApiKey(process.env.SENDGRID_API_KEY);
-
-  const { subject, description, email, name } = req.body;
-  const referer = req.headers.referer;
-
-  const content = {
-    to: ['contact@bstefanski.com'],
-    from: 'contact@bstefanski.com',
-    subject: subject,
-    text: description,
-    html: `<div>
-    <h1>Name: ${name}</h1>
-    <h1>E-mail: ${email}</h1>
-    <p>${description}</p>
-    <p>Sent from: ${referer || 'Not specified or hidden'}`,
-  };
+  if (!email) {
+    return res.status(400).json({ message: 'Email обязателен' });
+  }
 
   try {
-    await sgMail.send(content);
-    res.status(204).end();
+    await prisma.subscriber.upsert({
+      where: { email },
+      update: {},
+      create: { email },
+    });
+    res.status(200).json({ message: 'Вы успешно подписались!' });
   } catch (error) {
-    console.log('ERROR', error);
-    res.status(400).send({ message: error });
+    console.error('Subscription error:', error);
+    res.status(500).json({ message: 'Произошла ошибка при подписке.' });
   }
 }

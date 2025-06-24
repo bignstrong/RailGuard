@@ -17,7 +17,7 @@ module.exports = withBundleAnalyzer({
     styledComponents: true,
   },
   experimental: {
-    serverComponents: false,
+    // serverComponents: false,
   },
   webpack: (config, { buildId, dev, isServer, defaultLoaders, webpack }) => {
     config.module.rules.push({

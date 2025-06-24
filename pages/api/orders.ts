@@ -38,7 +38,7 @@ interface OrderData extends OrderSchemaType {
   createdAt: Date;
 }
 
-async function sendTelegramNotification(order: OrderData) {
+async function sendTelegramNotification(order: OrderData & { id: string }) {
   console.log('Telegram configuration:', {
     botTokenExists: !!TELEGRAM_BOT_TOKEN,
     chatIdExists: !!TELEGRAM_CHAT_ID,
@@ -67,7 +67,7 @@ async function sendTelegramNotification(order: OrderData) {
   };
 
   const message = `
-🛍 Новый заказ!
+🛍 Новый заказ #${order.id}!
 
 ${getContactInfo(order.contact)}
 📧 Email: ${order.contact.email}
@@ -75,6 +75,8 @@ ${getContactInfo(order.contact)}
 
 Товары:
 ${order.items.map((item) => `- ${item.title} (${item.quantity} шт.)`).join('\n')}
+
+📋 Статус: ${order.status}
 `;
 
   console.log('Attempting to send Telegram message:', {
@@ -155,9 +157,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     };
 
     // Save order to database using a transaction
-    const savedOrder = await prisma.$transaction(async (tx: PrismaClient) => {
+    const savedOrder = await prisma.$transaction(async (prisma) => {
       // Create the order
-      const order = await tx.order.create({
+      const order = await prisma.order.create({
         data: {
           items: orderData.items,
           contact: orderData.contact,
@@ -166,14 +168,17 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         },
       });
 
-      // Log the created order
-      console.log('Order created in database:', order);
-
       return order;
     });
 
-    // Send Telegram notification (don't wait for it)
-    sendTelegramNotification(orderData).catch((error) => {
+    // Send Telegram notification with order ID
+    const orderWithId = {
+      ...orderData,
+      id: savedOrder.id,
+    };
+
+    // Send notification asynchronously
+    sendTelegramNotification(orderWithId).catch((error) => {
       console.error('Failed to send Telegram notification:', error);
     });
 

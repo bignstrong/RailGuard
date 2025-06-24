@@ -6,6 +6,7 @@ import React, { useCallback, useState } from 'react';
 import styled from 'styled-components';
 import { media } from 'utils/media';
 import Link from '../Link';
+import OrderSuccessModal from '../OrderSuccessModal';
 
 interface CheckoutForm {
   phone: string;
@@ -105,6 +106,7 @@ export default function Cart() {
     email: '',
     preferredContact: 'phone',
   });
+  const [successOrderId, setSuccessOrderId] = useState<string | null>(null);
 
   const handlePhoneChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const formatted = formatPhoneNumber(e.target.value);
@@ -148,165 +150,180 @@ export default function Cart() {
         throw new Error('Failed to create order');
       }
 
-      // Clear cart and show success message
+      const data = await response.json();
+      
+      // Clear cart but don't close it yet
       clearCart();
-      toggleCart();
-      showToast('Заказ успешно оформлен! Мы свяжемся с вами в ближайшее время.', 'success');
+      // Show success modal with order ID
+      setSuccessOrderId(data.orderId);
     } catch (error) {
       console.error('Error submitting order:', error);
       showToast('Произошла ошибка при оформлении заказа. Пожалуйста, попробуйте еще раз.', 'error');
     }
   };
 
+  const handleCloseSuccessModal = () => {
+    setSuccessOrderId(null);
+    toggleCart(); // Close cart after closing success modal
+  };
+
   if (!isCartOpen) return null;
 
   return (
-    <Overlay isOpen={isCartOpen} onClick={toggleCart}>
-      <CartWrapper isOpen={isCartOpen} onClick={(e) => e.stopPropagation()}>
-        <Header>
-          <Title>Корзина</Title>
-          <CloseButton onClick={toggleCart}>
-            <CloseIcon />
-          </CloseButton>
-        </Header>
-        <Content>
-          {items.length === 0 ? (
-            <EmptyCartWrapper>
-              <EmptyCartIcon>
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={1.5}
-                    d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"
-                  />
-                </svg>
-              </EmptyCartIcon>
-              <EmptyCartMessage>
-                Ваша корзина пуста, но это не <Link href="/pricing">проблема</Link>!
-              </EmptyCartMessage>
-            </EmptyCartWrapper>
-          ) : (
-            <>
-              <ItemsList>
-                {items.map((item) => (
-                  <CartItem key={item.id}>
-                    <ItemImage src={item.image} alt={item.title} />
-                    <ItemInfo>
-                      <ItemTitle>{item.title}</ItemTitle>
-                      <PriceWrapper>
-                        <ItemPrice>{item.price.toLocaleString('ru-RU')}₽</ItemPrice>
-                        {item.oldPrice && <ItemOldPrice>{item.oldPrice.toLocaleString('ru-RU')}₽</ItemOldPrice>}
-                      </PriceWrapper>
-                    </ItemInfo>
-                    <ItemActions>
-                      <QuantityControl>
-                        <QuantityButton onClick={() => updateQuantity(item.id, item.quantity - 1)}>-</QuantityButton>
-                        <QuantityDisplay>{item.quantity}</QuantityDisplay>
-                        <QuantityButton onClick={() => updateQuantity(item.id, item.quantity + 1)}>+</QuantityButton>
-                      </QuantityControl>
-                      <RemoveButton onClick={() => removeItem(item.id)}>Удалить</RemoveButton>
-                    </ItemActions>
-                  </CartItem>
-                ))}
-              </ItemsList>
+    <>
+      <Overlay isOpen={isCartOpen} onClick={toggleCart}>
+        <CartWrapper isOpen={isCartOpen} onClick={(e) => e.stopPropagation()}>
+          <Header>
+            <Title>Корзина</Title>
+            <CloseButton onClick={toggleCart}>
+              <CloseIcon />
+            </CloseButton>
+          </Header>
+          <Content>
+            {items.length === 0 ? (
+              <EmptyCartWrapper>
+                <EmptyCartIcon>
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={1.5}
+                      d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"
+                    />
+                  </svg>
+                </EmptyCartIcon>
+                <EmptyCartMessage>
+                  Ваша корзина пуста, но это не <Link href="/pricing">проблема</Link>!
+                </EmptyCartMessage>
+              </EmptyCartWrapper>
+            ) : (
+              <>
+                <ItemsList>
+                  {items.map((item) => (
+                    <CartItem key={item.id}>
+                      <ItemImage src={item.image} alt={item.title} />
+                      <ItemInfo>
+                        <ItemTitle>{item.title}</ItemTitle>
+                        <PriceWrapper>
+                          <ItemPrice>{item.price.toLocaleString('ru-RU')}₽</ItemPrice>
+                          {item.oldPrice && <ItemOldPrice>{item.oldPrice.toLocaleString('ru-RU')}₽</ItemOldPrice>}
+                        </PriceWrapper>
+                      </ItemInfo>
+                      <ItemActions>
+                        <QuantityControl>
+                          <QuantityButton onClick={() => updateQuantity(item.id, item.quantity - 1)}>-</QuantityButton>
+                          <QuantityDisplay>{item.quantity}</QuantityDisplay>
+                          <QuantityButton onClick={() => updateQuantity(item.id, item.quantity + 1)}>+</QuantityButton>
+                        </QuantityControl>
+                        <RemoveButton onClick={() => removeItem(item.id)}>Удалить</RemoveButton>
+                      </ItemActions>
+                    </CartItem>
+                  ))}
+                </ItemsList>
 
-              <Summary>
-                <SummaryRow>
-                  <span>Товары</span>
-                  <PriceWrapper>
-                    <ItemPrice>{totalPrice.toLocaleString('ru-RU')}₽</ItemPrice>
-                    {totalOldPrice && totalOldPrice > totalPrice && <ItemOldPrice>{totalOldPrice.toLocaleString('ru-RU')}₽</ItemOldPrice>}
-                  </PriceWrapper>
-                </SummaryRow>
-                {totalOldPrice && totalOldPrice > totalPrice && (
-                  <SummaryRow highlight>
-                    <span>Скидка</span>
-                    <span>-{(totalOldPrice - totalPrice).toLocaleString('ru-RU')}₽</span>
+                <Summary>
+                  <SummaryRow>
+                    <span>Товары</span>
+                    <PriceWrapper>
+                      <ItemPrice>{totalPrice.toLocaleString('ru-RU')}₽</ItemPrice>
+                      {totalOldPrice && totalOldPrice > totalPrice && <ItemOldPrice>{totalOldPrice.toLocaleString('ru-RU')}₽</ItemOldPrice>}
+                    </PriceWrapper>
                   </SummaryRow>
-                )}
-                <TotalPrice>
-                  <span>Итого:</span>
-                  <span>{totalPrice.toLocaleString('ru-RU')}₽</span>
-                </TotalPrice>
-              </Summary>
+                  {totalOldPrice && totalOldPrice > totalPrice && (
+                    <SummaryRow highlight>
+                      <span>Скидка</span>
+                      <span>-{(totalOldPrice - totalPrice).toLocaleString('ru-RU')}₽</span>
+                    </SummaryRow>
+                  )}
+                  <TotalPrice>
+                    <span>Итого:</span>
+                    <span>{totalPrice.toLocaleString('ru-RU')}₽</span>
+                  </TotalPrice>
+                </Summary>
 
-              <CheckoutForm onSubmit={handleSubmit}>
-                <FormGroup>
-                  <Label>Как с вами связаться?</Label>
-                  <ContactOptions>
-                    <ContactOption isSelected={form.preferredContact === 'phone'}>
-                      <HiddenRadio
-                        type="radio"
-                        name="preferredContact"
-                        value="phone"
-                        checked={form.preferredContact === 'phone'}
-                        onChange={(e) => setForm({ ...form, preferredContact: e.target.value as 'phone' | 'whatsapp' | 'telegram' })}
-                      />
-                      <IconWrapper isSelected={form.preferredContact === 'phone'}>
-                        <PhoneIcon />
-                      </IconWrapper>
-                      <span>Телефон</span>
-                    </ContactOption>
-                    <ContactOption isSelected={form.preferredContact === 'whatsapp'}>
-                      <HiddenRadio
-                        type="radio"
-                        name="preferredContact"
-                        value="whatsapp"
-                        checked={form.preferredContact === 'whatsapp'}
-                        onChange={(e) => setForm({ ...form, preferredContact: e.target.value as 'phone' | 'whatsapp' | 'telegram' })}
-                      />
-                      <IconWrapper isSelected={form.preferredContact === 'whatsapp'}>
-                        <WhatsAppIcon />
-                      </IconWrapper>
-                      <span>WhatsApp</span>
-                    </ContactOption>
-                    <ContactOption isSelected={form.preferredContact === 'telegram'}>
-                      <HiddenRadio
-                        type="radio"
-                        name="preferredContact"
-                        value="telegram"
-                        checked={form.preferredContact === 'telegram'}
-                        onChange={(e) => setForm({ ...form, preferredContact: e.target.value as 'phone' | 'whatsapp' | 'telegram' })}
-                      />
-                      <IconWrapper isSelected={form.preferredContact === 'telegram'}>
-                        <TelegramIcon />
-                      </IconWrapper>
-                      <span>Telegram</span>
-                    </ContactOption>
-                  </ContactOptions>
-                </FormGroup>
-                <FormGroup>
-                  <Label htmlFor="phone">Номер телефона</Label>
-                  <PhoneInput
-                    id="phone"
-                    type="tel"
-                    value={form.phone}
-                    onChange={handlePhoneChange}
-                    placeholder="+7 (999) 999-99-99"
-                    required
-                  />
-                </FormGroup>
-                <FormGroup>
-                  <Label htmlFor="email">Email</Label>
-                  <EmailInput
-                    id="email"
-                    type="email"
-                    value={form.email}
-                    onChange={handleEmailChange}
-                    placeholder="example@mail.com"
-                    required
-                  />
-                </FormGroup>
-                <SubmitButton as="button" type="submit">
-                  Оформить заказ
-                </SubmitButton>
-              </CheckoutForm>
-            </>
-          )}
-        </Content>
-      </CartWrapper>
-    </Overlay>
+                <CheckoutForm onSubmit={handleSubmit}>
+                  <FormGroup>
+                    <Label>Как с вами связаться?</Label>
+                    <ContactOptions>
+                      <ContactOption isSelected={form.preferredContact === 'phone'}>
+                        <HiddenRadio
+                          type="radio"
+                          name="preferredContact"
+                          value="phone"
+                          checked={form.preferredContact === 'phone'}
+                          onChange={(e) => setForm({ ...form, preferredContact: e.target.value as 'phone' | 'whatsapp' | 'telegram' })}
+                        />
+                        <IconWrapper isSelected={form.preferredContact === 'phone'}>
+                          <PhoneIcon />
+                        </IconWrapper>
+                        <span>Телефон</span>
+                      </ContactOption>
+                      <ContactOption isSelected={form.preferredContact === 'whatsapp'}>
+                        <HiddenRadio
+                          type="radio"
+                          name="preferredContact"
+                          value="whatsapp"
+                          checked={form.preferredContact === 'whatsapp'}
+                          onChange={(e) => setForm({ ...form, preferredContact: e.target.value as 'phone' | 'whatsapp' | 'telegram' })}
+                        />
+                        <IconWrapper isSelected={form.preferredContact === 'whatsapp'}>
+                          <WhatsAppIcon />
+                        </IconWrapper>
+                        <span>WhatsApp</span>
+                      </ContactOption>
+                      <ContactOption isSelected={form.preferredContact === 'telegram'}>
+                        <HiddenRadio
+                          type="radio"
+                          name="preferredContact"
+                          value="telegram"
+                          checked={form.preferredContact === 'telegram'}
+                          onChange={(e) => setForm({ ...form, preferredContact: e.target.value as 'phone' | 'whatsapp' | 'telegram' })}
+                        />
+                        <IconWrapper isSelected={form.preferredContact === 'telegram'}>
+                          <TelegramIcon />
+                        </IconWrapper>
+                        <span>Telegram</span>
+                      </ContactOption>
+                    </ContactOptions>
+                  </FormGroup>
+                  <FormGroup>
+                    <Label htmlFor="phone">Номер телефона</Label>
+                    <PhoneInput
+                      id="phone"
+                      type="tel"
+                      value={form.phone}
+                      onChange={handlePhoneChange}
+                      placeholder="+7 (999) 999-99-99"
+                      required
+                    />
+                  </FormGroup>
+                  <FormGroup>
+                    <Label htmlFor="email">Email</Label>
+                    <EmailInput
+                      id="email"
+                      type="email"
+                      value={form.email}
+                      onChange={handleEmailChange}
+                      placeholder="example@mail.com"
+                      required
+                    />
+                  </FormGroup>
+                  <SubmitButton as="button" type="submit">
+                    Оформить заказ
+                  </SubmitButton>
+                </CheckoutForm>
+              </>
+            )}
+          </Content>
+        </CartWrapper>
+      </Overlay>
+      {successOrderId && (
+        <OrderSuccessModal 
+          orderId={successOrderId} 
+          onClose={handleCloseSuccessModal}
+        />
+      )}
+    </>
   );
 }
 
