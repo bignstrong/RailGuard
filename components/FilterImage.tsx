@@ -9,7 +9,6 @@ export default function FilterImage() {
       <ImageContainer>
         <StyledImage src="/Filter.png" alt="RailGuard фильтр тонкой очистки" width={200} height={200} priority quality={100} />
       </ImageContainer>
-      <Certification>Сертифицировано ✓</Certification>
     </ImageWrapper>
   );
 }
