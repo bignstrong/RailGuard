@@ -1,6 +1,5 @@
-import React from 'react';
-import styled from 'styled-components';
 import ArticleImage from 'components/ArticleImage';
+import styled from 'styled-components';
 import { media } from 'utils/media';
 
 interface HeaderProps {
@@ -13,7 +12,7 @@ interface HeaderProps {
 export default function Header({ title, formattedDate, imageUrl, readTime }: HeaderProps) {
   return (
     <HeaderContainer>
-      <ArticleImage src={imageUrl} />
+      <ArticleImage src={imageUrl} alt={title} />
       <Title>{title}</Title>
       <DetailsContainer>
         {formattedDate} <MidDot /> {readTime}

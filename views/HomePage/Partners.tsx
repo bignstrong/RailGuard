@@ -1,7 +1,7 @@
 import Container from 'components/Container';
 import NextImage from 'next/image';
 import styled from 'styled-components';
-import { Autoplay } from 'swiper';
+import { Autoplay } from 'swiper/modules';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { media } from 'utils/media';
 

@@ -1,10 +1,8 @@
 import BasicSection from 'components/BasicSection';
 import { EnvVars } from 'env';
-import { InferGetStaticPropsType } from 'next';
 import Head from 'next/head';
 import Image from 'next/image';
 import styled from 'styled-components';
-import { getAllPosts } from 'utils/postsFetcher';
 import Cta from 'views/HomePage/Cta';
 // import Features from 'views/HomePage/Features';
 // import FeaturesGallery from 'views/HomePage/FeaturesGallery';
@@ -12,7 +10,7 @@ import Hero from 'views/HomePage/Hero';
 // import Partners from 'views/HomePage/Partners';
 // import ScrollableBlogPosts from 'views/HomePage/ScrollableBlogPosts';
 
-export default function Homepage({ posts }: InferGetStaticPropsType<typeof getStaticProps>) {
+export default function Homepage() {
   return (
     <>
       <Head>
@@ -58,8 +56,8 @@ export default function Homepage({ posts }: InferGetStaticPropsType<typeof getSt
             overTitle="Для дизельных двигателей Common Rail"
           >
             <p>
-              Если двигатель не заводится на горячую, вышел из строя регулятор давления топлива, а форсунки стали "лить в обратку" — причина
-              в металлической стружке от топливных насосов и абразиве, проскочившем через основной фильтр.{' '}
+              Если двигатель не заводится на горячую, вышел из строя регулятор давления топлива, а форсунки стали &quot;лить в обратку&quot;
+              — причина в металлической стружке от топливных насосов и абразиве, проскочившем через основной фильтр.{' '}
               <strong>
                 Наш фильтр с площадью фильтрации 2000 мм² и тонкостью 8-12 мкм устанавливается после основного фильтра для окончательной
                 очистки топлива.
@@ -145,8 +143,6 @@ const StyledImage = styled(Image)`
 
 export async function getStaticProps() {
   return {
-    props: {
-      posts: await getAllPosts(),
-    },
+    props: {},
   };
 }

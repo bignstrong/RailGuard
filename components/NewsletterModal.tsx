@@ -19,6 +19,8 @@ export default function NewsletterModal({ onClose }: NewsletterModalProps) {
 
   useEscClose({ onClose });
 
+  const isDisabled = status === 'success';
+
   async function onSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setStatus('idle');
@@ -56,7 +58,8 @@ export default function NewsletterModal({ onClose }: NewsletterModalProps) {
               <SuccessIcon>✓</SuccessIcon>
               <SuccessTitle>Вы успешно подписались!</SuccessTitle>
               <SuccessDescription>
-                Спасибо за интерес к RailGuard!<br />
+                Спасибо за интерес к RailGuard!
+                <br />
                 Теперь вы будете первыми узнавать о скидках, новинках и полезных советах.
               </SuccessDescription>
               <CloseButton as="button" onClick={onClose}>
@@ -66,9 +69,7 @@ export default function NewsletterModal({ onClose }: NewsletterModalProps) {
           ) : (
             <>
               <Title>Подпишитесь на рассылку RailGuard</Title>
-              <Description>
-                Получайте первыми новости о скидках, специальных предложениях и новых продуктах!
-              </Description>
+              <Description>Получайте первыми новости о скидках, специальных предложениях и новых продуктах!</Description>
               <Row>
                 <CustomInput
                   value={email}
@@ -78,7 +79,7 @@ export default function NewsletterModal({ onClose }: NewsletterModalProps) {
                   type="email"
                   autoFocus
                 />
-                <CustomButton as="button" type="submit" disabled={status === 'success'}>
+                <CustomButton as="button" type="submit" disabled={isDisabled}>
                   Подписаться
                 </CustomButton>
               </Row>
@@ -109,7 +110,7 @@ const Card = styled.form`
   overflow: hidden;
   color: rgb(var(--text));
   box-shadow: var(--shadow-lg);
-  animation: ${fadeIn} 0.5s cubic-bezier(.4,0,.2,1);
+  animation: ${fadeIn} 0.5s cubic-bezier(0.4, 0, 0.2, 1);
 
   ${media('<=tablet')} {
     padding: 7.5rem 2.5rem;
@@ -209,7 +210,7 @@ const SuccessWrapper = styled.div`
   align-items: center;
   justify-content: center;
   min-height: 24rem;
-  animation: ${fadeIn} 0.5s cubic-bezier(.4,0,.2,1);
+  animation: ${fadeIn} 0.5s cubic-bezier(0.4, 0, 0.2, 1);
 `;
 
 const SuccessIcon = styled.div`

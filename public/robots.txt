@@ -18,6 +18,8 @@ Disallow: /private/
 Disallow: /404
 Disallow: /500
 
+# Host
+Host: https://railguard.shop
 
 # Sitemaps
-Sitemap: /sitemap.xml
+Sitemap: https://railguard.shop/sitemap.xml
