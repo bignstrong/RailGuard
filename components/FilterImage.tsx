@@ -54,11 +54,11 @@ const StyledImage = styled(Image)`
   }
 
   ${media('<=tablet')} {
-    filter: drop-shadow(0 15px 30px rgba(0, 0, 0, 0.25));
+    filter: none;
   }
 
   ${media('<=phone')} {
-    filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.2));
+    filter: none;
     border-radius: 8px;
   }
 `;

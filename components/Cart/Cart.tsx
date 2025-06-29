@@ -2,7 +2,9 @@ import Button from 'components/Button';
 import CloseIcon from 'components/CloseIcon';
 import { useCart } from 'contexts/cart.context';
 import { useToast } from 'contexts/toast.context';
+import { useRouter } from 'next/router';
 import React, { useCallback, useState } from 'react';
+import InputMask from 'react-input-mask';
 import styled from 'styled-components';
 import { media } from 'utils/media';
 import Link from '../Link';
@@ -51,35 +53,6 @@ const EmptyCartMessage = styled.p`
   }
 `;
 
-const formatPhoneNumber = (value: string) => {
-  if (!value) return value;
-
-  // Удаляем все нецифровые символы, кроме +
-  const phoneNumber = value.replace(/[^\d+]/g, '');
-
-  // Если первый символ не +7, добавляем его
-  let normalizedNumber = phoneNumber;
-  if (!phoneNumber.startsWith('+7')) {
-    if (phoneNumber.startsWith('7')) {
-      normalizedNumber = '+' + phoneNumber;
-    } else if (phoneNumber.startsWith('8')) {
-      normalizedNumber = '+7' + phoneNumber.slice(1);
-    } else if (!phoneNumber.startsWith('+')) {
-      normalizedNumber = '+7' + phoneNumber;
-    }
-  }
-
-  // Убираем все символы кроме цифр для дальнейшего форматирования
-  const digits = normalizedNumber.replace(/[^\d]/g, '');
-  const phoneNumberLength = digits.length;
-
-  if (phoneNumberLength <= 1) return normalizedNumber;
-  if (phoneNumberLength < 4) return `+7 (${digits.slice(1)}`;
-  if (phoneNumberLength < 7) return `+7 (${digits.slice(1, 4)}) ${digits.slice(4)}`;
-  if (phoneNumberLength < 9) return `+7 (${digits.slice(1, 4)}) ${digits.slice(4, 7)}-${digits.slice(7)}`;
-  return `+7 (${digits.slice(1, 4)}) ${digits.slice(4, 7)}-${digits.slice(7, 9)}-${digits.slice(9, 11)}`;
-};
-
 const PhoneIcon = () => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
     <path d="M20 15.5c-1.25 0-2.45-.2-3.57-.57a1.02 1.02 0 0 0-1.02.24l-2.2 2.2a15.045 15.045 0 0 1-6.59-6.59l2.2-2.21a.96.96 0 0 0 .25-1A11.36 11.36 0 0 1 8.5 4c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1 0 9.39 7.61 17 17 17 .55 0 1-.45 1-1v-3.5c0-.55-.45-1-1-1zM19 12h2a9 9 0 0 0-9-9v2c3.87 0 7 3.13 7 7z" />
@@ -98,6 +71,27 @@ const TelegramIcon = () => (
   </svg>
 );
 
+const cleanPhone = (input: string) => {
+  let value = input.replace(/\D/g, '');
+  if (value.startsWith('8')) value = value.slice(1);
+  if (value.startsWith('7')) value = value.slice(1);
+  if (value.length > 10) value = value.slice(-10);
+  return value;
+};
+
+// Функция для форматирования 10 цифр в маску
+function formatPhone(phone: string) {
+  const nums = phone.replace(/\D/g, '').slice(0, 10);
+  if (!nums) return '';
+  let res = '+7 (';
+  res += nums.slice(0, 3);
+  if (nums.length >= 3) res += ') ';
+  if (nums.length >= 4) res += nums.slice(3, 6);
+  if (nums.length >= 7) res += '-' + nums.slice(6, 8);
+  if (nums.length >= 9) res += '-' + nums.slice(8, 10);
+  return res;
+}
+
 export default function Cart() {
   const { items, isCartOpen, totalPrice, totalOldPrice, removeItem, updateQuantity, toggleCart, clearCart } = useCart();
   const { showToast } = useToast();
@@ -107,20 +101,33 @@ export default function Cart() {
     preferredContact: 'phone',
   });
   const [successOrderId, setSuccessOrderId] = useState<string | null>(null);
+  const router = useRouter();
 
   const handlePhoneChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    const formatted = formatPhoneNumber(e.target.value);
-    if (formatted && formatted.length > 18) return; // Prevent input longer than +7 (999) 999-99-99
-    setForm((prev) => ({ ...prev, phone: formatted }));
+    setForm((prev) => ({ ...prev, phone: cleanPhone(e.target.value) }));
   }, []);
 
+  const handlePhonePaste = useCallback((e: React.ClipboardEvent<HTMLInputElement>) => {
+    let paste = e.clipboardData.getData('Text');
+    const cleaned = cleanPhone(paste);
+    setForm((prev) => ({ ...prev, phone: cleaned }));
+    e.preventDefault();
+  }, []);
   const handleEmailChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     setForm((prev) => ({ ...prev, email: e.target.value }));
   }, []);
 
   const validatePhoneNumber = (phone: string) => {
-    const digits = phone.replace(/[^\d]/g, '');
-    return digits.length === 11; // +7 and 10 digits
+    // Проверяем, что нет символов _ (все цифры введены)
+    return phone && !phone.includes('_');
+  };
+
+  const handlePricingClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    e.preventDefault();
+    toggleCart();
+    setTimeout(() => {
+      router.push('/pricing');
+    }, 400); // 400 мс под анимацию закрытия
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -151,7 +158,7 @@ export default function Cart() {
       }
 
       const data = await response.json();
-      
+
       // Clear cart but don't close it yet
       clearCart();
       // Show success modal with order ID
@@ -193,7 +200,11 @@ export default function Cart() {
                   </svg>
                 </EmptyCartIcon>
                 <EmptyCartMessage>
-                  Ваша корзина пуста, но это не <Link href="/pricing">проблема</Link>!
+                  Ваша корзина пуста, но это не{' '}
+                  <Link href="/pricing" onClick={handlePricingClick}>
+                    проблема
+                  </Link>
+                  !
                 </EmptyCartMessage>
               </EmptyCartWrapper>
             ) : (
@@ -288,14 +299,17 @@ export default function Cart() {
                   </FormGroup>
                   <FormGroup>
                     <Label htmlFor="phone">Номер телефона</Label>
-                    <PhoneInput
-                      id="phone"
-                      type="tel"
-                      value={form.phone}
+                    <InputMask
+                      mask="+7 (999) 999-99-99"
+                      value={formatPhone(form.phone)}
                       onChange={handlePhoneChange}
-                      placeholder="+7 (999) 999-99-99"
-                      required
-                    />
+                      onPaste={handlePhonePaste}
+                      maskChar="_"
+                    >
+                      {(inputProps: any) => (
+                        <PhoneInput id="phone" type="tel" required placeholder="+7 (___) ___-__-__" inputMode="tel" {...inputProps} />
+                      )}
+                    </InputMask>
                   </FormGroup>
                   <FormGroup>
                     <Label htmlFor="email">Email</Label>
@@ -317,12 +331,7 @@ export default function Cart() {
           </Content>
         </CartWrapper>
       </Overlay>
-      {successOrderId && (
-        <OrderSuccessModal 
-          orderId={successOrderId} 
-          onClose={handleCloseSuccessModal}
-        />
-      )}
+      {successOrderId && <OrderSuccessModal orderId={successOrderId} onClose={handleCloseSuccessModal} />}
     </>
   );
 }

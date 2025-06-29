@@ -1,8 +1,10 @@
 import AutofitGrid from 'components/AutofitGrid';
 import BasicCard from 'components/BasicCard';
+import Link from 'components/Link';
 import { useCart } from 'contexts/cart.context';
 import { useLightbox } from 'contexts/lightbox.context';
 import { useToast } from 'contexts/toast.context';
+import Head from 'next/head';
 import { useState } from 'react';
 import styled from 'styled-components';
 import { media } from 'utils/media';
@@ -19,7 +21,7 @@ interface ProductCardProps {
 }
 
 function ProductCard({ id, title, price, oldPrice, description, image, actionLabel = 'В корзину', inStock = true }: ProductCardProps) {
-  const { addItem, items } = useCart();
+  const { addItem, items, toggleCart } = useCart();
   const { showToast } = useToast();
   const [isPressed, setIsPressed] = useState(false);
   const { openLightbox } = useLightbox();
@@ -40,7 +42,7 @@ function ProductCard({ id, title, price, oldPrice, description, image, actionLab
       oldPrice: oldPrice ? parseInt(oldPrice.replace(/[^\d]/g, '')) : undefined,
       image,
     });
-    showToast(`${title} добавлен в корзину`, 'success');
+    showToast(`${title} добавлен в корзину`, 'success', () => toggleCart());
 
     // Возвращаем кнопку в нормальное состояние через 200мс
     setTimeout(() => {
@@ -53,8 +55,28 @@ function ProductCard({ id, title, price, oldPrice, description, image, actionLab
     openLightbox(image, [image]);
   };
 
+  // Добавляем JSON-LD для Product
+  const productJsonLd = {
+    '@context': 'https://schema.org/',
+    '@type': 'Product',
+    name: title,
+    image: [image],
+    description: description,
+    sku: id,
+    offers: {
+      '@type': 'Offer',
+      priceCurrency: 'RUB',
+      price: price.replace(/[^\d]/g, ''),
+      availability: inStock ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock',
+      url: typeof window !== 'undefined' ? window.location.href : '',
+    },
+  };
+
   return (
     <CardWrapper outOfStock={!inStock}>
+      <Head>
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(productJsonLd) }} />
+      </Head>
       <ImageContainer onClick={handleImageClick}>
         {discount > 0 && <DiscountBadge>{`-${discount}%`}</DiscountBadge>}
         <img src={image} alt={title} loading="lazy" />
@@ -62,6 +84,11 @@ function ProductCard({ id, title, price, oldPrice, description, image, actionLab
       <Content>
         <Title>{title}</Title>
         <Description>{description}</Description>
+        {(id === 'fto-cr-standard' || id === 'cr-10-cartridge') && (
+          <LearnMoreLinkWrapper>
+            <Link href={id === 'fto-cr-standard' ? '/specifications#filter-body' : '/specifications#filter-element'}>Узнать больше</Link>
+          </LearnMoreLinkWrapper>
+        )}
         <PriceContainer>
           <PriceTag>{price}</PriceTag>
           {oldPrice && <OldPriceTag>{oldPrice}</OldPriceTag>}
@@ -83,29 +110,20 @@ export default function CatalogSection() {
       <AutofitGrid>
         <ProductCard
           id="fto-cr-standard"
-          title="Фильтр FTO-CR Standard"
-          price="13 000₽"
-          oldPrice="16 000₽"
-          description="Базовый фильтр высокого давления для Common Rail систем"
-          image="/Filter.png"
+          title="Корпус фильтра"
+          price="12 000₽"
+          oldPrice="18 000₽"
+          description="Базовый корпус фильтра высокого давления для Common Rail систем"
+          image="/withoutBack/corpus.png"
           inStock={true}
         />
         <ProductCard
           id="cr-10-cartridge"
-          title="Сменный картридж CR-10"
-          price="3 500₽"
-          oldPrice="4 000₽"
+          title="Фильтрующий элемент"
+          price="1 200₽"
+          oldPrice="3 000₽"
           description="Сменный фильтрующий элемент из хлопкового линта"
-          image="/FilterInfografika.png"
-          inStock={true}
-        />
-        <ProductCard
-          id="mk-200-kit"
-          title="Монтажный комплект MK-200"
-          price="4 500₽"
-          oldPrice="7 000₽"
-          description="Набор для профессиональной установки фильтра"
-          image="/installation-scheme.svg"
+          image="/withoutBack/element_2.png"
           inStock={true}
         />
       </AutofitGrid>
@@ -115,11 +133,11 @@ export default function CatalogSection() {
         <SpecialOfferCard>
           <ProductCard
             id="profi-start-kit"
-            title="Комплект «Профи-Старт»"
-            price="15 000₽"
-            oldPrice="20 000₽"
+            title="Комплект «Старт»"
+            price="14 000₽"
+            oldPrice="24 000₽"
             description="Полный комплект для начала работы"
-            image="/Scheme.png"
+            image="/withoutBack/start.png"
             actionLabel="В корзину"
             inStock={true}
           />
@@ -127,10 +145,10 @@ export default function CatalogSection() {
         <ProductCard
           id="sto-bulk-kit"
           title="Оптовый набор СТО"
-          price="65 000₽"
-          oldPrice="75 000₽"
+          price="60 000₽"
+          oldPrice="120 000₽"
           description="Специальное предложение для автосервисов"
-          image="/diaFilter.png"
+          image="/withoutBack/large.png"
           actionLabel="В корзину"
           inStock={true}
         />
@@ -282,12 +300,6 @@ const SpecialOffersGrid = styled(AutofitGrid)`
   transition: all 0.2s ease;
   margin-top: 1rem;
   position: relative;
-  transform: ${(p) => (p.isPressed ? 'scale(0.95)' : 'scale(1)')};
-
-  &:disabled {
-    background: rgb(var(--text-secondary));
-    cursor: not-allowed;
-  }
 `;
 
 const SpecialOfferCard = styled.div`
@@ -327,7 +339,6 @@ const CartButton = styled.button<{ isPressed: boolean }>`
   transition: all 0.2s ease;
   margin-top: auto;
   position: relative;
-  transform: ${(p) => (p.isPressed ? 'scale(0.95)' : 'scale(1)')};
 `;
 
 const ButtonText = styled.span`
@@ -352,4 +363,12 @@ const QuantityBadge = styled.span`
   font-weight: bold;
   box-shadow: 0 2px 8px rgba(255, 0, 0, 0.5);
   animation: badgePop 0.3s ease-out;
+`;
+
+const LearnMoreLinkWrapper = styled.div`
+  margin-top: -0.5rem;
+  margin-bottom: 0.5rem;
+  font-size: 1.3rem;
+  text-align: left;
+  width: fit-content;
 `;

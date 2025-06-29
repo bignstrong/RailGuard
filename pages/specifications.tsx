@@ -7,33 +7,36 @@ import styled from 'styled-components';
 import { media } from 'utils/media';
 
 const FILTER_BODY_SPECS = [
-  { title: 'Материал корпуса', value: 'нержавеющая сталь' },
-  { title: 'Габариты', value: '90-120 мм (длина), 30-35 мм (диаметр)' },
+  { title: 'Материал корпуса', value: 'Сталь' },
+  { title: 'Габариты', value: '120×35 мм' },
   { title: 'Вес', value: '430 г' },
-  { title: 'Резьба', value: 'M12×1,5 или M14×1,5' },
-  { title: 'Рабочее давление', value: 'до 2000 бар (2200 кг/см²)' },
-  { title: 'Давление опрессовки', value: '180–220 МПа (1800–2200 бар)' },
+  { title: 'Резьба', value: 'M14×1,5 (M12×1,5 опц.)' },
+  { title: 'Давление опрессовки', value: '180 МПа (1800 бар)' },
+  { title: 'Монтаж', value: 'Жёсткая фиксация к двигателю' },
+  { title: 'Назначение', value: 'Установка после основного фильтра между ТНВД и рампой' },
 ];
 
 const FILTER_ELEMENT_SPECS = [
-  { title: 'Тип системы', value: 'Common Rail (Bosch CP4, Denso, Delphi и др.)' },
-  { title: 'Тонкость фильтрации', value: '2–12 мкм (рекомендуемая — 10 мкм)' },
-  { title: 'Площадь фильтрации', value: '1850–2000 мм²' },
-  { title: 'Материал фильтра', value: 'хлопковый линт (альфа-целлюлоза)' },
-  { title: 'Ресурс', value: 'до 100 000 км' },
-  { title: 'Интервал обслуживания', value: '15-20 тыс. км' },
+  { title: 'Тип системы', value: 'Common Rail' },
+  { title: 'Тонкость фильтрации', value: '8–12 мкм' },
+  { title: 'Площадь фильтрации', value: '≈2000 мм²' },
+  { title: 'Применение', value: 'Двигатели до 2.7 л' },
+  { title: 'Обслуживание', value: 'Менять с основным фильтром' },
+  { title: 'Особенности', value: 'Каждый фильтр опрессован' },
+  { title: 'Преимущества', value: 'Защита форсунок и регулятора давления' },
 ];
 
 const FILTER_BODY_IMAGES = [
-  { src: '/Filter.png', alt: 'Корпус фильтра' },
-  { src: '/diaFilter.png', alt: 'Диагностика фильтра' },
-  { src: '/Scheme.png', alt: 'Схема фильтра' },
+  { src: '/withoutBack/corpus.png', alt: 'Корпус фильтра' },
+  { src: '/withoutBack/corpus_2.png', alt: 'Корпус фильтра' },
+  { src: '/withoutBack/corpus_naked.png', alt: 'Схема фильтра' },
+  { src: '/withoutBack/corpus_naked_2.png', alt: 'Схема фильтра' },
 ];
 
 const FILTER_ELEMENT_IMAGES = [
-  { src: '/FilterInfografika.png', alt: 'Инфографика фильтра' },
-  { src: '/installation-scheme.svg', alt: 'Схема установки' },
-  { src: '/Filter.png', alt: 'Фильтр в разрезе' },
+  { src: '/withoutBack/element_2.png', alt: 'Инфографика фильтра' },
+  { src: '/withoutBack/element.png', alt: 'Схема установки' },
+  { src: '/withoutBack/element_3.png', alt: 'Фильтр в разрезе' },
 ];
 
 const INSTALLATION_IMAGES = [
@@ -115,7 +118,7 @@ export default function SpecificationsPage() {
     <Page title="Характеристики" description="Технические характеристики и преимущества фильтра высокого давления Common Rail">
       <Wrapper>
         <Section>
-          <SectionTitle>Корпус фильтра</SectionTitle>
+          <SectionTitle id="filter-body">Корпус фильтра</SectionTitle>
           <ContentGrid>
             <ImageColumn>
               <ImageSlider images={FILTER_BODY_IMAGES} />
@@ -134,7 +137,7 @@ export default function SpecificationsPage() {
         </Section>
 
         <Section>
-          <SectionTitle>Фильтрующий элемент</SectionTitle>
+          <SectionTitle id="filter-element">Фильтрующий элемент</SectionTitle>
           <ContentGrid>
             <ImageColumn>
               <ImageSlider images={FILTER_ELEMENT_IMAGES} />
@@ -153,22 +156,77 @@ export default function SpecificationsPage() {
         </Section>
 
         <Section>
-          <SectionTitle>Схема установки</SectionTitle>
-          <ContentGrid>
-            <ImageColumn>
-              <ImageSlider images={INSTALLATION_IMAGES} />
-            </ImageColumn>
-            <SpecsColumn>
-              <InstallationList>
-                <li>Установка строго по направлению потока топлива (стрелка на корпусе)</li>
-                <li>Жёсткая фиксация корпуса к двигателю во избежание вибраций</li>
-                <li>Проверка соответствия резьбы на ТНВД и рейке</li>
-                <li>Выбор длины трубок (200 или 300 мм) в зависимости от точек подключения</li>
-                <li>Регулярная проверка каждые 15-20 тыс. км</li>
-                <li>Замена основного топливного фильтра перед установкой</li>
-              </InstallationList>
-            </SpecsColumn>
-          </ContentGrid>
+          <SectionTitle>Описание и назначение фильтра</SectionTitle>
+          <SpecsColumn>
+            <BasicCard>
+              <SectionTitle>Что это и где ставится</SectionTitle>
+              <RichText>
+                Этот фильтр устанавливают на дизельные двигатели с системой Common Rail между топливным насосом высокого давления (ТНВД) и
+                рампой форсунок, сразу после основного фильтра. Его задача — задерживать металлическую стружку от ТНВД/ТННД и мелкий
+                абразив, который мог проскочить через основной фильтр.
+              </RichText>
+              <SectionTitle>Зачем он нужен</SectionTitle>
+              <RichText>
+                <ul>
+                  <li>
+                    Если двигатель долго не заводится на «горячую» или вообще не запускается, а после попытки холодного пуска давление
+                    падает и регулятор выходит из строя;
+                  </li>
+                  <li>
+                    Если форсунки быстро начинают «лить в обратку» — значит в топливе есть мелкая металлическая стружка или абразив. Этот
+                    фильтр их задержит и продлит срок службы насоса и форсунок.
+                  </li>
+                </ul>
+              </RichText>
+              <SectionTitle>Основные характеристики</SectionTitle>
+              <RichText>
+                <ul>
+                  <li>
+                    <b>Площадь фильтрации:</b> 2 000 мм² (зона фильтровальной бумаги)
+                  </li>
+                  <li>
+                    <b>Размер пор:</b> 8–12 мкм (удерживает частицы мельче 0,01 мм)
+                  </li>
+                  <li>
+                    <b>Двигатели:</b> подходит для моторов объёмом до 2,7 л (проверено на практике)
+                  </li>
+                  <li>
+                    <b>Прочность корпуса:</b> выдерживает опрессовку 180 МПа (1 800 bar)
+                  </li>
+                  <li>
+                    <b>Резьба подключения:</b> стандарт M14×1,5 (по заказу можно M12×1,5)
+                  </li>
+                  <li>
+                    <b>Габариты:</b> длина 120 мм, максимальный диаметр 35 мм
+                  </li>
+                  <li>
+                    <b>Материал:</b> корпус из стали
+                  </li>
+                  <li>
+                    <b>Вес:</b> 430 г
+                  </li>
+                </ul>
+              </RichText>
+              <SectionTitle>Как обслуживать</SectionTitle>
+              <RichText>
+                <ul>
+                  <li>Менять одновременно с основным топливным фильтром при каждом ТО.</li>
+                  <li>Устанавливать чётко по стрелке, указывающей направление потока топлива.</li>
+                  <li>
+                    Жёстко фиксировать корпус к блоку двигателя — чтобы вибрации или масса фильтра не повредили топливные трубки и не
+                    разбалансировали систему.
+                  </li>
+                </ul>
+              </RichText>
+              <SectionTitle>Прочие моменты</SectionTitle>
+              <RichText>
+                <ul>
+                  <li>Марка автомобиля и производитель фильтра условны, подходят почти ко всем моторам Common Rail.</li>
+                  <li>Цена указана для самовывоза, доставка возможна по запросу.</li>
+                </ul>
+              </RichText>
+            </BasicCard>
+          </SpecsColumn>
         </Section>
       </Wrapper>
     </Page>
@@ -289,6 +347,7 @@ const SpecTitle = styled.div`
   font-weight: bold;
   color: rgb(var(--text));
   font-size: 1.8rem;
+  margin-bottom: 0.3em;
 `;
 
 const SpecValue = styled.div`
@@ -356,4 +415,17 @@ const SliderDot = styled.button<{ active: boolean }>`
     transform: scale(1.2);
     background: ${({ active }) => (active ? 'rgb(var(--primary))' : 'rgba(255, 255, 255, 0.7)')};
   }
+`;
+
+const BasicCard = styled.div`
+  background-color: rgba(var(--secondary), 0.1);
+  border-radius: 0.6rem;
+  padding: 2rem;
+  box-shadow: var(--shadow-md);
+`;
+
+const RichText = styled.div`
+  font-size: 1.8rem;
+  color: rgb(var(--text));
+  margin-bottom: 2rem;
 `;

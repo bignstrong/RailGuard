@@ -35,7 +35,11 @@ export default class MyDocument extends Document {
     return (
       <Html lang="en">
         <Head>
+          <meta name="viewport" content="width=device-width, initial-scale=1" />
           <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet" />
+          <link rel="icon" href="/favicon.ico" />
+          <link rel="apple-touch-icon" sizes="180x180" href="/favicon.png" />
+          <link rel="manifest" href="/manifest.json" />
         </Head>
         <body className="next-light-theme">
           <Main />

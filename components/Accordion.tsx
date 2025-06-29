@@ -15,7 +15,7 @@ export default function Accordion({ title, isOpen, children }: PropsWithChildren
   return (
     <AccordionWrapper onClick={() => setHasCollapsed((prev) => !prev)}>
       <TitleWrapper>
-        <Title>{title}</Title>
+        <Title isActive={isActive}>{title}</Title>
         <Icon isActive={isActive}>
           <svg
             viewBox="0 0 24 24"
@@ -37,14 +37,21 @@ export default function Accordion({ title, isOpen, children }: PropsWithChildren
   );
 }
 
-const Title = styled.h3`
+const Title = styled.h3<{ isActive: boolean }>`
   font-size: 2rem;
   width: 90%;
   overflow: hidden;
   text-overflow: ellipsis;
   display: -webkit-box;
   -webkit-box-orient: vertical;
-  -webkit-line-clamp: 1;
+  -webkit-line-clamp: ${(p) => (p.isActive ? 'unset' : 1)};
+  line-height: 1.3;
+
+  ${media('<=tablet')} {
+    -webkit-line-clamp: ${(p) => (p.isActive ? 'unset' : 2)};
+    font-size: 2.2rem;
+    line-height: 1.4;
+  }
 `;
 
 const TitleWrapper = styled.div`

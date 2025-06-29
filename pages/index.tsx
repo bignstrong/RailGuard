@@ -18,6 +18,24 @@ export default function Homepage({ posts }: InferGetStaticPropsType<typeof getSt
       <Head>
         <title>{EnvVars.SITE_NAME}</title>
         <meta name="description" content="RailGuard - страж давления и чистоты" />
+        <meta
+          name="keywords"
+          content="Топливный фильтр высокого давленя, RailGuard, фильтр, Common Rail, топливная система, защита, дизель, фильтрация, авто"
+        />
+        <link rel="canonical" href="https://railguard.shop/" />
+        <meta name="robots" content="index,follow" />
+        {/* Open Graph / Facebook */}
+        <meta property="og:type" content="website" />
+        <meta property="og:title" content="RailGuard" />
+        <meta property="og:description" content="RailGuard - Топливный фильтр высокого давления для дизельных двигателей Common Rail" />
+        <meta property="og:site_name" content="RailGuard" />
+        <meta property="og:url" content="https://railguard.shop/" />
+        <meta property="og:image" content="/og-image.png" />
+        {/* Twitter */}
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content="RailGuard" />
+        <meta name="twitter:description" content="RailGuard - страж давления и чистоты" />
+        <meta name="twitter:image" content="/og-image.png" />
       </Head>
       <HomepageWrapper>
         <WhiteBackgroundContainer>
@@ -54,18 +72,19 @@ export default function Homepage({ posts }: InferGetStaticPropsType<typeof getSt
                 <StyledImage src="/Scheme.png" alt="Фильтр высокого давления инфографика" width={200} height={650} quality={90} priority />
               </ImageWrapper>
             }
-            title="Установите — и забудьте о ремонте топливной системы"
+            title="RailGuard — надёжная защита топливной системы"
             overTitle="Преимущества для вас"
             reversed
           >
             <ul>
-              <li>Ноль повторных ремонтов — забудьте про стружку и поломки на десятки тысяч км</li>
-              <li>Экономия: один фильтр — десятки тысяч км без замены</li>
-              <li>Монтаж за 5 минут, без спецнавыков</li>
-              <li>Рабочее давление до 2000 бар — подходит для всех систем Common Rail</li>
+              <li>Дополнительная фильтрация металлической стружки и абразива, которые могут пройти через основной фильтр</li>
+              <li>Защита форсунок и регулятора давления от преждевременного износа</li>
+              <li>Прочный корпус из стали, выдерживающий давление до 1800 бар</li>
+              <li>Подходит для большинства дизельных двигателей Common Rail объёмом до 2,7 л</li>
+              <li>Простое обслуживание: замена вместе с основным фильтром</li>
             </ul>
             <p>
-              <strong>Ограниченный сток — закажите сейчас и получите скидку 5% при покупке от 3 шт!</strong>
+              <strong>Ограниченный сток — успейте заказать сейчас!</strong>
             </p>
           </BasicSection>
         </WhiteBackgroundContainer>

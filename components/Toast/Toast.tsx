@@ -6,6 +6,7 @@ interface ToastProps {
   duration?: number;
   onClose: () => void;
   type?: 'success' | 'error' | 'info';
+  onClick?: () => void;
 }
 
 const slideIn = keyframes`
@@ -19,7 +20,7 @@ const slideIn = keyframes`
   }
 `;
 
-const Toast = ({ message, duration = 3000, onClose, type = 'success' }: ToastProps) => {
+const Toast = ({ message, duration = 3000, onClose, type = 'success', onClick }: ToastProps) => {
   useEffect(() => {
     const timer = setTimeout(() => {
       onClose();
@@ -29,7 +30,7 @@ const Toast = ({ message, duration = 3000, onClose, type = 'success' }: ToastPro
   }, [duration, onClose]);
 
   return (
-    <ToastContainer>
+    <ToastContainer onClick={onClick} style={{ cursor: onClick ? 'pointer' : 'default' }}>
       <Message>{message}</Message>
       <CloseButton onClick={onClose}>×</CloseButton>
     </ToastContainer>

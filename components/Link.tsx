@@ -4,6 +4,7 @@ import styled from 'styled-components';
 
 export interface LinkProps {
   href: string;
+  onClick?: React.MouseEventHandler<HTMLAnchorElement>;
 }
 
 const StyledLink = styled(NextLink)`
@@ -31,6 +32,10 @@ const StyledLink = styled(NextLink)`
   }
 `;
 
-export default function Link({ href, children }: PropsWithChildren<LinkProps>) {
-  return <StyledLink href={href}>{children}</StyledLink>;
+export default function Link({ href, onClick, children }: PropsWithChildren<LinkProps>) {
+  return (
+    <StyledLink href={href} onClick={onClick}>
+      {children}
+    </StyledLink>
+  );
 }

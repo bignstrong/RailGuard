@@ -6,10 +6,7 @@ import FaqSection from 'views/PricingPage/FaqSection';
 
 export default function PricingPage() {
   return (
-    <Page
-      title="Полный каталог RailGuard"
-      description="Откройте для себя наш ассортимент топливных фильтров и аксессуаров премиум-класса. Каждое изделие создано для обеспечения максимальной защиты, эффективности и долговечности вашего двигателя. Выбирайте решения, которым доверяют профессионалы."
-    >
+    <Page title="Полный каталог RailGuard">
       <CatalogSection />
       {/* <PricingTablesSection /> */}
       <FaqSection />
