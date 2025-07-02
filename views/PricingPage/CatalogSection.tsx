@@ -136,7 +136,7 @@ export default function CatalogSection() {
             title="Комплект «Старт»"
             price="14 000₽"
             oldPrice="24 000₽"
-            description="Полный комплект для начала работы"
+            description="Комплект состоящий из корпуса и двух фильтрующих элементов"
             image="/withoutBack/start.png"
             actionLabel="В корзину"
             inStock={true}
