@@ -102,6 +102,7 @@ export default function Cart() {
   });
   const [successOrderId, setSuccessOrderId] = useState<string | null>(null);
   const router = useRouter();
+  const [isLoading, setIsLoading] = useState(false);
 
   const handlePhoneChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     setForm((prev) => ({ ...prev, phone: cleanPhone(e.target.value) }));
@@ -132,19 +133,17 @@ export default function Cart() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
     if (!validatePhoneNumber(form.phone)) {
       showToast('Пожалуйста, введите корректный номер телефона', 'error');
       return;
     }
-
+    setIsLoading(true);
     try {
       const orderData = {
         items,
         contact: form,
         totalPrice,
       };
-
       const response = await fetch('/api/orders', {
         method: 'POST',
         headers: {
@@ -152,20 +151,17 @@ export default function Cart() {
         },
         body: JSON.stringify(orderData),
       });
-
       if (!response.ok) {
         throw new Error('Failed to create order');
       }
-
       const data = await response.json();
-
-      // Clear cart but don't close it yet
       clearCart();
-      // Show success modal with order ID
       setSuccessOrderId(data.orderId);
     } catch (error) {
       console.error('Error submitting order:', error);
       showToast('Произошла ошибка при оформлении заказа. Пожалуйста, попробуйте еще раз.', 'error');
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -322,8 +318,17 @@ export default function Cart() {
                       required
                     />
                   </FormGroup>
-                  <SubmitButton as="button" type="submit">
-                    Оформить заказ
+                  <SubmitButton as="button" type="submit" disabled={isLoading}>
+                    {isLoading ? (
+                      <SpinnerWrapper>
+                        <svg width="24" height="24" viewBox="0 0 24 24" className="spinner" aria-label="Загрузка">
+                          <circle cx="12" cy="12" r="10" stroke="white" strokeWidth="4" fill="none" opacity="0.25" />
+                          <path d="M22 12a10 10 0 0 1-10 10" stroke="white" strokeWidth="4" fill="none" strokeLinecap="round" />
+                        </svg>
+                      </SpinnerWrapper>
+                    ) : (
+                      'Оформить заказ'
+                    )}
                   </SubmitButton>
                 </CheckoutForm>
               </>
@@ -808,5 +813,21 @@ const SubmitButton = styled(Button)`
     margin: 0;
     border-radius: 0;
     z-index: 2;
+  }
+`;
+
+const SpinnerWrapper = styled.span`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 2.4rem;
+  .spinner {
+    display: block;
+    animation: spin 0.9s linear infinite;
+  }
+  @keyframes spin {
+    100% {
+      transform: rotate(360deg);
+    }
   }
 `;

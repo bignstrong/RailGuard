@@ -20,14 +20,14 @@ export default function Homepage() {
           name="keywords"
           content="Топливный фильтр высокого давленя, RailGuard, фильтр, Common Rail, топливная система, защита, дизель, фильтрация, авто"
         />
-        <link rel="canonical" href="https://railguard.shop/" />
+        <link rel="canonical" href="https://railguard.ru/" />
         <meta name="robots" content="index,follow" />
         {/* Open Graph / Facebook */}
         <meta property="og:type" content="website" />
         <meta property="og:title" content="RailGuard" />
         <meta property="og:description" content="RailGuard - Топливный фильтр высокого давления для дизельных двигателей Common Rail" />
         <meta property="og:site_name" content="RailGuard" />
-        <meta property="og:url" content="https://railguard.shop/" />
+        <meta property="og:url" content="https://railguard.ru/" />
         <meta property="og:image" content="/og-image.png" />
         {/* Twitter */}
         <meta name="twitter:card" content="summary_large_image" />

@@ -41,7 +41,7 @@ export default function OrderSuccessModal({ orderId, onClose }: OrderSuccessModa
             </OrderNumberRow>
           </OrderNumberBlock>
           <Description>
-            Мы получили ваш заказ и свяжемся с вами в ближайшее время для подтверждения. Вы можете сохранить номер для ващего удобства.
+            Мы получили ваш заказ и свяжемся с вами в ближайшее время для подтверждения. Вы можете сохранить номер для вашего удобства.
           </Description>
           <CloseButton onClick={onClose}>Закрыть</CloseButton>
         </ModalWrapper>

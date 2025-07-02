@@ -11,8 +11,8 @@ export default function TermsOfUsePage() {
         </p>
         <p>
           Настоящие Условия использования (далее — «Условия») определяют правила пользования сайтом RailGuard, доступным по адресу:{' '}
-          <a href="https://railguard.shop" target="_blank" rel="noopener noreferrer">
-            https://railguard.shop
+          <a href="https://railguard.ru" target="_blank" rel="noopener noreferrer">
+            https://railguard.ru
           </a>{' '}
           (далее — «Сайт»). Используя Сайт, вы подтверждаете своё согласие с настоящими Условиями. Если вы не согласны с ними — пожалуйста,
           прекратите использование Сайта.

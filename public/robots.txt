@@ -19,7 +19,7 @@ Disallow: /404
 Disallow: /500
 
 # Host
-Host: https://railguard.shop
+Host: https://railguard.ru
 
 # Sitemaps
-Sitemap: https://railguard.shop/sitemap.xml
+Sitemap: https://railguard.ru/sitemap.xml

@@ -1,6 +1,6 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 
-const BASE_URL = 'https://railguard.shop';
+const BASE_URL = 'https://railguard.ru';
 
 const staticPages = ['', '/pricing', '/contact', '/specifications', '/privacy-policy', '/terms-of-use', '/cookies-policy'];
 

@@ -42,16 +42,19 @@ const ToastContainer = styled.div`
   bottom: 20px;
   right: 20px;
   padding: 12px 16px;
-  border-radius: 6px;
+  border-radius: 10px;
   background: rgb(var(--primary));
   color: white;
   display: flex;
   align-items: center;
   gap: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
   z-index: 1000;
   animation: ${slideIn} 0.3s ease-out;
   font-size: 1.4rem;
+  border: 2.5px solid #ff0000;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.1), 0 0 0 4px rgba(255, 0, 0, 0.1);
+  transition: border-color 0.3s, box-shadow 0.3s;
 `;
 
 const Message = styled.p`

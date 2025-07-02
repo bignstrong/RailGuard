@@ -12,8 +12,8 @@ export default function PrivacyPolicyPage() {
         <p>
           Настоящая Политика конфиденциальности (далее — «Политика») определяет порядок обработки и защиты персональных данных,
           предоставляемых пользователями сайта RailGuard, размещённого по адресу:{' '}
-          <a href="https://railguard.shop" target="_blank" rel="noopener noreferrer">
-            https://railguard.shop
+          <a href="https://railguard.ru" target="_blank" rel="noopener noreferrer">
+            https://railguard.ru
           </a>{' '}
           (далее — «Сайт»).
         </p>
