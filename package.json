@@ -16,7 +16,7 @@
     "@emotion/styled": "^11.14.0",
     "@n8tb1t/use-scroll-position": "^2.0.3",
     "@prisma/client": "^6.11.0",
-    "@sendgrid/mail": "^7.7.0",
+    "@sendgrid/mail": "^8.1.5",
     "@svgr/webpack": "^8.0.0",
     "css-in-js-media": "^2.0.1",
     "date-fns": "^2.29.3",
