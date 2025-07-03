@@ -1,10 +1,10 @@
-import Page from 'components/Page';
-import SliderArrow from 'components/SliderArrow';
-import { useLightbox } from 'contexts/lightbox.context';
-import NextImage from 'next/image';
-import { useState } from 'react';
-import styled from 'styled-components';
-import { media } from 'utils/media';
+import Page from 'components/Page'
+import SliderArrow from 'components/SliderArrow'
+import { useLightbox } from 'contexts/lightbox.context'
+import NextImage from 'next/image'
+import { useState } from 'react'
+import styled from 'styled-components'
+import { media } from 'utils/media'
 
 const FILTER_BODY_SPECS = [
   { title: 'Материал корпуса', value: 'Сталь' },
@@ -28,20 +28,12 @@ const FILTER_ELEMENT_SPECS = [
 const FILTER_BODY_IMAGES = [
   { src: '/withoutBack/corpus.png', alt: 'Корпус фильтра' },
   { src: '/withoutBack/corpus_2.png', alt: 'Корпус фильтра' },
-  { src: '/withoutBack/corpus_naked.png', alt: 'Схема фильтра' },
-  { src: '/withoutBack/corpus_naked_2.png', alt: 'Схема фильтра' },
 ];
 
 const FILTER_ELEMENT_IMAGES = [
   { src: '/withoutBack/element_2.png', alt: 'Инфографика фильтра' },
   { src: '/withoutBack/element.png', alt: 'Схема установки' },
   { src: '/withoutBack/element_3.png', alt: 'Фильтр в разрезе' },
-];
-
-const INSTALLATION_IMAGES = [
-  { src: '/installation-scheme.svg', alt: 'Схема установки' },
-  { src: '/Scheme.png', alt: 'Схема подключения' },
-  { src: '/FilterInfografika.png', alt: 'Инфографика установки' },
 ];
 
 function ImageSlider({ images }: { images: { src: string; alt: string }[] }) {

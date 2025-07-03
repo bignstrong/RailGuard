@@ -7,7 +7,14 @@ export default function FilterImage() {
     <ImageWrapper>
       <BackgroundDecoration />
       <ImageContainer>
-        <StyledImage src="/Filter.png" alt="RailGuard фильтр тонкой очистки" width={200} height={200} priority quality={100} />
+        <StyledImage
+          src="/withoutBack/corpus_black.png"
+          alt="RailGuard фильтр тонкой очистки"
+          width={300}
+          height={400}
+          priority
+          quality={100}
+        />
       </ImageContainer>
     </ImageWrapper>
   );
