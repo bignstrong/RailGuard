@@ -110,10 +110,10 @@ const ImageContainer = styled.div`
 
 const BackgroundDecoration = styled.div`
   position: absolute;
-  top: 10%;
-  right: -5%;
-  width: 90%;
-  height: 90%;
+  top: 13%;
+  right: 0%;
+  width: 75%;
+  height: 75%;
   background: linear-gradient(135deg, rgba(var(--primary), 0.15) 0%, rgba(var(--primary), 0.05) 100%);
   border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%;
   z-index: 1;
@@ -133,24 +133,25 @@ const BackgroundDecoration = styled.div`
   }
 
   ${media('<=desktop')} {
-    width: 85%;
-    height: 85%;
-    right: -2.5%;
+    width: 65%;
+    height: 65%;
+    right: 0%;
+    top: 15%;
   }
 
   ${media('<=tablet')} {
-    width: 80%;
-    height: 80%;
+    width: 55%;
+    height: 55%;
     right: 0;
-    top: 5%;
+    top: 18%;
     opacity: 0.8;
   }
 
   ${media('<=phone')} {
-    width: 70%;
-    height: 70%;
+    width: 45%;
+    height: 45%;
     right: 5%;
-    top: 5%;
+    top: 20%;
     opacity: 0.6;
     animation: none;
     border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%;

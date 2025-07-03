@@ -1,10 +1,10 @@
-import Page from 'components/Page'
-import SliderArrow from 'components/SliderArrow'
-import { useLightbox } from 'contexts/lightbox.context'
-import NextImage from 'next/image'
-import { useState } from 'react'
-import styled from 'styled-components'
-import { media } from 'utils/media'
+import Page from 'components/Page';
+import SliderArrow from 'components/SliderArrow';
+import { useLightbox } from 'contexts/lightbox.context';
+import NextImage from 'next/image';
+import { useState } from 'react';
+import styled from 'styled-components';
+import { media } from 'utils/media';
 
 const FILTER_BODY_SPECS = [
   { title: 'Материал корпуса', value: 'Сталь' },
@@ -152,9 +152,9 @@ export default function SpecificationsPage() {
             <BasicCard>
               <SectionTitle>Что это и где ставится</SectionTitle>
               <RichText>
-                Этот фильтр устанавливают на дизельные двигатели с системой Common Rail между топливным насосом высокого давления (ТНВД) и
-                рампой форсунок, сразу после основного фильтра. Его задача — задерживать металлическую стружку от ТНВД/ТННД и мелкий
-                абразив, который мог проскочить через основной фильтр.
+                Этот фильтр устанавливают на двигатели с системой Common Rail между топливным насосом высокого давления (ТНВД) и рампой
+                форсунок, сразу после основного фильтра. Его задача — задерживать металлическую стружку от ТНВД/ТННД и мелкий абразив,
+                который мог проскочить через основной фильтр.
               </RichText>
               <SectionTitle>Зачем он нужен</SectionTitle>
               <RichText>
@@ -213,7 +213,7 @@ export default function SpecificationsPage() {
               <RichText>
                 <ul>
                   <li>Марка автомобиля и производитель фильтра условны, подходят почти ко всем моторам Common Rail.</li>
-                  <li>Цена указана для самовывоза, доставка возможна по запросу.</li>
+                  <li>Всё остальное можете спросить у нашего менеджера.</li>
                 </ul>
               </RichText>
             </BasicCard>

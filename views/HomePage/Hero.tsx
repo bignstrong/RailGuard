@@ -17,11 +17,10 @@ export default function Hero() {
         <CustomOverTitle>Защита топливной системы Common Rail</CustomOverTitle>
         <Heading>RailGuard</Heading>
         <Description>
-          <strong>ХВАТИТ ВЫБРАСЫВАТЬ ДЕНЬГИ</strong> на ремонт форсунок! RailGuard – это профессиональная защита вашего двигателя с
-          тонкостью фильтрации <span className="highlight">8-12 мкм</span>. Наш фильтр устанавливается между ТНВД и рампой для окончательной
-          фильтрации топлива от продуктов износа ТННД и ТНВД. <strong>Испытан под давлением 1800 бар</strong> – надёжное профессиональное
-          решение. Площадь фильтрующего элемента <span className="highlight">2000 мм²</span>, протестирован на двигателях до{' '}
-          <span className="highlight">2.7л</span>. <strong>Защитите свой двигатель прямо сейчас!</strong>
+          <strong>ХВАТИТ ВЫБРАСЫВАТЬ ВРЕМЯ И ДЕНЬГИ</strong> на ремонт форсунок! RailGuard – это профессиональная защита вашего двигателя с
+          тонкостью фильтрации <span className="highlight">8-12 мкм</span>. <strong>Испытан под давлением 1800 бар</strong> – надёжное
+          профессиональное решение. Площадь фильтрующего элемента <span className="highlight">2000 мм²</span>, протестирован на двигателях
+          до <span className="highlight">2.7л</span>. <strong>Защитите свой двигатель прямо сейчас!</strong>
         </Description>
         <CustomButtonGroup>
           <NextLink href="/pricing" passHref>

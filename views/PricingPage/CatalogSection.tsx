@@ -98,6 +98,15 @@ function ProductCard({ id, title, price, oldPrice, description, image, actionLab
           <ButtonText>{actionLabel}</ButtonText>
           {quantity > 0 && <QuantityBadge>{quantity}</QuantityBadge>}
         </CartButton>
+        <NoticeWrapper>
+          <InfoIcon tabIndex={0}>
+            i
+            <Tooltip>
+              Производитель может изменять форму и цвет изделия без ухудшения его функциональности. Для получения самой актуальной
+              информации о товаре, пожалуйста, уточняйте детали у продавца.
+            </Tooltip>
+          </InfoIcon>
+        </NoticeWrapper>
       </Content>
     </CardWrapper>
   );
@@ -371,4 +380,67 @@ const LearnMoreLinkWrapper = styled.div`
   font-size: 1.3rem;
   text-align: left;
   width: fit-content;
+`;
+
+const NoticeWrapper = styled.div`
+  display: flex;
+  align-items: flex-end;
+  margin-top: 1.5rem;
+  min-height: 2.2rem;
+`;
+
+const InfoIcon = styled.span`
+  display: inline-block;
+  position: relative;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: rgb(var(--cardBackground));
+  color: rgba(var(--text), 0.35);
+  font-size: 13px;
+  font-weight: bold;
+  text-align: center;
+  line-height: 18px;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+  border: 1px solid rgba(var(--text), 0.08);
+  margin-left: 2px;
+  margin-bottom: 2px;
+  outline: none;
+
+  &:hover,
+  &:focus {
+    background: rgb(var(--cardBackground));
+    color: rgba(var(--text), 0.6);
+    border-color: rgba(var(--text), 0.18);
+  }
+
+  &:hover > div,
+  &:focus > div {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateY(-8px) scale(1);
+  }
+`;
+
+const Tooltip = styled.div`
+  opacity: 0;
+  pointer-events: none;
+  position: absolute;
+  left: 50%;
+  bottom: 120%;
+  transform: translateX(-50%) translateY(0) scale(0.98);
+  min-width: 260px;
+  max-width: 320px;
+  background: #222;
+  color: #fff;
+  font-size: 1.3rem;
+  border-radius: 6px;
+  padding: 1rem 1.2rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.13);
+  z-index: 10;
+  transition: opacity 0.2s, transform 0.2s;
+  text-align: left;
+  line-height: 1.5;
+  white-space: normal;
 `;

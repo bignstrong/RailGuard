@@ -5,7 +5,7 @@
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#1a202c",
-  "description": "RailGuard — страж давления и чистоты. Фильтры высокого давления для дизельных двигателей Common Rail.",
+  "description": "RailGuard — страж давления и чистоты. Фильтры высокого давления для двигателей Common Rail.",
   "icons": [
     {
       "src": "/favicon.png",

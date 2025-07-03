@@ -18,21 +18,21 @@ export default function Homepage() {
         <meta name="description" content="RailGuard - страж давления и чистоты" />
         <meta
           name="keywords"
-          content="Топливный фильтр высокого давленя, RailGuard, фильтр, Common Rail, топливная система, защита, дизель, фильтрация, авто"
+          content="Топливный фильтр высокого давления, RailGuard, фильтр, Common Rail, топливная система, защита, дизель, бензин, фильтрация, авто"
         />
         <link rel="canonical" href="https://railguard.ru/" />
         <meta name="robots" content="index,follow" />
         {/* Open Graph / Facebook */}
         <meta property="og:type" content="website" />
         <meta property="og:title" content="RailGuard" />
-        <meta property="og:description" content="RailGuard - Топливный фильтр высокого давления для дизельных двигателей Common Rail" />
+        <meta property="og:description" content="RailGuard - Топливный фильтр высокого давления для двигателей Common Rail" />
         <meta property="og:site_name" content="RailGuard" />
         <meta property="og:url" content="https://railguard.ru/" />
         <meta property="og:image" content="/og-image.png" />
         {/* Twitter */}
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content="RailGuard" />
-        <meta name="twitter:description" content="RailGuard - страж давления и чистоты" />
+        <meta name="twitter:description" content="RailGuard - Топливный фильтр высокого давления" />
         <meta name="twitter:image" content="/og-image.png" />
       </Head>
       <HomepageWrapper>
@@ -53,7 +53,7 @@ export default function Homepage() {
               </ImageWrapper>
             }
             title="Фильтр высокого давления – надёжная защита топливной системы!"
-            overTitle="Для дизельных двигателей Common Rail"
+            overTitle="Для двигателей Common Rail"
           >
             <p>
               Если двигатель не заводится на горячую, вышел из строя регулятор давления топлива, а форсунки стали &quot;лить в обратку&quot;
@@ -63,6 +63,15 @@ export default function Homepage() {
                 очистки топлива.
               </strong>
             </p>
+            <SectionNoticeWrapper>
+              <SectionInfoIcon tabIndex={0}>
+                i
+                <SectionTooltip>
+                  Данная иллюстрация не является точным изображением изделия и приведена исключительно для понимания принципа работы
+                  системы, а также служит для антиплагиата.
+                </SectionTooltip>
+              </SectionInfoIcon>
+            </SectionNoticeWrapper>
           </BasicSection>
           <BasicSection
             imageComponent={
@@ -78,7 +87,7 @@ export default function Homepage() {
               <li>Дополнительная фильтрация металлической стружки и абразива, которые могут пройти через основной фильтр</li>
               <li>Защита форсунок и регулятора давления от преждевременного износа</li>
               <li>Прочный корпус из стали, выдерживающий давление до 1800 бар</li>
-              <li>Подходит для большинства дизельных двигателей Common Rail объёмом до 2,7 л</li>
+              <li>Подходит для большинства двигателей Common Rail объёмом до 2,7 л</li>
               <li>Простое обслуживание: замена вместе с основным фильтром</li>
             </ul>
             <p>
@@ -139,6 +148,67 @@ const ImageWrapper = styled.div`
 const StyledImage = styled(Image)`
   width: 100%;
   object-fit: contain;
+`;
+
+const SectionNoticeWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  margin-bottom: 1.5rem;
+`;
+
+const SectionInfoIcon = styled.span`
+  display: inline-block;
+  position: relative;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: rgb(var(--cardBackground));
+  color: rgba(var(--text), 0.35);
+  font-size: 13px;
+  font-weight: bold;
+  text-align: center;
+  line-height: 18px;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+  border: 1px solid rgba(var(--text), 0.08);
+  margin-right: 8px;
+  outline: none;
+
+  &:hover,
+  &:focus {
+    background: rgb(var(--cardBackground));
+    color: rgba(var(--text), 0.6);
+    border-color: rgba(var(--text), 0.18);
+  }
+
+  &:hover > div,
+  &:focus > div {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateY(-8px) scale(1);
+  }
+`;
+
+const SectionTooltip = styled.div`
+  opacity: 0;
+  pointer-events: none;
+  position: absolute;
+  left: 50%;
+  bottom: 120%;
+  transform: translateX(-50%) translateY(0) scale(0.98);
+  min-width: 220px;
+  max-width: 340px;
+  background: #222;
+  color: #fff;
+  font-size: 1.3rem;
+  border-radius: 6px;
+  padding: 1rem 1.2rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.13);
+  z-index: 10;
+  transition: opacity 0.2s, transform 0.2s;
+  text-align: left;
+  line-height: 1.5;
+  white-space: normal;
 `;
 
 export async function getStaticProps() {
