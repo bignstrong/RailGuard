@@ -43,7 +43,7 @@ function MyApp({ Component, pageProps }: AppProps) {
             </Head>
             <GoogleAnalytics />
             <YandexMetrika />
-            <ColorModeScript defaultColorMode="light" />
+            <ColorModeScript />
             <Providers>
               <Modals />
               <Lightbox />
