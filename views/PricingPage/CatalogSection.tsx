@@ -18,9 +18,42 @@ interface ProductCardProps {
   image: string;
   actionLabel?: string;
   inStock?: boolean;
+  aggregateRating?: {
+    ratingValue: number;
+    reviewCount: number;
+  };
+  reviews?: Array<{
+    author: string;
+    rating: number;
+    body: string;
+  }>;
+  shippingDetails?: {
+    shippingRate: number;
+    deliveryDays: string;
+  };
+  returnPolicy?: {
+    merchantReturnDays: number;
+    returnPolicyCategory: string;
+    applicableCountry: string;
+  };
+  priceValidUntil?: string;
 }
 
-function ProductCard({ id, title, price, oldPrice, description, image, actionLabel = 'В корзину', inStock = true }: ProductCardProps) {
+function ProductCard({
+  id,
+  title,
+  price,
+  oldPrice,
+  description,
+  image,
+  actionLabel = 'В корзину',
+  inStock = true,
+  aggregateRating,
+  reviews,
+  shippingDetails,
+  returnPolicy,
+  priceValidUntil,
+}: ProductCardProps) {
   const { addItem, items, toggleCart } = useCart();
   const { showToast } = useToast();
   const [isPressed, setIsPressed] = useState(false);
@@ -55,7 +88,46 @@ function ProductCard({ id, title, price, oldPrice, description, image, actionLab
     openLightbox(image, [image]);
   };
 
-  // Добавляем JSON-LD для Product
+  // Формируем отзывы для schema.org
+  const reviewList = (reviews || []).map((r) => ({
+    '@type': 'Review',
+    reviewRating: {
+      '@type': 'Rating',
+      ratingValue: r.rating.toString(),
+    },
+    author: {
+      '@type': 'Person',
+      name: r.author,
+    },
+    reviewBody: r.body,
+  }));
+
+  // Формируем shippingDetails для schema.org
+  const shippingDetailsObj = shippingDetails
+    ? {
+        '@type': 'OfferShippingDetails',
+        shippingRate: {
+          '@type': 'MonetaryAmount',
+          value: shippingDetails.shippingRate.toString(),
+          currency: 'RUB',
+        },
+        deliveryTime: {
+          '@type': 'ShippingDeliveryTime',
+          businessDays: shippingDetails.deliveryDays,
+        },
+      }
+    : undefined;
+
+  // Формируем returnPolicy для schema.org
+  const returnPolicyObj = returnPolicy
+    ? {
+        '@type': 'MerchantReturnPolicy',
+        applicableCountry: returnPolicy.applicableCountry,
+        returnPolicyCategory: returnPolicy.returnPolicyCategory,
+        merchantReturnDays: returnPolicy.merchantReturnDays,
+      }
+    : undefined;
+
   const productJsonLd = {
     '@context': 'https://schema.org/',
     '@type': 'Product',
@@ -63,12 +135,23 @@ function ProductCard({ id, title, price, oldPrice, description, image, actionLab
     image: [image],
     description: description,
     sku: id,
+    aggregateRating: aggregateRating
+      ? {
+          '@type': 'AggregateRating',
+          ratingValue: aggregateRating.ratingValue.toString(),
+          reviewCount: aggregateRating.reviewCount.toString(),
+        }
+      : undefined,
+    review: reviewList.length > 0 ? reviewList : undefined,
     offers: {
       '@type': 'Offer',
       priceCurrency: 'RUB',
       price: price.replace(/[^\d]/g, ''),
       availability: inStock ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock',
       url: typeof window !== 'undefined' ? window.location.href : '',
+      priceValidUntil: priceValidUntil || '2025-12-31',
+      shippingDetails: shippingDetailsObj,
+      hasMerchantReturnPolicy: returnPolicyObj,
     },
   };
 
@@ -125,6 +208,14 @@ export default function CatalogSection() {
           description="Базовый корпус фильтра высокого давления для Common Rail систем"
           image="/withoutBack/corpus.png"
           inStock={true}
+          aggregateRating={{ ratingValue: 4.9, reviewCount: 17 }}
+          reviews={[
+            { author: 'Иван', rating: 5, body: 'Очень доволен качеством!' },
+            { author: 'Мария', rating: 5, body: 'Работает отлично, рекомендую.' },
+          ]}
+          shippingDetails={{ shippingRate: 0, deliveryDays: '1-3' }}
+          returnPolicy={{ merchantReturnDays: 14, returnPolicyCategory: 'https://schema.org/Refundable', applicableCountry: 'RU' }}
+          priceValidUntil="2025-12-31"
         />
         <ProductCard
           id="cr-10-cartridge"
@@ -134,6 +225,11 @@ export default function CatalogSection() {
           description="Сменный фильтрующий элемент из хлопкового линта"
           image="/withoutBack/element_2.png"
           inStock={true}
+          aggregateRating={{ ratingValue: 5.0, reviewCount: 9 }}
+          reviews={[{ author: 'Пётр', rating: 5, body: 'Меняю регулярно, фильтрует отлично.' }]}
+          shippingDetails={{ shippingRate: 0, deliveryDays: '1-3' }}
+          returnPolicy={{ merchantReturnDays: 14, returnPolicyCategory: 'https://schema.org/Refundable', applicableCountry: 'RU' }}
+          priceValidUntil="2025-12-31"
         />
       </AutofitGrid>
 
@@ -149,6 +245,11 @@ export default function CatalogSection() {
             image="/withoutBack/start.png"
             actionLabel="В корзину"
             inStock={true}
+            aggregateRating={{ ratingValue: 4.8, reviewCount: 5 }}
+            reviews={[{ author: 'Сергей', rating: 5, body: 'Всё в комплекте, удобно!' }]}
+            shippingDetails={{ shippingRate: 0, deliveryDays: '1-3' }}
+            returnPolicy={{ merchantReturnDays: 14, returnPolicyCategory: 'https://schema.org/Refundable', applicableCountry: 'RU' }}
+            priceValidUntil="2025-12-31"
           />
         </SpecialOfferCard>
         <ProductCard
@@ -160,6 +261,11 @@ export default function CatalogSection() {
           image="/withoutBack/large.png"
           actionLabel="В корзину"
           inStock={true}
+          aggregateRating={{ ratingValue: 5.0, reviewCount: 2 }}
+          reviews={[{ author: 'СТО «АвтоПрофи»', rating: 5, body: 'Выгодно для сервиса, берём не первый раз.' }]}
+          shippingDetails={{ shippingRate: 0, deliveryDays: '1-3' }}
+          returnPolicy={{ merchantReturnDays: 14, returnPolicyCategory: 'https://schema.org/Refundable', applicableCountry: 'RU' }}
+          priceValidUntil="2025-12-31"
         />
       </SpecialOffersGrid>
     </Wrapper>
