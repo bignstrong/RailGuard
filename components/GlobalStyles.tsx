@@ -11,7 +11,7 @@ import { createGlobalStyle } from 'styled-components';
 
 export const GlobalStyle = createGlobalStyle`
 
-.next-light-theme {
+.next-dark-theme {
   --background: 251,251,253;
   --secondBackground: 255,255,255;
   --text: 10,18,30;
@@ -28,7 +28,7 @@ export const GlobalStyle = createGlobalStyle`
   --logoColor:rgb(0, 0, 0);
 }
 
-.next-dark-theme {
+.next-light-theme {
   --background: 26,32,44;
   --secondBackground: 45,55,72;
   --text: 237,237,238;

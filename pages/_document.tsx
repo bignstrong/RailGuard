@@ -40,26 +40,6 @@ export default class MyDocument extends Document {
           <link rel="icon" href="/favicon.ico" />
           <link rel="apple-touch-icon" sizes="180x180" href="/favicon.png" />
           <link rel="manifest" href="/manifest.json" />
-          <script
-            dangerouslySetInnerHTML={{
-              __html: `
-            (function() {
-              try {
-                var theme = null;
-                if (typeof window !== 'undefined') {
-                  theme = localStorage.getItem('color-mode') || localStorage.getItem('theme');
-                }
-                if (!theme) {
-                  var prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-                  if (!prefersDark) {
-                    document.body.classList.add('next-light-theme');
-                  }
-                }
-              } catch (e) {}
-            })();
-          `,
-            }}
-          />
         </Head>
         <body className="next-light-theme">
           <Main />
