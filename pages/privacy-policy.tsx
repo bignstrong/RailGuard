@@ -3,7 +3,7 @@ import styled from 'styled-components';
 
 export default function PrivacyPolicyPage() {
   return (
-    <Page title="Политика конфиденциальности">
+    <Page title="Политика конфиденциальности" canonical="https://railguard.ru/privacy-policy">
       <PolicyContainer>
         <h1>📄 Политика конфиденциальности</h1>
         <p>

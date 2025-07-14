@@ -3,7 +3,7 @@ import styled from 'styled-components';
 
 export default function TermsOfUsePage() {
   return (
-    <Page title="Условия использования">
+    <Page title="Условия использования" canonical="https://railguard.ru/terms-of-use">
       <PolicyContainer>
         <h1>📘 Условия использования</h1>
         <p>

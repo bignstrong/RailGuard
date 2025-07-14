@@ -106,7 +106,11 @@ function ImageSlider({ images }: { images: { src: string; alt: string }[] }) {
 
 export default function SpecificationsPage() {
   return (
-    <Page title="Характеристики" description="Технические характеристики и преимущества фильтра высокого давления Common Rail">
+    <Page
+      title="Характеристики"
+      description="Технические характеристики и преимущества фильтра высокого давления Common Rail"
+      canonical="https://railguard.ru/specifications"
+    >
       <Wrapper>
         <Section>
           <SectionTitle id="filter-body">Корпус фильтра</SectionTitle>
