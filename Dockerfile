@@ -3,12 +3,10 @@ FROM node:18-alpine AS deps
 WORKDIR /app
 
 # Копируем package files
-COPY package.json yarn.lock* package-lock.json* ./
+COPY package.json yarn.lock ./
 
-# Устанавливаем зависимости
-RUN if [ -f yarn.lock ]; then yarn install --frozen-lockfile; \
-    elif [ -f package-lock.json ]; then npm ci --legacy-peer-deps; \
-    else npm install --legacy-peer-deps; fi
+# Устанавливаем зависимости через yarn
+RUN yarn install --frozen-lockfile
 
 # Stage 2: Builder
 FROM node:18-alpine AS builder
@@ -19,11 +17,11 @@ COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
 # Генерируем Prisma Client (БЕЗ миграций)
-RUN npx prisma generate
+RUN yarn prisma generate
 
 # Собираем Next.js приложение (БЕЗ миграций)
 ENV SKIP_ENV_VALIDATION=1
-RUN npm run build:docker
+RUN yarn next build
 
 # Stage 3: Runner
 FROM node:18-alpine AS runner

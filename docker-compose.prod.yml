@@ -1,0 +1,51 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:15-alpine
+    container_name: railguard_db
+    restart: always
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-railguard}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-railguard_password}
+      POSTGRES_DB: ${POSTGRES_DB:-railguard}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    networks:
+      - railguard_network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-railguard}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Next.js Application (готовый образ из Docker Hub)
+  web:
+    image: thehandofthelord/railguard:latest
+    container_name: railguard_web
+    restart: always
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - DATABASE_URL=postgresql://${POSTGRES_USER:-railguard}:${POSTGRES_PASSWORD:-railguard_password}@postgres:5432/${POSTGRES_DB:-railguard}?schema=public
+      - TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN}
+      - TELEGRAM_CHAT_ID=${TELEGRAM_CHAT_ID}
+      - NEXT_PUBLIC_SITE_URL=${NEXT_PUBLIC_SITE_URL:-https://railguard.ru}
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - railguard_network
+    command: sh -c "npx prisma migrate deploy && node server.js"
+
+volumes:
+  postgres_data:
+    driver: local
+
+networks:
+  railguard_network:
+    driver: bridge
