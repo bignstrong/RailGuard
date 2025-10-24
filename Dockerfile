@@ -6,7 +6,9 @@ WORKDIR /app
 COPY package.json yarn.lock* package-lock.json* ./
 
 # Устанавливаем зависимости
-RUN npm ci --legacy-peer-deps
+RUN if [ -f yarn.lock ]; then yarn install --frozen-lockfile; \
+    elif [ -f package-lock.json ]; then npm ci --legacy-peer-deps; \
+    else npm install --legacy-peer-deps; fi
 
 # Stage 2: Builder
 FROM node:18-alpine AS builder
