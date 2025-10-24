@@ -88,3 +88,9 @@ Thumbs.db
 .yarn/build-state.yml
 .yarn/install-state.gz
 .pnp.*
+
+# Docker
+docker-compose.override.yml
+nginx/ssl/
+postgres_data/
+*.sql
