@@ -18,11 +18,12 @@ WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
-# Генерируем Prisma Client
+# Генерируем Prisma Client (БЕЗ миграций)
 RUN npx prisma generate
 
-# Собираем Next.js приложение
-RUN npm run build
+# Собираем Next.js приложение (БЕЗ миграций)
+ENV SKIP_ENV_VALIDATION=1
+RUN npm run build:docker
 
 # Stage 3: Runner
 FROM node:18-alpine AS runner
