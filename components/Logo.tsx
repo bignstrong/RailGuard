@@ -6,7 +6,7 @@ import styled from 'styled-components';
 export default function Logo() {
   return (
     <LogoWrapper>
-      <Image src="/Logo.png" alt="Логотип" width={64} height={64} />
+      <Image src="/webp/Logo.webp" alt="Логотип" width={64} height={64} />
       <BrandName>RailGuard</BrandName>
     </LogoWrapper>
   );

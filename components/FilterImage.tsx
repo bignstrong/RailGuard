@@ -8,12 +8,12 @@ export default function FilterImage() {
       <BackgroundDecoration />
       <ImageContainer>
         <StyledImage
-          src="/withoutBack/corpus_black.png"
+          src="/webp/corpus_black.webp"
           alt="RailGuard фильтр тонкой очистки"
           width={300}
           height={400}
           priority
-          quality={100}
+          quality={85}
         />
       </ImageContainer>
     </ImageWrapper>

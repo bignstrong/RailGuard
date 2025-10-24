@@ -28,12 +28,12 @@ export default function Homepage() {
         <meta property="og:description" content="RailGuard - Топливный фильтр высокого давления для двигателей Common Rail" />
         <meta property="og:site_name" content="RailGuard" />
         <meta property="og:url" content="https://railguard.ru/" />
-        <meta property="og:image" content="/og-image.png" />
+        <meta property="og:image" content="/webp/og-image.webp" />
         {/* Twitter */}
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content="RailGuard" />
         <meta name="twitter:description" content="RailGuard - Топливный фильтр высокого давления" />
-        <meta name="twitter:image" content="/og-image.png" />
+        <meta name="twitter:image" content="/webp/og-image.webp" />
       </Head>
       <HomepageWrapper>
         <WhiteBackgroundContainer>
@@ -43,7 +43,7 @@ export default function Homepage() {
             imageComponent={
               <ImageWrapper>
                 <StyledImage
-                  src="/FilterInfografika.png"
+                  src="/webp/FilterInfografika.webp"
                   alt="Фильтр высокого давления инфографика"
                   width={200}
                   height={650}
@@ -76,7 +76,7 @@ export default function Homepage() {
           <BasicSection
             imageComponent={
               <ImageWrapper>
-                <StyledImage src="/Scheme.png" alt="Фильтр высокого давления инфографика" width={200} height={650} quality={90} priority />
+                <StyledImage src="/webp/Scheme.webp" alt="Фильтр высокого давления инфографика" width={200} height={650} quality={85} priority />
               </ImageWrapper>
             }
             title="RailGuard — надёжная защита топливной системы"

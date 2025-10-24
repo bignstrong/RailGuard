@@ -26,14 +26,14 @@ const FILTER_ELEMENT_SPECS = [
 ];
 
 const FILTER_BODY_IMAGES = [
-  { src: '/withoutBack/corpus.png', alt: 'Корпус фильтра' },
-  { src: '/withoutBack/corpus_2.png', alt: 'Корпус фильтра' },
+  { src: '/webp/corpus.webp', alt: 'Корпус фильтра' },
+  { src: '/webp/corpus_2.webp', alt: 'Корпус фильтра' },
 ];
 
 const FILTER_ELEMENT_IMAGES = [
-  { src: '/withoutBack/element_2.png', alt: 'Инфографика фильтра' },
-  { src: '/withoutBack/element.png', alt: 'Схема установки' },
-  { src: '/withoutBack/element_3.png', alt: 'Фильтр в разрезе' },
+  { src: '/webp/element_2.webp', alt: 'Инфографика фильтра' },
+  { src: '/webp/element.webp', alt: 'Схема установки' },
+  { src: '/webp/element_3.webp', alt: 'Фильтр в разрезе' },
 ];
 
 function ImageSlider({ images }: { images: { src: string; alt: string }[] }) {

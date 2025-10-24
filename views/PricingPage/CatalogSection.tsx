@@ -5,6 +5,7 @@ import { useCart } from 'contexts/cart.context';
 import { useLightbox } from 'contexts/lightbox.context';
 import { useToast } from 'contexts/toast.context';
 import Head from 'next/head';
+import NextImage from 'next/image';
 import { useState } from 'react';
 import styled from 'styled-components';
 import { media } from 'utils/media';
@@ -162,7 +163,7 @@ function ProductCard({
       </Head>
       <ImageContainer onClick={handleImageClick}>
         {discount > 0 && <DiscountBadge>{`-${discount}%`}</DiscountBadge>}
-        <img src={image} alt={title} loading="lazy" />
+        <NextImage src={image} alt={title} fill sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw" style={{ objectFit: 'contain' }} loading="lazy" quality={85} />
       </ImageContainer>
       <Content>
         <Title>{title}</Title>
@@ -206,7 +207,7 @@ export default function CatalogSection() {
           price="12 000₽"
           oldPrice="18 000₽"
           description="Базовый корпус фильтра высокого давления для Common Rail систем"
-          image="/withoutBack/corpus.png"
+          image="/webp/corpus.webp"
           inStock={true}
           aggregateRating={{ ratingValue: 4.9, reviewCount: 17 }}
           reviews={[
@@ -223,7 +224,7 @@ export default function CatalogSection() {
           price="1 200₽"
           oldPrice="3 000₽"
           description="Сменный фильтрующий элемент из хлопкового линта"
-          image="/withoutBack/element_2.png"
+          image="/webp/element_2.webp"
           inStock={true}
           aggregateRating={{ ratingValue: 5.0, reviewCount: 9 }}
           reviews={[{ author: 'Пётр', rating: 5, body: 'Меняю регулярно, фильтрует отлично.' }]}
@@ -242,7 +243,7 @@ export default function CatalogSection() {
             price="14 000₽"
             oldPrice="24 000₽"
             description="Комплект состоящий из корпуса и двух фильтрующих элементов"
-            image="/withoutBack/start.png"
+            image="/webp/start.webp"
             actionLabel="В корзину"
             inStock={true}
             aggregateRating={{ ratingValue: 4.8, reviewCount: 5 }}
@@ -258,7 +259,7 @@ export default function CatalogSection() {
           price="60 000₽"
           oldPrice="120 000₽"
           description="Специальное предложение для автосервисов"
-          image="/withoutBack/large.png"
+          image="/webp/large.webp"
           actionLabel="В корзину"
           inStock={true}
           aggregateRating={{ ratingValue: 5.0, reviewCount: 2 }}
@@ -330,15 +331,7 @@ const ImageContainer = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 2rem;
   cursor: zoom-in;
-
-  img {
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
-    transition: transform 0.3s ease;
-  }
 
   ${media('<=tablet')} {
     height: 30rem;
