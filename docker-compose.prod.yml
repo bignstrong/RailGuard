@@ -67,7 +67,7 @@ services:
     environment:
       - BOT_TOKEN=${BOT_TOKEN}
       - ADMIN_ID=${ADMIN_ID}
-      - DB_URL=postgresql://${POSTGRES_USER:-railguard}:${POSTGRES_PASSWORD:-railguard_password}@postgres:5432/${POSTGRES_DB:-railguard}?schema=public&sslmode=disable
+      - DB_URL=postgresql://${POSTGRES_USER:-railguard}:${POSTGRES_PASSWORD:-railguard_password}@postgres:5432/${POSTGRES_DB:-railguard}?sslmode=disable
     volumes:
       - ./Bot/last_order_id.txt:/app/last_order_id.txt
     depends_on:
