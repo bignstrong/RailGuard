@@ -6,11 +6,15 @@ echo "🚀 Updating RailGuard..."
 
 cd /opt/railguard
 
-# Pull latest image
-echo "📥 Pulling latest image..."
-docker compose -f docker-compose.prod.yml pull
+# Pull latest images
+echo "📥 Pulling latest images..."
+docker compose -f docker-compose.prod.yml pull web
 
-# Restart containers
+# Rebuild bot
+echo "🤖 Building bot..."
+docker compose -f docker-compose.prod.yml build bot
+
+# Restart all containers
 echo "🔄 Restarting containers..."
 docker compose -f docker-compose.prod.yml up -d
 

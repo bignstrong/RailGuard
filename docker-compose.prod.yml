@@ -57,6 +57,25 @@ services:
     networks:
       - railguard_network
 
+  # Telegram Admin Bot
+  bot:
+    build:
+      context: ./Bot
+      dockerfile: Dockerfile
+    container_name: railguard_bot
+    restart: always
+    environment:
+      - BOT_TOKEN=${BOT_TOKEN}
+      - ADMIN_ID=${ADMIN_ID}
+      - DB_URL=postgresql://${POSTGRES_USER:-railguard}:${POSTGRES_PASSWORD:-railguard_password}@postgres:5432/${POSTGRES_DB:-railguard}?schema=public&sslmode=disable
+    volumes:
+      - ./Bot/last_order_id.txt:/app/last_order_id.txt
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - railguard_network
+
 volumes:
   postgres_data:
     driver: local

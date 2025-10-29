@@ -54,8 +54,10 @@ cp .env.example .env
 **Обязательные переменные:**
 
 - `DATABASE_URL` — строка подключения к PostgreSQL
-- `TELEGRAM_BOT_TOKEN` — токен Telegram-бота
+- `TELEGRAM_BOT_TOKEN` — токен Telegram-бота для уведомлений о заказах
 - `TELEGRAM_CHAT_ID` — ID чата для уведомлений
+- `BOT_TOKEN` — токен админ-бота для управления заказами
+- `ADMIN_ID` — ваш Telegram ID для доступа к админ-боту
 - `NEXT_PUBLIC_SITE_URL` — публичный URL сайта
 
 ### 4. Миграция базы данных
@@ -83,7 +85,9 @@ npm run dev
 - **Prisma** — ORM для работы с PostgreSQL
 - **Styled Components** — стилизация компонентов
 - **Telegram Bot API** — интеграция для уведомлений
+- **Telegram Admin Bot** — бот для управления заказами (в папке `Bot/`)
 - **MDX** — поддержка статей и контента в формате Markdown + JSX
+- **Docker** — контейнеризация для production
 
 ---
 
@@ -114,6 +118,54 @@ npm run dev
 - `yarn build` — сборка приложения
 - `yarn start` — запуск production-сервера
 - `yarn prisma` — работа с Prisma ORM
+
+---
+
+## 🐳 Docker Deployment
+
+### Запуск всего проекта (Web + Database + Bot + Nginx)
+
+```bash
+# Соберите образ web-приложения
+docker build -t thehandofthelord/railguard:latest .
+
+# Запустите все сервисы
+docker compose -f docker-compose.prod.yml up -d
+```
+
+### Проверка статуса
+
+```bash
+docker compose -f docker-compose.prod.yml ps
+```
+
+### Логи
+
+```bash
+# Все сервисы
+docker compose -f docker-compose.prod.yml logs -f
+
+# Только web
+docker logs -f railguard_web
+
+# Только бот
+docker logs -f railguard_bot
+
+# Только база данных
+docker logs -f railguard_db
+```
+
+### Обновление на сервере
+
+```bash
+./update-server.sh
+```
+
+**Что включает Docker Compose:**
+- 🗄️ **PostgreSQL** — база данных
+- 🌐 **Next.js** — веб-приложение
+- 🤖 **Telegram Bot** — админ-бот для управления заказами
+- 🔒 **Nginx** — reverse proxy с SSL
 
 ---
 
