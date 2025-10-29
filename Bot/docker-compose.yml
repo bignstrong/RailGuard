@@ -1,0 +1,20 @@
+version: '3.8'
+
+services:
+  bot:
+    build: .
+    container_name: railguard-admin-bot
+    restart: unless-stopped
+    environment:
+      # Переменные окружения - можно переопределить в .env файле
+      - BOT_TOKEN=${BOT_TOKEN:-8183078178:AAH5xaLKTzbQVG_HOrLa8QMAGCDj4kJ74Wc}
+      - ADMIN_ID=${ADMIN_ID:-827470359}
+      - DB_URL=${DB_URL:-postgres://neondb_owner:npg_MOxCSv6LNE3K@ep-long-dream-a418igmv-pooler.us-east-1.aws.neon.tech/neondb?sslmode=require}
+    volumes:
+      # Монтируем файл для сохранения последнего ID между перезапусками
+      - ./last_order_id.txt:/app/last_order_id.txt
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
