@@ -52,8 +52,8 @@ const ToastContainer = styled.div`
   z-index: 1000;
   animation: ${slideIn} 0.3s ease-out;
   font-size: 1.4rem;
-  border: 2.5px solid #ff0000;
-  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.1), 0 0 0 4px rgba(255, 0, 0, 0.1);
+  border: 2.5px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.15), 0 0 0 4px rgba(255, 107, 0, 0.15);
   transition: border-color 0.3s, box-shadow 0.3s;
 `;
 

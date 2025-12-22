@@ -45,8 +45,8 @@ export default function Homepage() {
                 <StyledImage
                   src="/webp/FilterInfografika.webp"
                   alt="Фильтр высокого давления инфографика"
-                  width={200}
-                  height={650}
+                  width={700}
+                  height={900}
                   quality={90}
                   priority
                 />
@@ -59,8 +59,8 @@ export default function Homepage() {
               Если двигатель не заводится на горячую, вышел из строя регулятор давления топлива, а форсунки стали &quot;лить в обратку&quot;
               — причина в металлической стружке от топливных насосов и абразиве, проскочившем через основной фильтр.{' '}
               <strong>
-                Наш фильтр с площадью фильтрации 2000 мм² и тонкостью 8-12 мкм устанавливается после основного фильтра для окончательной
-                очистки топлива.
+                Наш фильтр с площадью фильтрации около 2000 мм² и тонкостью 8-12 мкм устанавливается после основного фильтра для
+                окончательной очистки топлива.
               </strong>
             </p>
             <SectionNoticeWrapper>
@@ -75,16 +75,23 @@ export default function Homepage() {
           </BasicSection>
           <BasicSection
             imageComponent={
-              <ImageWrapper>
-                <StyledImage src="/webp/Scheme.webp" alt="Фильтр высокого давления инфографика" width={200} height={650} quality={85} priority />
-              </ImageWrapper>
+              <ImageWrapperSmall>
+                <StyledImage
+                  src="/webp/Scheme.webp"
+                  alt="Фильтр высокого давления инфографика"
+                  width={500}
+                  height={600}
+                  quality={85}
+                  priority
+                />
+              </ImageWrapperSmall>
             }
             title="RailGuard — надёжная защита топливной системы"
             overTitle="Преимущества для вас"
             reversed
           >
             <ul>
-              <li>Дополнительная фильтрация металлической стружки и абразива, которые могут пройти через основной фильтр</li>
+              <li>Фильтрация топлива от продуктов износа ТННД и ТНВД, а также абразива, который может пройти через основной фильтр</li>
               <li>Защита форсунок и регулятора давления от преждевременного износа</li>
               <li>Прочный корпус из стали, выдерживающий давление до 1800 бар</li>
               <li>Подходит для большинства двигателей Common Rail объёмом до 2,7 л</li>
@@ -137,16 +144,30 @@ const ImageWrapper = styled.div`
   justify-content: center;
   align-items: center;
   width: 100%;
-  max-width: 300px;
+  max-width: 100%;
   margin: 0 auto;
 
   @media (max-width: 768px) {
-    max-width: 250px;
+    max-width: 400px;
+  }
+`;
+
+const ImageWrapperSmall = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  max-width: 450px;
+  margin: 0 auto;
+
+  @media (max-width: 768px) {
+    max-width: 350px;
   }
 `;
 
 const StyledImage = styled(Image)`
   width: 100%;
+  height: auto;
   object-fit: contain;
 `;
 

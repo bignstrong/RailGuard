@@ -23,3 +23,7 @@ Host: https://railguard.ru
 
 # Sitemaps
 Sitemap: https://railguard.ru/sitemap.xml
+
+# Yandex Direct Feed
+User-agent: YandexDirectFetcher
+Allow: /api/feed.xml

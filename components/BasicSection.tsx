@@ -55,11 +55,16 @@ const CustomOverTitle = styled(OverTitle)`
 `;
 
 const ImageContainer = styled.div`
-  flex: 1;
+  flex: 1.5;
   position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-width: 500px;
 
   ${media('<=desktop')} {
     width: 100%;
+    min-width: unset;
     order: 2;
   }
 `;

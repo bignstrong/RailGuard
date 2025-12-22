@@ -163,7 +163,15 @@ function ProductCard({
       </Head>
       <ImageContainer onClick={handleImageClick}>
         {discount > 0 && <DiscountBadge>{`-${discount}%`}</DiscountBadge>}
-        <NextImage src={image} alt={title} fill sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw" style={{ objectFit: 'contain' }} loading="lazy" quality={85} />
+        <NextImage
+          src={image}
+          alt={title}
+          fill
+          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+          style={{ objectFit: 'contain' }}
+          loading="lazy"
+          quality={85}
+        />
       </ImageContainer>
       <Content>
         <Title>{title}</Title>
@@ -223,7 +231,7 @@ export default function CatalogSection() {
           title="Фильтрующий элемент"
           price="1 200₽"
           oldPrice="3 000₽"
-          description="Сменный фильтрующий элемент из хлопкового линта"
+          description="Сменный фильтрующий элемент"
           image="/webp/element_2.webp"
           inStock={true}
           aggregateRating={{ ratingValue: 5.0, reviewCount: 9 }}
