@@ -1,88 +1,51 @@
-import { PropsWithChildren, useState } from 'react';
+import { PropsWithChildren } from 'react';
 import styled from 'styled-components';
-import { media } from 'utils/media';
-import Collapse from './Collapse';
 import RichText from './RichText';
 
-interface AccordionProps {
-  title: string;
-  isOpen?: boolean;
-}
-
-export default function Accordion({ title, isOpen, children }: PropsWithChildren<AccordionProps>) {
-  const [hasCollapsed, setHasCollapsed] = useState(!isOpen);
-  const isActive = !hasCollapsed;
+// Нативный <details>: без JS и анимационных библиотек.
+export default function Accordion({ title, children }: PropsWithChildren<{ title: string }>) {
   return (
-    <AccordionWrapper onClick={() => setHasCollapsed((prev) => !prev)}>
-      <TitleWrapper>
-        <Title isActive={isActive}>{title}</Title>
-        <Icon isActive={isActive}>
-          <svg
-            viewBox="0 0 24 24"
-            focusable="false"
-            className="chakra-icon chakra-accordion__icon css-j2ph2z"
-            aria-hidden="true"
-            preserveAspectRatio="none"
-          >
-            <path fill="currentColor" d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"></path>
-          </svg>
-        </Icon>
-      </TitleWrapper>
-      <Collapse isOpen={isActive} duration={300}>
-        <Description>
-          <RichText>{children}</RichText>
-        </Description>
-      </Collapse>
-    </AccordionWrapper>
+    <Details>
+      <summary>{title}</summary>
+      <RichText>{children}</RichText>
+    </Details>
   );
 }
 
-const Title = styled.h3<{ isActive: boolean }>`
-  font-size: 2rem;
-  width: 90%;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  display: -webkit-box;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: ${(p) => (p.isActive ? 'unset' : 1)};
-  line-height: 1.3;
+const Details = styled.details`
+  border: var(--line);
+  border-radius: 0.4rem;
+  padding: 0 2rem;
 
-  ${media('<=tablet')} {
-    -webkit-line-clamp: ${(p) => (p.isActive ? 'unset' : 2)};
-    font-size: 2.2rem;
-    line-height: 1.4;
+  summary {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 2rem;
+    padding: 2rem 0;
+    font-size: 1.9rem;
+    font-weight: 700;
+    cursor: pointer;
+    list-style: none;
+
+    &::-webkit-details-marker {
+      display: none;
+    }
+    &::after {
+      content: '+';
+      flex-shrink: 0;
+      color: rgb(var(--accent));
+      font-size: 2.4rem;
+      line-height: 1;
+    }
   }
-`;
 
-const TitleWrapper = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-`;
+  &[open] summary::after {
+    content: '−';
+  }
 
-const Icon = styled.div<{ isActive: boolean }>`
-  width: 2.4rem;
-  transition: transform 0.3s;
-  transform: rotateZ(${(p) => (p.isActive ? 180 : 0)}deg);
-`;
-
-const Description = styled.div`
-  margin-top: 2.5rem;
-  font-size: 1.6rem;
-  font-weight: normal;
-`;
-
-const AccordionWrapper = styled.div`
-  display: flex;
-  flex-direction: column;
-  padding: 2rem 1.5rem;
-  background: rgb(var(--cardBackground));
-  box-shadow: var(--shadow-md);
-  cursor: pointer;
-  border-radius: 0.6rem;
-  transition: opacity 0.2s;
-
-  ${media('<=desktop')} {
-    width: 100%;
+  ${RichText} {
+    padding-bottom: 2rem;
+    font-size: 1.6rem;
   }
 `;

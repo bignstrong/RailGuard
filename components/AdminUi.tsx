@@ -9,7 +9,7 @@ export const AdminPage = styled.main`
   margin: 0 auto;
   padding: 2rem 1.6rem 6rem;
   font-size: 1.5rem;
-  color: rgb(var(--text));
+  color: rgb(var(--ink));
 `;
 
 export const AdminHeader = styled.header`
@@ -30,15 +30,15 @@ export const AdminHeader = styled.header`
     align-items: center;
   }
   a {
-    color: rgb(var(--primary));
+    color: rgb(var(--accent));
   }
 `;
 
 export const Table = styled.table`
   width: 100%;
   border-collapse: collapse;
-  background: rgb(var(--cardBackground));
-  box-shadow: var(--shadow-md);
+  background: rgb(var(--bg));
+  border: 1px solid rgba(var(--ink), 0.12);
   border-radius: 0.6rem;
   overflow: hidden;
 
@@ -46,18 +46,18 @@ export const Table = styled.table`
   td {
     text-align: left;
     padding: 1rem 1.2rem;
-    border-bottom: 1px solid rgba(var(--text), 0.08);
+    border-bottom: 1px solid rgba(var(--ink), 0.08);
     vertical-align: top;
   }
   th {
     font-weight: 600;
-    background: rgba(var(--text), 0.04);
+    background: rgba(var(--ink), 0.04);
   }
   tr:last-child td {
     border-bottom: 0;
   }
   a {
-    color: rgb(var(--primary));
+    color: rgb(var(--accent));
   }
 `;
 
@@ -71,20 +71,20 @@ export const Toolbar = styled.form`
 export const Input = styled.input`
   padding: 0.8rem 1rem;
   font: inherit;
-  border: 1px solid rgba(var(--text), 0.2);
+  border: 1px solid rgba(var(--ink), 0.2);
   border-radius: 0.5rem;
-  background: rgb(var(--inputBackground));
-  color: rgb(var(--text));
+  background: rgb(var(--bg));
+  color: rgb(var(--ink));
   min-width: 22rem;
 `;
 
 export const Select = styled.select`
   padding: 0.7rem 1rem;
   font: inherit;
-  border: 1px solid rgba(var(--text), 0.2);
+  border: 1px solid rgba(var(--ink), 0.2);
   border-radius: 0.5rem;
-  background: rgb(var(--inputBackground));
-  color: rgb(var(--text));
+  background: rgb(var(--bg));
+  color: rgb(var(--ink));
 `;
 
 export const Btn = styled.button<{ $danger?: boolean }>`
@@ -93,8 +93,8 @@ export const Btn = styled.button<{ $danger?: boolean }>`
   border: 0;
   border-radius: 0.5rem;
   cursor: pointer;
-  color: #fff;
-  background: ${(p) => (p.$danger ? 'rgb(var(--error))' : 'rgb(var(--primary))')};
+  color: rgb(var(--bg));
+  background: ${(p) => (p.$danger ? 'rgb(var(--accent))' : 'rgb(var(--ink))')};
 
   &:disabled {
     opacity: 0.5;
@@ -103,8 +103,8 @@ export const Btn = styled.button<{ $danger?: boolean }>`
 `;
 
 export const Card = styled.section`
-  background: rgb(var(--cardBackground));
-  box-shadow: var(--shadow-md);
+  background: rgb(var(--bg));
+  border: 1px solid rgba(var(--ink), 0.12);
   border-radius: 0.6rem;
   padding: 2rem;
   margin-bottom: 2rem;
@@ -132,8 +132,20 @@ export const Status = styled.span<{ $s: string }>`
   padding: 0.2rem 0.8rem;
   border-radius: 1rem;
   font-size: 1.3rem;
-  color: #fff;
-  background: ${(p) => ({ pending: '#d97706', processing: '#2563eb', completed: '#16a34a', cancelled: '#6b7280' })[p.$s] || '#6b7280'};
+  color: rgb(var(--bg));
+  background: ${(p) => {
+    const styles = {
+      pending: 'rgb(var(--accent))',
+      processing: 'rgb(var(--ink))',
+      completed: 'rgba(var(--ink), 0.6)',
+      cancelled: 'transparent',
+    };
+    return styles[p.$s as keyof typeof styles] || 'rgba(var(--ink), 0.6)';
+  }};
+  ${(p) =>
+    p.$s === 'cancelled'
+      ? `color: rgba(var(--ink), 0.6); border: 1px solid rgba(var(--ink), 0.3);`
+      : ''}
 `;
 
 export const fmtDate = (iso: string) => new Date(iso).toLocaleString('ru-RU', { timeZone: 'Europe/Moscow' });

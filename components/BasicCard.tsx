@@ -1,30 +1,14 @@
-import React from 'react';
 import styled from 'styled-components';
 
-interface BasicCardProps {
-  id?: string;
-  className?: string;
-  children?: React.ReactNode;
-}
-
-export default function BasicCard({ id, className, children }: BasicCardProps) {
-  return (
-    <Card id={id} className={className}>
-      {children}
-    </Card>
-  );
-}
-
-const Card = styled.div`
+const BasicCard = styled.div`
   display: flex;
+  flex-direction: column;
   padding: 2.5rem;
-  background: rgb(var(--cardBackground));
-  box-shadow: var(--shadow-md);
-  border-radius: 0.6rem;
-  color: rgb(var(--text));
+  border: var(--line);
+  border-radius: 0.4rem;
+  background: rgb(var(--bg));
+  color: rgb(var(--ink));
   font-size: 1.6rem;
-
-  & > *:not(:first-child) {
-    margin-top: 1rem;
-  }
 `;
+
+export default BasicCard;

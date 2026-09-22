@@ -1,130 +1,94 @@
+import Image from 'next/image';
+import NextLink from 'next/link';
+import styled from 'styled-components';
 import Button from 'components/Button';
 import ButtonGroup from 'components/ButtonGroup';
 import Container from 'components/Container';
-import FilterImage from 'components/FilterImage';
 import OverTitle from 'components/OverTitle';
-import NextLink from 'next/link';
-import styled from 'styled-components';
 import { media } from 'utils/media';
 
 export default function Hero() {
   return (
-    <HeroWrapper>
+    <Wrapper>
       <Contents>
-        <CustomOverTitle>Защита топливной системы Common Rail</CustomOverTitle>
+        <OverTitle>Защита топливной системы Common Rail</OverTitle>
         <Heading>RailGuard</Heading>
         <Description>
-          <strong>ХВАТИТ ВЫБРАСЫВАТЬ ВРЕМЯ И ДЕНЬГИ</strong> на ремонт форсунок! RailGuard – это профессиональная защита вашего двигателя с
-          тонкостью фильтрации <span className="highlight">8-12 мкм</span>. <strong>Испытан под давлением 1800 бар</strong> – надёжное
-          профессиональное решение. Площадь фильтрующего элемента <span className="highlight">2000 мм²</span>, протестирован на двигателях
-          до <span className="highlight">2.7л</span>. <strong>Защитите свой двигатель прямо сейчас!</strong>
+          <strong>Хватит выбрасывать время и деньги</strong> на ремонт форсунок. RailGuard — фильтр тонкой очистки с тонкостью фильтрации{' '}
+          <strong>8–12 мкм</strong>, испытанный под давлением <strong>1800 бар</strong>. Площадь фильтрующего элемента 2000 мм², проверен на
+          двигателях до 2,7 л.
         </Description>
-        <CustomButtonGroup>
-          <NextLink href="/pricing" passHref>
-            <Button>
-              Заказать <span>&rarr;</span>
-            </Button>
-          </NextLink>
-          <NextLink href="/specifications" passHref>
-            <Button transparent>
-              Технические характеристики <span>&rarr;</span>
-            </Button>
-          </NextLink>
-        </CustomButtonGroup>
+        <ButtonGroup>
+          <Button as={NextLink} href="/pricing">
+            Заказать →
+          </Button>
+          <Button as={NextLink} href="/specifications" $outline>
+            Характеристики
+          </Button>
+        </ButtonGroup>
       </Contents>
-      <ImageContainer>
-        <FilterImage />
-      </ImageContainer>
-    </HeroWrapper>
+      <ImageBox>
+        <Image src="/webp/corpus_black.webp" alt="RailGuard фильтр тонкой очистки" width={360} height={640} priority />
+      </ImageBox>
+    </Wrapper>
   );
 }
 
-const HeroWrapper = styled(Container)`
+const Wrapper = styled(Container)`
   display: flex;
-  padding-top: 5rem;
-  position: relative;
-  overflow: hidden;
-
-  &::before {
-    content: '';
-    position: absolute;
-    top: -10%;
-    right: -5%;
-    width: 45%;
-    height: 120%;
-    background: linear-gradient(135deg, rgba(0, 71, 255, 0.02) 0%, rgba(0, 71, 255, 0.01) 100%);
-    border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%;
-    z-index: -1;
-  }
+  align-items: center;
+  gap: 6rem;
+  padding-top: 8rem;
 
   ${media('<=desktop')} {
-    padding-top: 1rem;
     flex-direction: column;
-    align-items: center;
+    padding-top: 4rem;
   }
 `;
 
 const Contents = styled.div`
   flex: 1;
-  max-width: 60rem;
-  position: relative;
-  z-index: 2;
+  max-width: 64rem;
+`;
+
+const ImageBox = styled.div`
+  flex: 1;
+  display: flex;
+  justify-content: center;
+
+  img {
+    width: auto;
+    height: 56rem;
+    max-width: 100%;
+    object-fit: contain;
+  }
 
   ${media('<=desktop')} {
-    max-width: 100%;
+    img {
+      height: 40rem;
+    }
   }
 `;
 
-const CustomButtonGroup = styled(ButtonGroup)`
-  margin-top: 4rem;
-`;
+const Heading = styled.h1`
+  font-size: 7.2rem;
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: -0.03em;
+  margin: 2rem 0 3rem;
 
-const ImageContainer = styled.div`
-  display: flex;
-  flex: 1;
-  justify-content: flex-end;
-  align-items: center;
-  position: relative;
-
-  ${media('<=desktop')} {
-    margin-top: 2rem;
-    justify-content: center;
-    width: 100%;
+  ${media('<=tablet')} {
+    font-size: 4.6rem;
   }
 `;
 
 const Description = styled.p`
   font-size: 1.8rem;
-
-  .highlight {
-    color: #4caf50;
-    font-weight: 600;
-  }
-  strong {
-    color: #1976d2;
-    font-weight: 700;
-  }
-  opacity: 0.8;
   line-height: 1.6;
-
-  ${media('<=desktop')} {
-    font-size: 1.5rem;
-  }
-`;
-
-const CustomOverTitle = styled(OverTitle)`
-  margin-bottom: 2rem;
-`;
-
-const Heading = styled.h1`
-  font-size: 7.2rem;
-  font-weight: bold;
-  line-height: 1.1;
+  color: rgba(var(--ink), 0.8);
   margin-bottom: 4rem;
-  letter-spacing: -0.03em;
 
-  ${media('<=tablet')} {
-    font-size: 4.6rem;
-    margin-bottom: 2rem;
+  strong {
+    color: rgb(var(--ink));
   }
 `;

@@ -2,92 +2,68 @@ import Head from 'next/head';
 import { PropsWithChildren } from 'react';
 import styled from 'styled-components';
 import { EnvVars } from 'env';
-import { media } from 'utils/media';
 import Container from './Container';
 import SectionTitle from './SectionTitle';
 
 export interface PageProps {
   title: string;
   description?: string;
-  keywords?: string;
   canonical?: string;
-  robots?: string;
-  ogImage?: string;
 }
 
-export default function Page({ title, description, keywords, canonical, robots, ogImage, children }: PropsWithChildren<PageProps>) {
-  const siteName = EnvVars.SITE_NAME;
-  const siteUrl = EnvVars.URL;
-  const ogImageUrl = ogImage || `${EnvVars.OG_IMAGES_URL}og-image.png`;
-  const canonicalUrl = canonical || siteUrl;
+export default function Page({ title, description, canonical, children }: PropsWithChildren<PageProps>) {
+  const fullTitle = `${title} | ${EnvVars.SITE_NAME}`;
+  const ogImage = `${EnvVars.URL}og-image.png`;
+  const url = canonical || EnvVars.URL;
   return (
     <>
       <Head>
-        <title>
-          {title} | {siteName}
-        </title>
+        <title>{fullTitle}</title>
         {description && <meta name="description" content={description} />}
-        {keywords && <meta name="keywords" content={keywords} />}
-        <link rel="canonical" href={canonicalUrl} />
-        <meta name="robots" content={robots || 'index,follow'} />
-        {/* Open Graph / Facebook */}
+        <link rel="canonical" href={url} />
         <meta property="og:type" content="website" />
-        <meta property="og:title" content={`${title} | ${siteName}`} />
+        <meta property="og:title" content={fullTitle} />
         {description && <meta property="og:description" content={description} />}
-        <meta property="og:site_name" content={siteName} />
-        <meta property="og:url" content={canonicalUrl} />
-        <meta property="og:image" content={ogImageUrl} />
-        {/* Twitter */}
+        <meta property="og:site_name" content={EnvVars.SITE_NAME} />
+        <meta property="og:url" content={url} />
+        <meta property="og:image" content={ogImage} />
         <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content={`${title} | ${siteName}`} />
-        {description && <meta name="twitter:description" content={description} />}
-        <meta name="twitter:image" content={ogImageUrl} />
       </Head>
-      <Wrapper>
-        <HeaderContainer>
-          <Container>
-            <Title>{title}</Title>
-            {description && <Description>{description}</Description>}
-          </Container>
-        </HeaderContainer>
+      <Header>
         <Container>
-          <ChildrenWrapper>{children}</ChildrenWrapper>
+          <Title as="h1">{title}</Title>
+          {description && <Description>{description}</Description>}
         </Container>
-      </Wrapper>
+      </Header>
+      <Container>
+        <Body>{children}</Body>
+      </Container>
     </>
   );
 }
 
-const Wrapper = styled.div`
-  background: rgb(var(--background));
-`;
-
-const HeaderContainer = styled.div`
+const Header = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgb(var(--secondary));
-  min-height: 40rem;
+  background: rgb(var(--ink));
+  color: rgb(var(--bg));
+  min-height: 32rem;
+  padding: 6rem 0;
 `;
 
 const Title = styled(SectionTitle)`
-  color: rgb(var(--textSecondary));
   margin-bottom: 2rem;
 `;
 
-const Description = styled.div`
+const Description = styled.p`
   font-size: 1.8rem;
-  color: rgba(var(--textSecondary), 0.8);
+  opacity: 0.8;
   text-align: center;
-  max-width: 60%;
-  margin: auto;
-
-  ${media('<=tablet')} {
-    max-width: 100%;
-  }
+  max-width: 60rem;
+  margin: 0 auto;
 `;
 
-const ChildrenWrapper = styled.div`
-  margin-top: 10rem;
-  margin-bottom: 10rem;
+const Body = styled.div`
+  margin: 8rem 0;
 `;

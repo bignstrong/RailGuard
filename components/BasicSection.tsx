@@ -1,4 +1,3 @@
-import NextImage from 'next/image';
 import { PropsWithChildren, ReactNode } from 'react';
 import styled from 'styled-components';
 import { media } from 'utils/media';
@@ -6,92 +5,63 @@ import Container from './Container';
 import OverTitle from './OverTitle';
 import RichText from './RichText';
 
-export interface BasicSectionProps {
-  imageUrl?: string;
-  imageComponent?: ReactNode;
+interface BasicSectionProps {
+  image: ReactNode;
   title: string;
   overTitle: string;
   reversed?: boolean;
 }
 
-export default function BasicSection({
-  imageUrl,
-  imageComponent,
-  title,
-  overTitle,
-  reversed,
-  children,
-}: PropsWithChildren<BasicSectionProps>) {
+export default function BasicSection({ image, title, overTitle, reversed, children }: PropsWithChildren<BasicSectionProps>) {
   return (
-    <BasicSectionWrapper reversed={reversed}>
-      <ImageContainer>
-        {imageUrl && <NextImage src={imageUrl} alt={title} layout="fill" objectFit="cover" />}
-        {imageComponent}
-      </ImageContainer>
+    <Wrapper $reversed={reversed}>
+      <ImageContainer>{image}</ImageContainer>
       <ContentContainer>
-        <CustomOverTitle>{overTitle}</CustomOverTitle>
+        <OverTitle>{overTitle}</OverTitle>
         <Title>{title}</Title>
         <RichText>{children}</RichText>
       </ContentContainer>
-    </BasicSectionWrapper>
+    </Wrapper>
   );
 }
 
-const Title = styled.h1`
-  font-size: 5.2rem;
-  font-weight: bold;
+const Title = styled.h2`
+  font-size: 4.4rem;
+  font-weight: 700;
   line-height: 1.1;
-  margin-bottom: 4rem;
-  letter-spacing: -0.03em;
+  letter-spacing: -0.02em;
+  margin: 2rem 0 3rem;
 
   ${media('<=tablet')} {
-    font-size: 4.6rem;
+    font-size: 3.2rem;
     margin-bottom: 2rem;
   }
 `;
 
-const CustomOverTitle = styled(OverTitle)`
-  margin-bottom: 2rem;
-`;
-
 const ImageContainer = styled.div`
-  flex: 1.5;
-  position: relative;
+  flex: 1;
   display: flex;
   justify-content: center;
   align-items: center;
-  min-width: 500px;
-
-  ${media('<=desktop')} {
-    width: 100%;
-    min-width: unset;
-    order: 2;
-  }
 `;
 
 const ContentContainer = styled.div`
   flex: 1;
-
-  ${media('<=desktop')} {
-    order: 1;
-  }
 `;
 
-type Props = Pick<BasicSectionProps, 'reversed'>;
-const BasicSectionWrapper = styled(Container)`
+const Wrapper = styled(Container)<{ $reversed?: boolean }>`
   display: flex;
   align-items: center;
-  flex-direction: ${(p: Props) => (p.reversed ? 'row-reverse' : 'row')};
-
-  ${ImageContainer} {
-    margin: ${(p: Props) => (p.reversed ? '0 0 0 5rem' : '0 5rem 0 0')};
-  }
+  gap: 6rem;
+  flex-direction: ${(p) => (p.$reversed ? 'row-reverse' : 'row')};
 
   ${media('<=desktop')} {
     flex-direction: column;
+    gap: 3rem;
 
     ${ImageContainer} {
-      margin: 2.5rem 0 0 0;
+      order: 2;
+      width: 100%;
     }
   }
 `;

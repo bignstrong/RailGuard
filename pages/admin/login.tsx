@@ -67,7 +67,7 @@ export default function AdminLogin({ base }: Props) {
             <Input type="text" inputMode="numeric" autoComplete="one-time-code" placeholder="Код из приложения (6 цифр)" value={code} onChange={(e) => setCode(e.target.value)} maxLength={6} autoFocus required style={{ width: '100%' }} />
           </p>
         )}
-        {error && <p style={{ color: 'rgb(var(--error))' }}>{error}</p>}
+        {error && <p style={{ color: 'rgb(var(--accent))' }}>{error}</p>}
         <Btn type="submit" disabled={busy}>
           Войти
         </Btn>

@@ -1,90 +1,48 @@
-import { AppProps } from 'next/dist/shared/lib/router/router';
+import type { AppProps } from 'next/app';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
-import { ColorModeScript } from 'nextjs-color-mode';
-import { PropsWithChildren } from 'react';
-import Cart from 'components/Cart/Cart';
+import Cart from 'components/Cart';
 import CookieConsent from 'components/CookieConsent';
 import Footer from 'components/Footer';
 import { GlobalStyle } from 'components/GlobalStyles';
-import ImageLightbox from 'components/ImageLightbox';
+import Lightbox from 'components/Lightbox';
 import Navbar from 'components/Navbar';
-import NavigationDrawer from 'components/NavigationDrawer';
-import NewsletterModal from 'components/NewsletterModal';
-import WaveCta from 'components/WaveCta';
+import Newsletter from 'components/Newsletter';
 import { CartProvider } from 'contexts/cart.context';
-import { LightboxProvider, useLightbox } from 'contexts/lightbox.context';
-import { NewsletterModalContextProvider, useNewsletterModalContext } from 'contexts/newsletter-modal.context';
+import { LightboxProvider } from 'contexts/lightbox.context';
 import { ToastProvider } from 'contexts/toast.context';
-import 'swiper/css';
-import 'swiper/css/autoplay';
-import 'swiper/css/bundle';
-import 'swiper/css/navigation';
-import { NavItems } from 'types';
 
-const navItems: NavItems = [
-  { title: 'Характеристики', href: '/specifications' },
-  { title: 'Каталог', href: '/pricing' },
-];
-
-function MyApp({ Component, pageProps }: AppProps) {
+export default function MyApp({ Component, pageProps }: AppProps) {
   const { pathname } = useRouter();
   if (pathname.startsWith('/admin')) {
     return (
       <>
         <GlobalStyle />
-        <ColorModeScript />
         <Component {...pageProps} />
       </>
     );
   }
   return (
     <ToastProvider>
-      <NewsletterModalContextProvider>
-        <CartProvider>
-          <LightboxProvider>
-            <GlobalStyle />
-            <Head>
-              <link rel="icon" type="image/webp" href="/webp/favicon.webp" />
-              {/* <link rel="alternate" type="application/rss+xml" href={EnvVars.URL + 'rss'} title="RSS 2.0" /> */}
-              {/* Google Analytics код закомментирован */}
-            </Head>
-            <CookieConsent />
-            <ColorModeScript />
-            <Providers>
-              <Modals />
-              <Lightbox />
-              <Navbar items={navItems} />
-              <Cart />
-              <Component {...pageProps} />
-              <WaveCta />
-              <Footer />
-            </Providers>
-          </LightboxProvider>
-        </CartProvider>
-      </NewsletterModalContextProvider>
+      <CartProvider>
+        <LightboxProvider>
+          <GlobalStyle />
+          <Head>
+            <link rel="icon" href="/favicon.ico" />
+            <link rel="apple-touch-icon" href="/favicon.png" />
+            <link rel="manifest" href="/manifest.json" />
+          </Head>
+          <Navbar />
+          <main>
+            <Component {...pageProps} />
+          </main>
+          <Newsletter />
+          <Footer />
+          <Cart />
+          <Lightbox />
+          <CookieConsent />
+        </LightboxProvider>
+      </CartProvider>
     </ToastProvider>
   );
 }
-
-function Providers<T>({ children }: PropsWithChildren<T>) {
-  return <NavigationDrawer items={navItems}>{children}</NavigationDrawer>;
-}
-
-function Modals() {
-  const { isModalOpened, setIsModalOpened } = useNewsletterModalContext();
-  if (!isModalOpened) {
-    return null;
-  }
-  return <NewsletterModal onClose={() => setIsModalOpened(false)} />;
-}
-
-function Lightbox() {
-  const { imageUrl, closeLightbox, nextImage, prevImage, hasNavigation } = useLightbox();
-  if (!imageUrl) {
-    return null;
-  }
-  return <ImageLightbox imageUrl={imageUrl} onClose={closeLightbox} onNext={nextImage} onPrev={prevImage} hasNavigation={hasNavigation} />;
-}
-
-export default MyApp;

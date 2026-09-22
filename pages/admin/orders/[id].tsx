@@ -152,7 +152,7 @@ export default function AdminOrder({ base, session, order }: Props) {
           <Btn type="button" disabled={contactSaving} onClick={saveContact}>
             Сохранить
           </Btn>
-          {contactMsg && <span style={{ color: contactMsg.ok ? 'rgb(var(--primary))' : 'rgb(var(--error))' }}>{contactMsg.text}</span>}
+          {contactMsg && <span style={{ color: contactMsg.ok ? 'rgb(var(--accent))' : 'rgb(var(--accent))' }}>{contactMsg.text}</span>}
         </div>
       </Card>
       <Card>
@@ -162,13 +162,13 @@ export default function AdminOrder({ base, session, order }: Props) {
           onChange={(e) => setNote(e.target.value)}
           maxLength={2000}
           rows={4}
-          style={{ width: '100%', font: 'inherit', padding: '0.8rem 1rem', border: '1px solid rgba(var(--text), 0.2)', borderRadius: '0.5rem', background: 'rgb(var(--inputBackground))', color: 'rgb(var(--text))', resize: 'vertical' }}
+          style={{ width: '100%', font: 'inherit', padding: '0.8rem 1rem', border: '1px solid rgba(var(--ink), 0.2)', borderRadius: '0.5rem', background: 'rgb(var(--bg))', color: 'rgb(var(--ink))', resize: 'vertical' }}
         />
         <div style={{ marginTop: '0.8rem', display: 'flex', gap: '0.8rem', alignItems: 'center' }}>
           <Btn type="button" disabled={noteSaving} onClick={saveNote}>
             Сохранить
           </Btn>
-          {noteMsg && <span style={{ color: noteMsg.ok ? 'rgb(var(--primary))' : 'rgb(var(--error))' }}>{noteMsg.text}</span>}
+          {noteMsg && <span style={{ color: noteMsg.ok ? 'rgb(var(--accent))' : 'rgb(var(--accent))' }}>{noteMsg.text}</span>}
         </div>
       </Card>
       <Card>

@@ -1,29 +1,12 @@
 import styled from 'styled-components';
-import { media } from 'utils/media';
 
 const OverTitle = styled.span`
   display: block;
-  &::before {
-    position: relative;
-    bottom: -0.1em;
-    content: '';
-    display: inline-block;
-    width: 0.9em;
-    height: 0.9em;
-    background-color: rgb(var(--primary));
-    line-height: 0;
-    margin-right: 1em;
-  }
-
   font-size: 1.3rem;
-  letter-spacing: 0.02em;
-  font-weight: bold;
-  line-height: 0;
+  font-weight: 700;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
-
-  ${media('<=desktop')} {
-    line-height: 1.5;
-  }
+  color: rgb(var(--accent));
 `;
 
 export default OverTitle;

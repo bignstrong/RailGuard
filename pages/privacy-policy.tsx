@@ -5,7 +5,7 @@ export default function PrivacyPolicyPage() {
   return (
     <Page title="Политика конфиденциальности" canonical="https://railguard.ru/privacy-policy">
       <PolicyContainer>
-        <h1>📄 Политика конфиденциальности</h1>
+        <h1>Политика конфиденциальности</h1>
         <p>
           <b>Дата вступления в силу:</b> 24 июня 2025 г.
         </p>
@@ -92,10 +92,8 @@ const PolicyContainer = styled.div`
   max-width: 70rem;
   margin: 0 auto;
   padding: 4rem 2rem;
-  background: rgb(var(--background));
-  border-radius: 1.2rem;
-  box-shadow: var(--shadow-md);
-  color: rgb(var(--text));
+  background: rgb(var(--bg));
+  color: rgb(var(--ink));
   font-size: 1.35rem;
   line-height: 2;
   h1 {
@@ -107,7 +105,7 @@ const PolicyContainer = styled.div`
     font-size: 1.3rem;
     margin-top: 2.2rem;
     margin-bottom: 0.7rem;
-    color: rgb(var(--primary));
+    color: rgb(var(--ink));
   }
   ul {
     margin: 0 0 1.2rem 1.2rem;
@@ -118,7 +116,7 @@ const PolicyContainer = styled.div`
     margin-bottom: 1.1rem;
   }
   a {
-    color: rgb(var(--primary));
+    color: rgb(var(--accent));
     text-decoration: underline;
   }
 `;

@@ -1,251 +1,161 @@
-import dynamic from 'next/dynamic';
+import Image from 'next/image';
 import NextLink from 'next/link';
 import { useRouter } from 'next/router';
-import { useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import styled from 'styled-components';
-import { useLightbox } from 'contexts/lightbox.context';
-import { useNewsletterModalContext } from 'contexts/newsletter-modal.context';
-import { ScrollPositionEffectProps, useScrollPosition } from 'hooks/useScrollPosition';
-import { NavItems, SingleNavItem } from 'types';
+import { useCart } from 'contexts/cart.context';
 import { media } from 'utils/media';
-import Button from './Button';
-import CartIcon from './Cart/CartIcon';
 import Container from './Container';
-import Drawer from './Drawer';
-import { HamburgerIcon } from './HamburgerIcon';
-import Logo from './Logo';
 
-const ColorSwitcher = dynamic(() => import('../components/ColorSwitcher'), { ssr: false });
+export const NAV_ITEMS = [
+  { title: 'Характеристики', href: '/specifications' },
+  { title: 'Каталог', href: '/pricing' },
+];
 
-type NavbarProps = { items: NavItems };
-type ScrollingDirections = 'up' | 'down' | 'none';
-type NavbarContainerProps = { hidden: boolean; transparent: boolean };
+export default function Navbar() {
+  const [open, setOpen] = useState(false);
+  const { pathname } = useRouter();
+  const { totalItems, toggleCart } = useCart();
 
-interface NavItemLinkProps {
-  outlined?: boolean;
-}
-
-export default function Navbar({ items }: NavbarProps) {
-  const router = useRouter();
-  const { toggle } = Drawer.useDrawer();
-  const [scrollingDirection, setScrollingDirection] = useState<ScrollingDirections>('none');
-  const { imageUrl } = useLightbox();
-
-  let lastScrollY = useRef(0);
-  const lastRoute = useRef('');
-  const stepSize = useRef(50);
-
-  useScrollPosition(scrollPositionCallback, [router.asPath], undefined, undefined, 50);
-
-  function scrollPositionCallback({ currPos }: ScrollPositionEffectProps) {
-    const routerPath = router.asPath;
-    const hasRouteChanged = routerPath !== lastRoute.current;
-
-    if (hasRouteChanged) {
-      lastRoute.current = routerPath;
-      setScrollingDirection('none');
-      return;
-    }
-
-    const currentScrollY = currPos.y;
-    const isScrollingUp = currentScrollY > lastScrollY.current;
-    const scrollDifference = Math.abs(lastScrollY.current - currentScrollY);
-    const hasScrolledWholeStep = scrollDifference >= stepSize.current;
-    const isInNonCollapsibleArea = lastScrollY.current > -50;
-
-    if (isInNonCollapsibleArea) {
-      setScrollingDirection('none');
-      lastScrollY.current = currentScrollY;
-      return;
-    }
-
-    if (!hasScrolledWholeStep) {
-      lastScrollY.current = currentScrollY;
-      return;
-    }
-
-    setScrollingDirection(isScrollingUp ? 'up' : 'down');
-    lastScrollY.current = currentScrollY;
-  }
-
-  const isNavbarHidden = scrollingDirection === 'down' || !!imageUrl;
-  const isTransparent = scrollingDirection === 'none' && !imageUrl;
+  useEffect(() => setOpen(false), [pathname]);
 
   return (
-    <NavbarContainer hidden={isNavbarHidden} transparent={isTransparent}>
+    <Bar>
       <Content>
-        <Left>
-          <NextLink href="/" passHref legacyBehavior>
-            <LogoAnchor>
-              <Logo />
-            </LogoAnchor>
-          </NextLink>
-        </Left>
-        <Right>
-          <NavItemList>
-            {items.map((singleItem) => (
-              <NavItem key={singleItem.href} {...singleItem} />
-            ))}
-          </NavItemList>
-          <NavActions>
-            <ColorSwitcherContainer>
-              <ColorSwitcher />
-            </ColorSwitcherContainer>
-            <CartIconWrapper>
-              <CartIcon />
-            </CartIconWrapper>
-
-            <HamburgerMenuWrapper>
-              <HamburgerIcon aria-label="Toggle menu" onClick={toggle} />
-            </HamburgerMenuWrapper>
-          </NavActions>
-        </Right>
+        <Logo href="/">
+          <Image src="/webp/Logo.webp" alt="" width={40} height={40} />
+          RailGuard
+        </Logo>
+        <Menu $open={open}>
+          {NAV_ITEMS.map((item) => (
+            <MenuLink key={item.href} href={item.href} $active={pathname === item.href}>
+              {item.title}
+            </MenuLink>
+          ))}
+        </Menu>
+        <Actions>
+          <CartButton type="button" onClick={toggleCart} aria-label="Корзина">
+            Корзина{totalItems > 0 && <Badge>{totalItems}</Badge>}
+          </CartButton>
+          <Burger type="button" aria-label="Меню" aria-expanded={open} onClick={() => setOpen((v) => !v)}>
+            {open ? '✕' : '☰'}
+          </Burger>
+        </Actions>
       </Content>
-    </NavbarContainer>
+    </Bar>
   );
 }
 
-function NavItem({ href, title, outlined }: SingleNavItem) {
-  const { setIsModalOpened } = useNewsletterModalContext();
-
-  function showNewsletterModal() {
-    setIsModalOpened(true);
-  }
-
-  if (outlined) {
-    return <CustomButton onClick={showNewsletterModal}>{title}</CustomButton>;
-  }
-
-  return (
-    <NavItemWrapper outlined={outlined}>
-      <NextLink href={href} passHref legacyBehavior>
-        <NavItemAnchor outlined={outlined}>{title}</NavItemAnchor>
-      </NextLink>
-    </NavItemWrapper>
-  );
-}
-
-const CustomButton = styled(Button)`
-  padding: 0.75rem 1.5rem;
-  line-height: 1.8;
-`;
-
-const NavItemList = styled.div`
-  display: flex;
-  list-style: none;
-
-  ${media('<desktop')} {
-    display: none;
-  }
-`;
-
-const HamburgerMenuWrapper = styled.div`
-  ${media('>=desktop')} {
-    display: none;
-  }
-`;
-
-const LogoAnchor = styled.a`
-  display: flex;
-  margin-right: auto;
-  text-decoration: none !important;
-  color: rgb(var(--logoColor));
-  border-bottom: none !important;
-  background: none !important;
-  box-shadow: none !important;
-  span,
-  img {
-    text-decoration: none !important;
-    border-bottom: none !important;
-    background: none !important;
-    box-shadow: none !important;
-  }
-`;
-
-const NavItemWrapper = styled.li<Partial<SingleNavItem>>`
-  background-color: ${(p) => (p.outlined ? 'rgb(var(--primary))' : 'transparent')};
-  border-radius: 0.5rem;
-  font-size: 1.3rem;
-  text-transform: uppercase;
-  line-height: 2;
-
-  &:hover {
-    background-color: ${(p) => (p.outlined ? 'rgb(var(--primary), 0.8)' : 'transparent')};
-    transition: background-color 0.2s;
-  }
-
-  &:not(:last-child) {
-    margin-right: 2rem;
-  }
-`;
-
-const NavItemAnchor = styled.a<NavItemLinkProps>`
-  display: flex;
-  color: ${(p) => (p.outlined ? 'rgb(var(--textSecondary))' : 'rgb(var(--text), 0.75)')};
-  letter-spacing: 0.025em;
-  text-decoration: none;
-  padding: 0.75rem 1.5rem;
-  font-weight: 700;
-`;
-
-const NavbarContainer = styled.div<NavbarContainerProps>`
-  display: flex;
+const Bar = styled.header`
   position: sticky;
   top: 0;
-  padding: 1.5rem 0;
-  width: 100%;
-  height: 8rem;
   z-index: var(--z-navbar);
-
-  background-color: rgb(var(--navbarBackground));
-  box-shadow: 0 1px 2px 0 rgb(0 0 0 / 5%);
-  visibility: ${(p) => (p.hidden ? 'hidden' : 'visible')};
-  transform: ${(p) => (p.hidden ? `translateY(-8rem) translateZ(0) scale(1)` : 'translateY(0) translateZ(0) scale(1)')};
-
-  transition-property: transform, visibility, height, box-shadow, background-color;
-  transition-duration: 0.15s;
-  transition-timing-function: ease-in-out;
+  height: 7rem;
+  background: rgb(var(--bg));
+  border-bottom: var(--line);
 `;
 
 const Content = styled(Container)`
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  height: 100%;
+  gap: 3rem;
 `;
 
-const Left = styled.div`
+const Logo = styled(NextLink)`
   display: flex;
   align-items: center;
-  flex: 1;
+  gap: 1rem;
+  font-size: 2rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  margin-right: auto;
+`;
 
-  ${LogoAnchor} {
-    margin-right: auto;
+const Menu = styled.nav<{ $open: boolean }>`
+  display: flex;
+  gap: 3rem;
+
+  ${media('<desktop')} {
+    display: ${(p) => (p.$open ? 'flex' : 'none')};
+    position: absolute;
+    top: 7rem;
+    left: 0;
+    right: 0;
+    flex-direction: column;
+    gap: 0;
+    background: rgb(var(--bg));
+    border-bottom: var(--line);
   }
 `;
 
-const Right = styled.div`
-  display: flex;
-  align-items: center;
-  margin-left: auto;
-`;
+const MenuLink = styled(NextLink)<{ $active: boolean }>`
+  font-size: 1.3rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: ${(p) => (p.$active ? 'rgb(var(--accent))' : 'rgba(var(--ink), 0.8)')};
 
-const NavActions = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 1.5rem;
-`;
-
-const CartIconWrapper = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-`;
-
-const ColorSwitcherContainer = styled.div`
-  width: 4rem;
-  margin: 0 1rem;
+  &:hover {
+    color: rgb(var(--accent));
+  }
 
   ${media('<desktop')} {
-    display: none;
+    padding: 2rem;
+    border-top: var(--line);
+  }
+`;
+
+const Actions = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 1.6rem;
+`;
+
+const CartButton = styled.button`
+  position: relative;
+  padding: 1rem 1.8rem;
+  border: 0;
+  border-radius: 0.4rem;
+  background: rgb(var(--accent));
+  color: rgb(var(--bg));
+  font-size: 1.3rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  cursor: pointer;
+
+  &:hover {
+    opacity: 0.85;
+  }
+`;
+
+const Badge = styled.span`
+  position: absolute;
+  top: -0.8rem;
+  right: -0.8rem;
+  min-width: 2.2rem;
+  height: 2.2rem;
+  padding: 0 0.6rem;
+  border-radius: 1.1rem;
+  background: rgb(var(--ink));
+  color: rgb(var(--bg));
+  font-size: 1.2rem;
+  line-height: 2.2rem;
+  text-align: center;
+`;
+
+const Burger = styled.button`
+  display: none;
+  width: 4rem;
+  height: 4rem;
+  border: 0;
+  background: none;
+  font-size: 2.4rem;
+  line-height: 1;
+  cursor: pointer;
+
+  ${media('<desktop')} {
+    display: block;
   }
 `;

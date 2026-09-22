@@ -37,8 +37,7 @@ export default function CookieConsent() {
       {choice === 'unknown' && (
         <Bar role="dialog" aria-live="polite" aria-label="Использование cookies">
           <Text>
-            Мы используем cookies и Яндекс.Метрику для аналитики. Подробнее в{' '}
-            <NextLink href="/cookies-policy">политике cookies</NextLink>.
+            Мы используем cookies и Яндекс.Метрику для аналитики. Подробнее в <NextLink href="/cookies-policy">политике cookies</NextLink>.
           </Text>
           <Buttons>
             <Btn type="button" onClick={() => choose('rejected')}>
@@ -66,21 +65,18 @@ const Bar = styled.div`
   align-items: center;
   justify-content: space-between;
   padding: 1.6rem 2rem;
-  border-radius: 0.8rem;
-  background: #1a202c;
-  color: #fff;
-  box-shadow: var(--shadow-lg);
+  border-radius: 0.4rem;
+  background: rgb(var(--ink));
+  color: rgb(var(--bg));
   font-size: 1.4rem;
   line-height: 1.5;
 
   a {
-    color: #fff;
-    text-decoration: underline;
+    border-bottom: 1px solid currentColor;
   }
 `;
 
 const Text = styled.p`
-  margin: 0;
   flex: 1 1 28rem;
 `;
 
@@ -91,10 +87,9 @@ const Buttons = styled.div`
 
 const Btn = styled.button<{ $primary?: boolean }>`
   padding: 0.8rem 1.6rem;
-  border-radius: 0.6rem;
-  border: 1px solid #fff;
-  background: ${(p) => (p.$primary ? '#fff' : 'transparent')};
-  color: ${(p) => (p.$primary ? '#1a202c' : '#fff')};
-  font: inherit;
+  border-radius: 0.4rem;
+  border: 1px solid ${(p) => (p.$primary ? 'rgb(var(--accent))' : 'rgba(var(--bg), 0.5)')};
+  background: ${(p) => (p.$primary ? 'rgb(var(--accent))' : 'transparent')};
+  color: rgb(var(--bg));
   cursor: pointer;
 `;

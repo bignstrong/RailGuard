@@ -4,28 +4,11 @@ import { ServerStyleSheet } from 'styled-components';
 export default class MyDocument extends Document {
   static async getInitialProps(ctx: DocumentContext) {
     const sheet = new ServerStyleSheet();
-
+    const originalRenderPage = ctx.renderPage;
     try {
-      const originalRenderPage = ctx.renderPage;
-      ctx.renderPage = () =>
-        originalRenderPage({
-          enhanceApp: (App) => (props) => sheet.collectStyles(<App {...props} />),
-        });
-
+      ctx.renderPage = () => originalRenderPage({ enhanceApp: (App) => (props) => sheet.collectStyles(<App {...props} />) });
       const initialProps = await Document.getInitialProps(ctx);
-
-      return {
-        ...initialProps,
-        styles: (
-          <>
-            {initialProps.styles}
-            {sheet.getStyleElement()}
-          </>
-        ),
-      };
-    } catch (error) {
-      console.error(error);
-      throw error;
+      return { ...initialProps, styles: [initialProps.styles, sheet.getStyleElement()] };
     } finally {
       sheet.seal();
     }
@@ -35,12 +18,9 @@ export default class MyDocument extends Document {
     return (
       <Html lang="ru">
         <Head>
-          <meta name="viewport" content="width=device-width, initial-scale=1" />
-          <link rel="icon" href="/favicon.ico" />
-          <link rel="apple-touch-icon" sizes="180x180" href="/webp/favicon.webp" />
-          <link rel="manifest" href="/manifest.json" />
+          <meta name="theme-color" content="#0A121E" />
         </Head>
-        <body className="next-light-theme">
+        <body>
           <Main />
           <NextScript />
         </body>

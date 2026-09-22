@@ -1,63 +1,37 @@
-import { PropsWithChildren } from 'react';
 import styled from 'styled-components';
 import { media } from 'utils/media';
 
-export interface ButtonProps {
-  transparent?: boolean;
-  disabled?: boolean;
-  as?: any;
-  type?: 'submit' | 'button' | 'reset';
-}
-
-export default function Button({
-  children,
-  transparent,
-  disabled,
-  as,
-  type,
-  ...buttonProps
-}: PropsWithChildren<ButtonProps & { [key: string]: any }>) {
-  return (
-    <ButtonWrapper as={as} type={type} transparent={transparent} disabled={disabled} {...buttonProps}>
-      {children}
-    </ButtonWrapper>
-  );
-}
-
-const ButtonWrapper = styled.button<ButtonProps>`
-  border: none;
-  background: ${(p) => (p.transparent ? 'transparent' : 'rgb(var(--primary))')};
-  display: inline-block;
-  text-decoration: none;
-  text-align: center;
-  padding: 1.75rem 2.25rem;
-  font-size: 1.2rem;
-  font-weight: bold;
-  color: ${(p) => (p.transparent ? 'rgb(var(--text))' : 'rgb(var(--textSecondary))')};
-  text-transform: uppercase;
-  font-family: var(--font);
-  transition: transform 0.3s;
-  backface-visibility: hidden;
-  will-change: transform;
-  cursor: pointer;
+// Единственная кнопка сайта: сплошная оранжевая или контурная. Рендерится как <a> через as={NextLink}.
+const Button = styled.button<{ $outline?: boolean }>`
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  padding: 1.6rem 2.4rem;
+  border: 2px solid rgb(var(--accent));
   border-radius: 0.4rem;
-
-  span {
-    margin-left: 2rem;
-  }
+  background: ${(p) => (p.$outline ? 'transparent' : 'rgb(var(--accent))')};
+  color: ${(p) => (p.$outline ? 'rgb(var(--accent))' : 'rgb(var(--bg))')};
+  font-size: 1.3rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: opacity 0.15s;
 
   &:hover {
-    transform: scale(1.025);
+    opacity: 0.85;
   }
 
   &:disabled {
-    opacity: 0.7;
+    opacity: 0.5;
     cursor: not-allowed;
-    transform: none;
   }
 
   ${media('<=tablet')} {
-    font-size: 1.1rem;
-    padding: 1.5rem 2rem;
+    width: 100%;
+    padding: 1.4rem 2rem;
   }
 `;
+
+export default Button;

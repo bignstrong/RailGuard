@@ -1,35 +1,21 @@
 import React, { createContext, useCallback, useContext, useState } from 'react';
-import Toast from '../components/Toast/Toast';
+import Toast, { ToastProps } from 'components/Toast';
 
-interface ToastContextType {
-  showToast: (message: string, type?: 'success' | 'error' | 'info', onClick?: () => void) => void;
-}
+type ShowToast = (message: string, type?: ToastProps['type'], onClick?: () => void) => void;
 
-const ToastContext = createContext<ToastContextType | undefined>(undefined);
+const ToastContext = createContext<ShowToast>(() => {});
 
-export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [toast, setToast] = useState<{
-    message: string;
-    type: 'success' | 'error' | 'info';
-    onClick?: () => void;
-  } | null>(null);
-
-  const showToast = useCallback((message: string, type: 'success' | 'error' | 'info' = 'success', onClick?: () => void) => {
-    setToast({ message, type, onClick });
-  }, []);
+export function ToastProvider({ children }: { children: React.ReactNode }) {
+  const [toast, setToast] = useState<Omit<ToastProps, 'onClose'> | null>(null);
+  const showToast = useCallback<ShowToast>((message, type, onClick) => setToast({ message, type, onClick }), []);
+  const close = useCallback(() => setToast(null), []);
 
   return (
-    <ToastContext.Provider value={{ showToast }}>
+    <ToastContext.Provider value={showToast}>
       {children}
-      {toast && <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} onClick={toast.onClick} />}
+      {toast && <Toast {...toast} onClose={close} />}
     </ToastContext.Provider>
   );
-};
+}
 
-export const useToast = () => {
-  const context = useContext(ToastContext);
-  if (context === undefined) {
-    throw new Error('useToast must be used within a ToastProvider');
-  }
-  return context;
-};
+export const useToast = () => useContext(ToastContext);

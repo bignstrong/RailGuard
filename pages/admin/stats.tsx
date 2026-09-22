@@ -104,7 +104,7 @@ const KpiGrid = styled.div`
 `;
 
 const BarTrack = styled.div`
-  background: rgba(var(--text), 0.08);
+  background: rgba(var(--ink), 0.08);
   border-radius: 0.3rem;
   margin-top: 0.4rem;
   width: 12rem;
@@ -113,7 +113,7 @@ const BarTrack = styled.div`
 const Bar = styled.div<{ $pct: number }>`
   height: 0.6rem;
   border-radius: 0.3rem;
-  background: rgb(var(--primary));
+  background: rgb(var(--accent));
   width: ${(p) => p.$pct}%;
 `;
 

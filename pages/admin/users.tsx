@@ -88,7 +88,7 @@ export default function AdminUsers({ base, session, users: initial, owner }: Pro
       <AdminNav base={base} session={session} active="users" title="Пользователи" />
 
       {secret && (
-        <Card style={{ borderLeft: '4px solid rgb(var(--primary))' }}>
+        <Card style={{ borderLeft: '4px solid rgb(var(--accent))' }}>
           <h2>Пароль для {secret.login} — показывается один раз</h2>
           <p>
             <code>{secret.password}</code>
@@ -113,7 +113,7 @@ export default function AdminUsers({ base, session, users: initial, owner }: Pro
           </Select>
           <Btn type="submit">Создать</Btn>
         </Toolbar>
-        {error && <p style={{ color: 'rgb(var(--error))' }}>{error}</p>}
+        {error && <p style={{ color: 'rgb(var(--accent))' }}>{error}</p>}
         <p style={{ opacity: 0.7 }}>Менеджер: заказы, статистика, экспорт. Администратор: плюс удаление заказов и пользователи.</p>
       </Card>
 

@@ -1,22 +1,21 @@
 import styled from 'styled-components';
 
 const Input = styled.input`
-  border: 1px solid rgb(var(--inputBackground));
-  background: rgb(var(--inputBackground));
-  border-radius: 0.6rem;
+  width: 100%;
+  padding: 1.4rem 1.6rem;
+  border: var(--line);
+  border-radius: 0.4rem;
+  background: rgb(var(--bg));
+  color: rgb(var(--ink));
   font-size: 1.6rem;
-  padding: 1.8rem;
-  box-shadow: var(--shadow-md);
-  color: rgb(var(--text));
 
   &::placeholder {
-    color: rgb(var(--text-secondary));
-    opacity: 0.8;
+    color: rgba(var(--ink), 0.4);
   }
 
   &:focus {
     outline: none;
-    box-shadow: var(--shadow-lg);
+    border-color: rgb(var(--accent));
   }
 `;
 

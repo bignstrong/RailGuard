@@ -72,7 +72,7 @@ export default function AdminSettings({ base, session, totpEnabled: initial }: P
         <meta name="robots" content="noindex, nofollow" />
       </Head>
       <AdminNav base={base} session={session} active="settings" title="Настройки" />
-      {msg && <p style={{ color: msg.ok ? 'rgb(var(--success))' : 'rgb(var(--error))' }}>{msg.text}</p>}
+      {msg && <p style={{ color: msg.ok ? 'rgb(var(--ink))' : 'rgb(var(--accent))' }}>{msg.text}</p>}
 
       <Card>
         <h2>Двухфакторная защита (TOTP)</h2>
@@ -95,7 +95,7 @@ export default function AdminSettings({ base, session, totpEnabled: initial }: P
             <p style={{ display: 'flex', gap: '0.8rem' }}>
               <Input inputMode="numeric" maxLength={6} placeholder="000000" value={code} onChange={(e) => setCode(e.target.value)} required style={{ minWidth: '12rem' }} />
               <Btn type="submit">Подтвердить</Btn>
-              <Btn type="button" onClick={() => setSetup(null)} style={{ background: 'transparent', color: 'inherit', border: '1px solid currentColor' }}>
+              <Btn type="button" onClick={() => setSetup(null)} style={{ background: 'transparent', color: 'rgb(var(--ink))', border: '1px solid rgba(var(--ink), 0.3)' }}>
                 Отмена
               </Btn>
             </p>
