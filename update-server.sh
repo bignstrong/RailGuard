@@ -1,26 +1,17 @@
 #!/bin/bash
-# Server update script
-# Usage: ./update-server.sh
-
-echo "🚀 Updating RailGuard..."
-
+# Обновление прода: git pull, пересборка образов, перезапуск. Запускается вручную или из cron (03:00 MSK).
+set -euo pipefail
 cd /opt/railguard
 
-# Pull code
-echo "📥 Pulling code..."
+echo "[$(date '+%F %T')] pull"
 git pull --ff-only
 
-# Build image
-echo "🔨 Building images..."
+echo "[$(date '+%F %T')] build"
 docker compose -f docker-compose.prod.yml build
 
-# Restart containers
-echo "🔄 Restarting containers..."
+echo "[$(date '+%F %T')] up"
 docker compose -f docker-compose.prod.yml up -d --remove-orphans
 
-# Show status
-echo "📊 Status:"
-docker compose -f docker-compose.prod.yml ps
-
-echo "✅ Update complete!"
-echo "🌐 Check: https://railguard.ru"
+docker image prune -f >/dev/null
+docker compose -f docker-compose.prod.yml ps --format '{{.Name}} {{.Status}}'
+echo "[$(date '+%F %T')] done"
