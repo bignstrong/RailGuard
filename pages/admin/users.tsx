@@ -6,7 +6,7 @@ import { adminBase, getAdminSession, OWNER_LOGIN } from 'lib/adminAuth';
 import type { AdminSession } from 'lib/adminSession';
 import prisma from 'lib/prisma';
 
-type User = { id: string; login: string; role: string; disabled: boolean; createdAt: string; lastLoginAt: string | null };
+type User = { id: string; login: string; role: string; disabled: boolean; totpEnabled: boolean; createdAt: string; lastLoginAt: string | null };
 type Props = { base: string; session: AdminSession; users: User[]; owner: string };
 
 export const getServerSideProps: GetServerSideProps<Props> = async (ctx) => {
@@ -25,6 +25,7 @@ export const getServerSideProps: GetServerSideProps<Props> = async (ctx) => {
         login: u.login,
         role: u.role,
         disabled: u.disabled,
+        totpEnabled: u.totpEnabled,
         createdAt: u.createdAt.toISOString(),
         lastLoginAt: u.lastLoginAt?.toISOString() ?? null,
       })),
@@ -32,7 +33,7 @@ export const getServerSideProps: GetServerSideProps<Props> = async (ctx) => {
   };
 };
 
-type Secret = { login: string; otpauth: string; totpSecret: string; password?: string };
+type Secret = { login: string; password: string };
 
 export default function AdminUsers({ base, session, users: initial, owner }: Props) {
   const [users, setUsers] = useState(initial);
@@ -50,8 +51,8 @@ export default function AdminUsers({ base, session, users: initial, owner }: Pro
     const res = await api('', { method: 'POST', body: JSON.stringify({ login, password, role }) });
     const data = await res.json().catch(() => ({}));
     if (!res.ok) return setError(data.message || 'Ошибка');
-    setUsers((u) => [...u, { id: data.id, login, role, disabled: false, createdAt: new Date().toISOString(), lastLoginAt: null }]);
-    setSecret({ login, otpauth: data.otpauth, totpSecret: data.totpSecret, password });
+    setUsers((u) => [...u, { id: data.id, login, role, disabled: false, totpEnabled: false, createdAt: new Date().toISOString(), lastLoginAt: null }]);
+    setSecret({ login, password });
     setLogin('');
     setPassword('');
   }
@@ -59,8 +60,13 @@ export default function AdminUsers({ base, session, users: initial, owner }: Pro
     const res = await api(`/${u.id}`, { method: 'PATCH', body: JSON.stringify(body) });
     const data = await res.json().catch(() => ({}));
     if (!res.ok) return alert(data.message || 'Ошибка');
-    if (data.otpauth) setSecret({ login: u.login, otpauth: data.otpauth, totpSecret: data.totpSecret });
-    setUsers((list) => list.map((x) => (x.id === u.id ? { ...x, ...('role' in body ? { role: body.role as string } : {}), ...('disabled' in body ? { disabled: body.disabled as boolean } : {}) } : x)));
+    setUsers((list) =>
+      list.map((x) =>
+        x.id === u.id
+          ? { ...x, ...('role' in body ? { role: body.role as string } : {}), ...('disabled' in body ? { disabled: body.disabled as boolean } : {}), ...('resetTotp' in body ? { totpEnabled: false } : {}) }
+          : x,
+      ),
+    );
   }
   async function remove(u: User) {
     if (!window.confirm(`Удалить пользователя ${u.login}?`)) return;
@@ -83,25 +89,11 @@ export default function AdminUsers({ base, session, users: initial, owner }: Pro
 
       {secret && (
         <Card style={{ borderLeft: '4px solid rgb(var(--primary))' }}>
-          <h2>Данные для {secret.login} — показываются один раз</h2>
-          <dl>
-            {secret.password && (
-              <>
-                <dt>Пароль</dt>
-                <dd>
-                  <code>{secret.password}</code>
-                </dd>
-              </>
-            )}
-            <dt>Секрет 2FA</dt>
-            <dd>
-              <code>{secret.totpSecret}</code>
-            </dd>
-            <dt>Ссылка для приложения</dt>
-            <dd style={{ wordBreak: 'break-all' }}>
-              <code>{secret.otpauth}</code>
-            </dd>
-          </dl>
+          <h2>Пароль для {secret.login} — показывается один раз</h2>
+          <p>
+            <code>{secret.password}</code>
+          </p>
+          <p style={{ opacity: 0.7 }}>Двухфакторную защиту пользователь включает сам в «Настройках».</p>
           <p>
             <Btn type="button" onClick={() => setSecret(null)}>
               Скрыть
@@ -130,45 +122,38 @@ export default function AdminUsers({ base, session, users: initial, owner }: Pro
           <tr>
             <th>Логин</th>
             <th>Роль</th>
+            <th>2FA</th>
             <th>Создан</th>
             <th>Последний вход</th>
             <th>Действия</th>
           </tr>
         </thead>
         <tbody>
-          <tr>
-            <td>
-              <b>{owner}</b> <small>(владелец, задаётся в .env)</small>
-            </td>
-            <td>Администратор</td>
-            <td>—</td>
-            <td>—</td>
-            <td>—</td>
-          </tr>
           {users.map((u) => (
             <tr key={u.id} style={{ opacity: u.disabled ? 0.5 : 1 }}>
               <td>
-                {u.login} {u.disabled && <small>(отключён)</small>}
+                {u.login} {u.login === owner && <small>(владелец)</small>} {u.disabled && <small>(отключён)</small>}
               </td>
               <td>
-                <Select value={u.role} onChange={(e) => patch(u, { role: e.target.value })} disabled={u.login === session.user}>
+                <Select value={u.role} onChange={(e) => patch(u, { role: e.target.value })} disabled={u.login === session.user || u.login === owner}>
                   <option value="manager">Менеджер</option>
                   <option value="admin">Администратор</option>
                 </Select>
               </td>
+              <td>{u.totpEnabled ? 'вкл' : 'выкл'}</td>
               <td>{fmtDate(u.createdAt)}</td>
               <td>{u.lastLoginAt ? fmtDate(u.lastLoginAt) : 'ещё не входил'}</td>
               <td style={{ display: 'flex', gap: '0.6rem', flexWrap: 'wrap' }}>
                 <Btn type="button" onClick={() => resetPassword(u)}>
                   Пароль
                 </Btn>
-                <Btn type="button" onClick={() => patch(u, { resetTotp: true })}>
-                  Сбросить 2FA
+                <Btn type="button" onClick={() => patch(u, { resetTotp: true })} disabled={!u.totpEnabled}>
+                  Выключить 2FA
                 </Btn>
-                <Btn type="button" onClick={() => patch(u, { disabled: !u.disabled })} disabled={u.login === session.user}>
+                <Btn type="button" onClick={() => patch(u, { disabled: !u.disabled })} disabled={u.login === session.user || u.login === owner}>
                   {u.disabled ? 'Включить' : 'Отключить'}
                 </Btn>
-                <Btn type="button" $danger onClick={() => remove(u)} disabled={u.login === session.user}>
+                <Btn type="button" $danger onClick={() => remove(u)} disabled={u.login === session.user || u.login === owner}>
                   Удалить
                 </Btn>
               </td>

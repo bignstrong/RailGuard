@@ -25,7 +25,8 @@ model AdminUser {
   id           String    @id @default(cuid())
   login        String    @unique
   passwordHash String
-  totpSecret   String
+  totpSecret   String?
+  totpEnabled  Boolean   @default(false)
   role         String    @default("manager") // admin | manager
   disabled     Boolean   @default(false)
   createdAt    DateTime  @default(now())

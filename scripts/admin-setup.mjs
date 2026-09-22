@@ -23,5 +23,4 @@ console.log(`ADMIN_PATH=${adminPath}`);
 console.log('ADMIN_LOGIN=owner');
 console.log(`ADMIN_PASSWORD_HASH=${hash}`);
 console.log(`ADMIN_SESSION_SECRET=${sessionSecret}`);
-console.log(`ADMIN_TOTP_SECRET=${totp}`);
-console.log(`\n# Добавь в Google Authenticator / Яндекс Ключ:\notpauth://totp/RailGuard:admin?secret=${totp}&issuer=RailGuard&digits=6&period=30`);
+console.log('\n# Первый вход: логин owner + пароль. 2FA включается в админке, раздел «Настройки».');

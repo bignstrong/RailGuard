@@ -19,6 +19,7 @@ export default function AdminLogin({ base }: Props) {
   const [password, setPassword] = useState('');
   const [code, setCode] = useState('');
   const [error, setError] = useState('');
+  const [needCode, setNeedCode] = useState(false);
   const [busy, setBusy] = useState(false);
 
   async function onSubmit(e: FormEvent) {
@@ -36,6 +37,11 @@ export default function AdminLogin({ base }: Props) {
         return;
       }
       const data = await res.json().catch(() => ({}));
+      if (data.needCode) {
+        setNeedCode(true);
+        setError(code ? data.message : '');
+        return;
+      }
       setError(data.message || 'Ошибка входа');
     } finally {
       setBusy(false);
@@ -56,9 +62,11 @@ export default function AdminLogin({ base }: Props) {
         <p>
           <Input type="password" autoComplete="current-password" placeholder="Пароль" value={password} onChange={(e) => setPassword(e.target.value)} required style={{ width: '100%' }} />
         </p>
-        <p>
-          <Input type="text" inputMode="numeric" autoComplete="one-time-code" placeholder="Код из приложения (6 цифр)" value={code} onChange={(e) => setCode(e.target.value)} maxLength={6} style={{ width: '100%' }} />
-        </p>
+        {needCode && (
+          <p>
+            <Input type="text" inputMode="numeric" autoComplete="one-time-code" placeholder="Код из приложения (6 цифр)" value={code} onChange={(e) => setCode(e.target.value)} maxLength={6} autoFocus required style={{ width: '100%' }} />
+          </p>
+        )}
         {error && <p style={{ color: 'rgb(var(--error))' }}>{error}</p>}
         <Btn type="submit" disabled={busy}>
           Войти

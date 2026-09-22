@@ -1,6 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { z } from 'zod';
-import { clientIp, hashPassword, otpauthUrl, randomTotpSecret, requireAdmin, sameOrigin } from 'lib/adminAuth';
+import { clientIp, hashPassword, OWNER_LOGIN, requireAdmin, sameOrigin } from 'lib/adminAuth';
 import prisma from 'lib/prisma';
 
 const Patch = z
@@ -20,18 +20,21 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   const who = `${session.user}@${clientIp(req)}`;
   const user = await prisma.adminUser.findUnique({ where: { id } });
   if (!user) return res.status(404).json({ message: 'Пользователь не найден' });
+  if (user.login === OWNER_LOGIN && (req.method === 'DELETE' || req.body?.disabled || req.body?.role === 'manager')) {
+    return res.status(400).json({ message: 'Владельца нельзя удалить, отключить или понизить' });
+  }
 
   if (req.method === 'PATCH') {
     const parsed = Patch.safeParse(req.body);
     if (!parsed.success) return res.status(400).json({ message: parsed.error.errors[0]?.message || 'Некорректные данные' });
     const { role, disabled, password, resetTotp } = parsed.data;
-    const totpSecret = resetTotp ? randomTotpSecret() : undefined;
+    // resetTotp: выключить 2FA пользователю, который потерял телефон. Включит заново сам в «Настройках».
     await prisma.adminUser.update({
       where: { id },
-      data: { role, disabled, passwordHash: password ? hashPassword(password) : undefined, totpSecret },
+      data: { role, disabled, passwordHash: password ? hashPassword(password) : undefined, ...(resetTotp ? { totpEnabled: false, totpSecret: null } : {}) },
     });
     console.info(`[admin] ${who} updated user ${user.login}: ${Object.keys(parsed.data).join(',')}`);
-    return res.status(200).json({ ok: true, otpauth: totpSecret ? otpauthUrl(user.login, totpSecret) : undefined, totpSecret });
+    return res.status(200).json({ ok: true });
   }
   if (req.method === 'DELETE') {
     await prisma.adminUser.delete({ where: { id } });
