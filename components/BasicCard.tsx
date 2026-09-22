@@ -2,12 +2,17 @@ import React from 'react';
 import styled from 'styled-components';
 
 interface BasicCardProps {
+  id?: string;
   className?: string;
   children?: React.ReactNode;
 }
 
-export default function BasicCard({ className, children }: BasicCardProps) {
-  return <Card className={className}>{children}</Card>;
+export default function BasicCard({ id, className, children }: BasicCardProps) {
+  return (
+    <Card id={id} className={className}>
+      {children}
+    </Card>
+  );
 }
 
 const Card = styled.div`

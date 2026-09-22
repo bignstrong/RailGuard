@@ -104,6 +104,7 @@ export default function Cart() {
   const [successOrderId, setSuccessOrderId] = useState<string | null>(null);
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
+  const [consent, setConsent] = useState(false);
 
   const handlePhoneChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     setForm((prev) => ({ ...prev, phone: cleanPhone(e.target.value) }));
@@ -119,10 +120,8 @@ export default function Cart() {
     setForm((prev) => ({ ...prev, email: e.target.value }));
   }, []);
 
-  const validatePhoneNumber = (phone: string) => {
-    // Проверяем, что нет символов _ (все цифры введены)
-    return phone && !phone.includes('_');
-  };
+  // form.phone хранит 10 цифр без +7; маска заполнена целиком только при 10.
+  const validatePhoneNumber = (phone: string) => /^\d{10}$/.test(phone);
 
   const handlePricingClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
     e.preventDefault();
@@ -140,7 +139,7 @@ export default function Cart() {
     }
     setIsLoading(true);
     try {
-      const orderData = { items, contact: form, consent: true };
+      const orderData = { items, contact: form, consent };
       const response = await fetch('/api/orders', {
         method: 'POST',
         headers: {
@@ -148,15 +147,16 @@ export default function Cart() {
         },
         body: JSON.stringify(orderData),
       });
+      const data = await response.json().catch(() => ({}));
       if (!response.ok) {
-        throw new Error('Failed to create order');
+        showToast(data.message || 'Произошла ошибка при оформлении заказа. Пожалуйста, попробуйте еще раз.', 'error');
+        return;
       }
-      const data = await response.json();
       clearCart();
       setSuccessOrderId(data.orderId);
     } catch (error) {
       console.error('Error submitting order:', error);
-      showToast('Произошла ошибка при оформлении заказа. Пожалуйста, попробуйте еще раз.', 'error');
+      showToast('Нет связи с сервером. Проверьте интернет и попробуйте ещё раз.', 'error');
     } finally {
       setIsLoading(false);
     }
@@ -215,7 +215,9 @@ export default function Cart() {
                       </ItemInfo>
                       <ItemActions>
                         <QuantityControl>
-                          <QuantityButton onClick={() => updateQuantity(item.id, item.quantity - 1)}>-</QuantityButton>
+                          <QuantityButton onClick={() => (item.quantity > 1 ? updateQuantity(item.id, item.quantity - 1) : removeItem(item.id))}>
+                            -
+                          </QuantityButton>
                           <QuantityDisplay>{item.quantity}</QuantityDisplay>
                           <QuantityButton onClick={() => updateQuantity(item.id, item.quantity + 1)}>+</QuantityButton>
                         </QuantityControl>
@@ -316,7 +318,7 @@ export default function Cart() {
                     />
                   </FormGroup>
                   <ConsentLabel>
-                    <input type="checkbox" name="consent" required />
+                    <input type="checkbox" name="consent" required checked={consent} onChange={(e) => setConsent(e.target.checked)} />
                     <span>
                       Даю согласие на обработку персональных данных в соответствии с{' '}
                       <NextLink href="/privacy-policy" target="_blank">

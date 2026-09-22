@@ -145,7 +145,7 @@ function ProductCard({
   };
 
   return (
-    <CardWrapper outOfStock={!inStock}>
+    <CardWrapper id={id} outOfStock={!inStock}>
       <Head>
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(productJsonLd) }} />
       </Head>

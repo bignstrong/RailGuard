@@ -17,6 +17,7 @@ export default function NewsletterModal({ onClose }: NewsletterModalProps) {
   const [email, setEmail] = useState('');
   const [status, setStatus] = useState<'idle' | 'success' | 'error'>('idle');
   const [message, setMessage] = useState('');
+  const [consent, setConsent] = useState(false);
 
   useEscClose({ onClose });
 
@@ -31,7 +32,7 @@ export default function NewsletterModal({ onClose }: NewsletterModalProps) {
         const res = await fetch('/api/sendEmail', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ email, consent: true }),
+          body: JSON.stringify({ email, consent }),
         });
         if (res.ok) {
           setStatus('success');
@@ -85,7 +86,7 @@ export default function NewsletterModal({ onClose }: NewsletterModalProps) {
                 </CustomButton>
               </Row>
               <ConsentLabel>
-                <input type="checkbox" name="consent" required />
+                <input type="checkbox" name="consent" required checked={consent} onChange={(e) => setConsent(e.target.checked)} />
                 <span>
                   Согласен(на) на обработку персональных данных и получение рекламной рассылки (
                   <NextLink href="/privacy-policy" target="_blank">

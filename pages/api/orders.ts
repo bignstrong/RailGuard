@@ -14,12 +14,12 @@ const OrderSchema = z.object({
     )
     .nonempty(),
   contact: z.object({
-    phone: z.string().min(5).max(30),
+    phone: z.string().regex(/^\d{10}$/, 'Введите номер полностью'),
     email: z.string().email().max(120),
     preferredContact: z.enum(['phone', 'whatsapp', 'telegram']),
   }),
   // Явное согласие на обработку ПДн (ст. 9 152-ФЗ); факт и время фиксируем в заказе.
-  consent: z.literal(true),
+  consent: z.literal(true, { errorMap: () => ({ message: 'Нужно согласие на обработку персональных данных' }) }),
 });
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
@@ -27,12 +27,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     return res.status(405).json({ message: 'Method not allowed' });
   }
   if (!rateLimit(req, 5)) {
-    return res.status(429).json({ message: 'Too many requests' });
+    return res.status(429).json({ message: 'Слишком много попыток. Подождите минуту и попробуйте снова.' });
   }
 
   const parsed = OrderSchema.safeParse(req.body);
   if (!parsed.success) {
-    return res.status(400).json({ message: 'Invalid request data', errors: parsed.error.errors });
+    const first = parsed.error.errors[0];
+    return res.status(400).json({ message: `Проверьте данные: ${first?.path.join('.')} — ${first?.message}`, errors: parsed.error.errors });
   }
 
   // Цены берём только из каталога: клиентскому totalPrice не доверяем.
@@ -46,6 +47,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     return res.status(200).json({ message: 'Order created successfully', orderId: order.id });
   } catch (error) {
     console.error('Error processing order:', error);
-    return res.status(500).json({ message: 'An error occurred while processing your order. Please try again later.' });
+    return res.status(500).json({ message: 'Не удалось сохранить заказ. Попробуйте позже.' });
   }
 }

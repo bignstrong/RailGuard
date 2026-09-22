@@ -14,7 +14,6 @@ const footerItems: FooterItems = [
     items: [
       { title: 'Характеристики', href: '/specifications' },
       { title: 'Каталог', href: '/pricing' },
-      { title: 'Контакты', href: '/contact' },
     ],
   },
   // {
@@ -45,7 +44,7 @@ export default function Footer() {
           ))}
         </ListContainer>
         <BottomBar>
-          <Copyright>&copy; Copyright 2025 RailGuard</Copyright>
+          <Copyright>&copy; {new Date().getFullYear()} RailGuard</Copyright>
         </BottomBar>
       </Container>
     </FooterWrapper>

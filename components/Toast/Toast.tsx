@@ -30,20 +30,22 @@ const Toast = ({ message, duration = 3000, onClose, type = 'success', onClick }:
   }, [duration, onClose]);
 
   return (
-    <ToastContainer onClick={onClick} style={{ cursor: onClick ? 'pointer' : 'default' }}>
+    <ToastContainer $type={type} onClick={onClick} style={{ cursor: onClick ? 'pointer' : 'default' }}>
       <Message>{message}</Message>
       <CloseButton onClick={onClose}>×</CloseButton>
     </ToastContainer>
   );
 };
 
-const ToastContainer = styled.div`
+const TOAST_BG = { success: 'rgb(var(--primary))', error: 'rgb(var(--error))', info: 'rgb(var(--navbarBackground))' };
+
+const ToastContainer = styled.div<{ $type: 'success' | 'error' | 'info' }>`
   position: fixed;
   bottom: 20px;
   right: 20px;
   padding: 12px 16px;
   border-radius: 10px;
-  background: rgb(var(--primary));
+  background: ${(p) => TOAST_BG[p.$type]};
   color: white;
   display: flex;
   align-items: center;

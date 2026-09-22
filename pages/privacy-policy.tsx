@@ -81,7 +81,7 @@ export default function PrivacyPolicyPage() {
         <h2>9. Контактная информация</h2>
         <p>По вопросам, связанным с обработкой персональных данных, вы можете связаться с нами:</p>
         <p>
-          📧 Email: <a href="">Скоро появиться</a>
+          📧 Email: <span>скоро появится</span>
         </p>
       </PolicyContainer>
     </Page>
