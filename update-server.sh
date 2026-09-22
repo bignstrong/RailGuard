@@ -11,8 +11,8 @@ echo "📥 Pulling code..."
 git pull --ff-only
 
 # Build image
-echo "🔨 Building web..."
-docker compose -f docker-compose.prod.yml build web
+echo "🔨 Building images..."
+docker compose -f docker-compose.prod.yml build
 
 # Restart containers
 echo "🔄 Restarting containers..."

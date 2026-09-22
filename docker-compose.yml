@@ -44,7 +44,7 @@ services:
 
   # Nginx Reverse Proxy (опционально)
   nginx:
-    image: nginx:alpine
+    build: ./nginx
     container_name: railguard_nginx
     restart: always
     ports:
