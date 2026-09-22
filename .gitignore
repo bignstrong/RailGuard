@@ -95,3 +95,6 @@ nginx/ssl/
 postgres_data/
 *.sql
 !prisma/migrations/**/*.sql
+
+# отдельный репозиторий бота, в основной не коммитим
+railguardbot/

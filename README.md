@@ -173,3 +173,10 @@ docker logs -f railguard_db
 ---
 
 > _RailGuard — современная защита вашего топлива!_
+
+## Админка и уведомления
+
+- Заказы приходят письмом на `ORDER_NOTIFY_TO` через SMTP (`SMTP_*` в `.env`, Яндекс 360). Без SMTP заказ всё равно сохраняется.
+- Админка живёт на секретном пути `ADMIN_PATH` (например `https://railguard.ru/k3x9-panel`). Прямой `/admin` всегда отдаёт 404.
+- Вход: пароль (scrypt-хеш в `ADMIN_PASSWORD_HASH`) + код TOTP из приложения (`ADMIN_TOTP_SECRET`). Сессия 8 часов в cookie `__Host-admin_session` (HttpOnly, Secure, SameSite=Strict). 5 попыток входа за 15 минут с IP. Опционально `ADMIN_ALLOWED_IPS`.
+- Сгенерировать значения: `node scripts/admin-setup.mjs [пароль]`, вставить в `.env`, перезапустить `web`.

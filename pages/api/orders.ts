@@ -1,6 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { z } from 'zod';
 import { CATALOG, isProductId } from 'lib/catalog';
+import { sendOrderEmail } from 'lib/mailer';
 import prisma from 'lib/prisma';
 import { rateLimit } from 'lib/rateLimit';
 
@@ -44,6 +45,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const order = await prisma.order.create({
       data: { items, contact: { ...parsed.data.contact, consentAt: new Date().toISOString() }, totalPrice, status: 'pending' },
     });
+    sendOrderEmail({ id: order.id, totalPrice, items, contact: parsed.data.contact }).catch((e) => console.error('Order email failed:', e));
     return res.status(200).json({ message: 'Order created successfully', orderId: order.id });
   } catch (error) {
     console.error('Error processing order:', error);

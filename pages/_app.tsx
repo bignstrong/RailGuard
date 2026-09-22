@@ -1,5 +1,6 @@
 import { AppProps } from 'next/dist/shared/lib/router/router';
 import Head from 'next/head';
+import { useRouter } from 'next/router';
 import { ColorModeScript } from 'nextjs-color-mode';
 import { PropsWithChildren } from 'react';
 import Cart from 'components/Cart/Cart';
@@ -27,6 +28,16 @@ const navItems: NavItems = [
 ];
 
 function MyApp({ Component, pageProps }: AppProps) {
+  const { pathname } = useRouter();
+  if (pathname.startsWith('/admin')) {
+    return (
+      <>
+        <GlobalStyle />
+        <ColorModeScript />
+        <Component {...pageProps} />
+      </>
+    );
+  }
   return (
     <ToastProvider>
       <NewsletterModalContextProvider>
