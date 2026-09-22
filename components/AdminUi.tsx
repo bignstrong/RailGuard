@@ -150,7 +150,7 @@ export const Status = styled.span<{ $s: string }>`
 
 export const fmtDate = (iso: string) => new Date(iso).toLocaleString('ru-RU', { timeZone: 'Europe/Moscow' });
 
-type NavKey = 'orders' | 'stats' | 'users' | 'compatibility' | 'settings';
+type NavKey = 'orders' | 'stats' | 'users' | 'compatibility' | 'site' | 'settings';
 
 export function AdminNav({ base, session, active, title }: { base: string; session: AdminSession; active: NavKey; title: string }) {
   const router = useRouter();
@@ -164,6 +164,7 @@ export function AdminNav({ base, session, active, title }: { base: string; sessi
       <h1>{title}</h1>
       <nav>
         {link('orders', base || '/', 'Заказы')}
+        {link('site', `${base}/site`, 'Сайт')}
         {link('stats', `${base}/stats`, 'Статистика')}
         {session.role === 'admin' && link('users', `${base}/users`, 'Пользователи')}
         {link('compatibility', `${base}/compatibility`, 'Совместимость')}

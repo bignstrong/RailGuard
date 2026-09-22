@@ -1,9 +1,10 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { z } from 'zod';
-import { CATALOG, isProductId } from 'lib/catalog';
+import { isProductId } from 'lib/catalog';
 import { sendOrderEmail } from 'lib/mailer';
 import prisma from 'lib/prisma';
 import { rateLimit } from 'lib/rateLimit';
+import { loadSite, visibleProducts } from 'lib/site';
 
 const OrderSchema = z.object({
   items: z
@@ -37,8 +38,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     return res.status(400).json({ message: `Проверьте данные: ${first?.path.join('.')} — ${first?.message}`, errors: parsed.error.errors });
   }
 
-  // Цены берём только из каталога: клиентскому totalPrice не доверяем.
-  const items = parsed.data.items.map(({ id, quantity }) => ({ id, quantity, ...CATALOG[id] }));
+  // Цены берём только из настроек сайта: клиентскому totalPrice не доверяем. Скрытые и отсутствующие товары не продаём.
+  const products = visibleProducts(await loadSite());
+  const items = [];
+  for (const { id, quantity } of parsed.data.items) {
+    const p = products.find((x) => x.id === id);
+    if (!p || !p.inStock) return res.status(400).json({ message: 'Товар временно недоступен, обновите корзину' });
+    items.push({ id, quantity, title: p.title, price: p.price, oldPrice: p.oldPrice, image: p.image });
+  }
   const totalPrice = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
 
   try {

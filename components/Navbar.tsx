@@ -19,10 +19,20 @@ export default function Navbar() {
   const { pathname } = useRouter();
   const { totalItems, toggleCart } = useCart();
 
+  const [announcement, setAnnouncement] = useState('');
+
   useEffect(() => setOpen(false), [pathname]);
+  // Полоса-объявление из админки; грузится после первого рендера, чтобы страницы оставались статическими.
+  useEffect(() => {
+    fetch('/api/site')
+      .then((r) => r.json())
+      .then((d) => setAnnouncement(d.announcement || ''))
+      .catch(() => {});
+  }, []);
 
   return (
     <Bar>
+      {announcement && <Announcement>{announcement}</Announcement>}
       <Content>
         <Logo href="/">
           <Image src="/webp/Logo.webp" alt="" width={40} height={40} />
@@ -52,15 +62,23 @@ const Bar = styled.header`
   position: sticky;
   top: 0;
   z-index: var(--z-navbar);
-  height: 7rem;
   background: rgb(var(--bg));
   border-bottom: var(--line);
+`;
+
+const Announcement = styled.p`
+  padding: 0.8rem 2rem;
+  background: rgb(var(--accent));
+  color: rgb(var(--bg));
+  font-size: 1.4rem;
+  font-weight: 700;
+  text-align: center;
 `;
 
 const Content = styled(Container)`
   display: flex;
   align-items: center;
-  height: 100%;
+  height: 7rem;
   gap: 3rem;
 `;
 
@@ -81,7 +99,7 @@ const Menu = styled.nav<{ $open: boolean }>`
   ${media('<desktop')} {
     display: ${(p) => (p.$open ? 'flex' : 'none')};
     position: absolute;
-    top: 7rem;
+    top: 100%;
     left: 0;
     right: 0;
     flex-direction: column;

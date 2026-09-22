@@ -7,26 +7,27 @@ import { useCart } from 'contexts/cart.context';
 import { useLightbox } from 'contexts/lightbox.context';
 import { useToast } from 'contexts/toast.context';
 import { EnvVars } from 'env';
-import { CATALOG, formatPrice, ProductId } from 'lib/catalog';
+import { formatPrice, ProductId } from 'lib/catalog';
+import type { Product } from 'lib/site';
 import { media } from 'utils/media';
 
-const PRODUCTS: { id: ProductId; description: string; more?: string; best?: boolean }[] = [
-  { id: 'fto-cr-standard', description: 'Базовый корпус фильтра высокого давления для систем Common Rail', more: '/specifications#filter-body' },
-  { id: 'cr-10-cartridge', description: 'Сменный фильтрующий элемент', more: '/specifications#filter-element' },
-  { id: 'profi-start-kit', description: 'Корпус и два фильтрующих элемента', best: true },
-  { id: 'sto-bulk-kit', description: 'Специальное предложение для автосервисов' },
-];
+const TEXT: Record<ProductId, { description: string; more?: string; best?: boolean }> = {
+  'fto-cr-standard': { description: 'Базовый корпус фильтра высокого давления для систем Common Rail', more: '/specifications#filter-body' },
+  'cr-10-cartridge': { description: 'Сменный фильтрующий элемент', more: '/specifications#filter-element' },
+  'profi-start-kit': { description: 'Корпус и два фильтрующих элемента', best: true },
+  'sto-bulk-kit': { description: 'Специальное предложение для автосервисов' },
+};
 
 // Страница статическая: дата фиксируется на момент сборки, ~90 дней вперёд.
 const PRICE_VALID_UNTIL = new Date(Date.now() + 90 * 864e5).toISOString().slice(0, 10);
 
-function ProductCard({ id, description, more, best }: (typeof PRODUCTS)[number]) {
-  const { title, price, oldPrice, image } = CATALOG[id];
+function ProductCard({ id, title, price, oldPrice, image, inStock }: Product) {
+  const { description, more, best } = TEXT[id];
   const { addItem, items, toggleCart } = useCart();
   const showToast = useToast();
   const { open } = useLightbox();
   const inCart = items.find((i) => i.id === id)?.quantity ?? 0;
-  const discount = Math.round(((oldPrice - price) / oldPrice) * 100);
+  const discount = oldPrice > price ? Math.round(((oldPrice - price) / oldPrice) * 100) : 0;
 
   const jsonLd = {
     '@context': 'https://schema.org/',
@@ -40,7 +41,7 @@ function ProductCard({ id, description, more, best }: (typeof PRODUCTS)[number])
       '@type': 'Offer',
       priceCurrency: 'RUB',
       price: String(price),
-      availability: 'https://schema.org/InStock',
+      availability: inStock ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock',
       url: `${EnvVars.URL}pricing#${id}`,
       priceValidUntil: PRICE_VALID_UNTIL,
     },
@@ -66,12 +67,13 @@ function ProductCard({ id, description, more, best }: (typeof PRODUCTS)[number])
         </PriceRow>
         <Button
           type="button"
+          disabled={!inStock}
           onClick={() => {
             addItem({ id, title, price, oldPrice, image });
             showToast(`${title} — в корзине`, 'success', toggleCart);
           }}
         >
-          В корзину{inCart > 0 && ` (${inCart})`}
+          {inStock ? `В корзину${inCart > 0 ? ` (${inCart})` : ''}` : 'Нет в наличии'}
         </Button>
         <Note>Производитель может менять форму и цвет изделия без ухудшения его функциональности.</Note>
       </Body>
@@ -79,10 +81,10 @@ function ProductCard({ id, description, more, best }: (typeof PRODUCTS)[number])
   );
 }
 
-export default function CatalogSection() {
+export default function CatalogSection({ products }: { products: Product[] }) {
   return (
     <Grid>
-      {PRODUCTS.map((p) => (
+      {products.map((p) => (
         <ProductCard key={p.id} {...p} />
       ))}
     </Grid>

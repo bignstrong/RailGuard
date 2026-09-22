@@ -1,22 +1,24 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
-import { CATALOG } from 'lib/catalog';
+import { loadSite } from 'lib/site';
 
-export default function handler(req: NextApiRequest, res: NextApiResponse) {
-  // Данные о товарах для Яндекс Директа
+export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+  const site = await loadSite();
+  // Данные о товарах для Яндекс Директа; цены и наличие — из админки.
   const products = [
     {
       id: 'fto-cr-standard',
+      hidden: site.products['fto-cr-standard'].hidden,
+      available: site.products['fto-cr-standard'].inStock,
       typePrefix: 'Фильтр топливный',
       name: 'Корпус фильтра высокого давления RailGuard',
       model: 'FTO-CR-Standard',
-      price: CATALOG['fto-cr-standard'].price,
-      oldPrice: CATALOG['fto-cr-standard'].oldPrice,
+      price: site.products['fto-cr-standard'].price,
+      oldPrice: site.products['fto-cr-standard'].oldPrice,
       categoryId: 1,
       picture: 'https://railguard.ru/webp/corpus.webp',
       description:
         'Базовый корпус фильтра высокого давления для дизельных двигателей Common Rail. Защищает форсунки и ТНВД от металлической стружки и абразива. Тонкость фильтрации 8-12 мкм.',
       vendor: 'RailGuard',
-      available: true,
       countryOfOrigin: 'Россия',
       warranty: true,
       salesNotes: 'Бесплатная доставка от 5000₽',
@@ -29,17 +31,18 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
     },
     {
       id: 'cr-10-cartridge',
+      hidden: site.products['cr-10-cartridge'].hidden,
+      available: site.products['cr-10-cartridge'].inStock,
       typePrefix: 'Фильтрующий элемент',
       name: 'Сменный картридж RailGuard',
       model: 'CR-10',
-      price: CATALOG['cr-10-cartridge'].price,
-      oldPrice: CATALOG['cr-10-cartridge'].oldPrice,
+      price: site.products['cr-10-cartridge'].price,
+      oldPrice: site.products['cr-10-cartridge'].oldPrice,
       categoryId: 1,
       picture: 'https://railguard.ru/webp/element_2.webp',
       description:
         'Сменный фильтрующий элемент для корпуса RailGuard. Рекомендуемый интервал замены — каждые 30 000 км или при замене топливного фильтра.',
       vendor: 'RailGuard',
-      available: true,
       countryOfOrigin: 'Россия',
       warranty: true,
       salesNotes: 'Бесплатная доставка от 5000₽',
@@ -51,17 +54,18 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
     },
     {
       id: 'profi-start-kit',
+      hidden: site.products['profi-start-kit'].hidden,
+      available: site.products['profi-start-kit'].inStock,
       typePrefix: 'Комплект',
       name: 'Комплект «Старт» RailGuard',
       model: 'Start-Kit',
-      price: CATALOG['profi-start-kit'].price,
-      oldPrice: CATALOG['profi-start-kit'].oldPrice,
+      price: site.products['profi-start-kit'].price,
+      oldPrice: site.products['profi-start-kit'].oldPrice,
       categoryId: 2,
       picture: 'https://railguard.ru/webp/start.webp',
       description:
         'Выгодный комплект: корпус фильтра высокого давления и два сменных фильтрующих элемента. Идеальный выбор для установки и длительной эксплуатации.',
       vendor: 'RailGuard',
-      available: true,
       countryOfOrigin: 'Россия',
       warranty: true,
       salesNotes: 'Бесплатная доставка',
@@ -73,16 +77,17 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
     },
     {
       id: 'sto-bulk-kit',
+      hidden: site.products['sto-bulk-kit'].hidden,
+      available: site.products['sto-bulk-kit'].inStock,
       typePrefix: 'Набор оптовый',
       name: 'Оптовый набор СТО RailGuard',
       model: 'STO-Bulk',
-      price: CATALOG['sto-bulk-kit'].price,
-      oldPrice: CATALOG['sto-bulk-kit'].oldPrice,
+      price: site.products['sto-bulk-kit'].price,
+      oldPrice: site.products['sto-bulk-kit'].oldPrice,
       categoryId: 2,
       picture: 'https://railguard.ru/webp/large.webp',
       description: 'Специальное предложение для автосервисов: 5 корпусов и 10 фильтрующих элементов по оптовой цене. Скидка 50%.',
       vendor: 'RailGuard',
-      available: true,
       countryOfOrigin: 'Россия',
       warranty: true,
       salesNotes: 'Бесплатная доставка, скидка 50%',
@@ -126,6 +131,7 @@ ${categories.map((cat) => `      <category id="${cat.id}">${cat.name}</category>
     </delivery-options>
     <offers>
 ${products
+  .filter((product) => !product.hidden)
   .map(
     (product) => `      <offer id="${product.id}" available="${product.available}">
         <url>https://railguard.ru/pricing#${product.id}</url>

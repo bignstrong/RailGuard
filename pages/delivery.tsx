@@ -1,16 +1,18 @@
+import type { GetServerSideProps } from 'next';
 import styled from 'styled-components';
 import Page from 'components/Page';
 import RichText from 'components/RichText';
+import { loadSite, SiteConfig } from 'lib/site';
 
-// TODO(владелец): вписать телефон и реквизиты; пустые строки на странице не показываются.
-const CONTACTS = {
-  phone: '',
-  email: 'info@railguard.ru',
-  legal: '',
-  hours: 'Пн–Пт, 9:00–18:00 (МСК)',
+type Props = { contacts: SiteConfig['contacts'] };
+
+// Контакты редактируются в админке (раздел «Сайт»); пустые строки не показываются.
+export const getServerSideProps: GetServerSideProps<Props> = async ({ res }) => {
+  res.setHeader('Cache-Control', 'public, s-maxage=60, stale-while-revalidate=300');
+  return { props: { contacts: (await loadSite()).contacts } };
 };
 
-export default function DeliveryPage() {
+export default function DeliveryPage({ contacts: CONTACTS }: Props) {
   return (
     <Page
       title="Доставка, оплата и гарантия"
