@@ -1,15 +1,15 @@
 # Stage 1: Dependencies
-FROM node:18-alpine AS deps
+FROM node:20-alpine AS deps
 WORKDIR /app
 
 # Копируем package files
 COPY package.json yarn.lock ./
 
 # Устанавливаем зависимости через yarn
-RUN yarn install --frozen-lockfile
+RUN yarn install --frozen-lockfile --ignore-scripts
 
 # Stage 2: Builder
-FROM node:18-alpine AS builder
+FROM node:20-alpine AS builder
 WORKDIR /app
 
 # Копируем зависимости из предыдущего stage
@@ -24,7 +24,7 @@ ENV SKIP_ENV_VALIDATION=1
 RUN yarn next build
 
 # Stage 3: Runner
-FROM node:18-alpine AS runner
+FROM node:20-alpine AS runner
 WORKDIR /app
 
 ENV NODE_ENV=production
