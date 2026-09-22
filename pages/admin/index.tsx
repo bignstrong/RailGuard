@@ -1,20 +1,21 @@
 import type { GetServerSideProps } from 'next';
 import Head from 'next/head';
 import NextLink from 'next/link';
-import { useRouter } from 'next/router';
 import { useState } from 'react';
-import { AdminHeader, AdminPage, Btn, fmtDate, Input, Select, Status, Table, Toolbar } from 'components/AdminUi';
-import { adminBase, isAdminRequest } from 'lib/adminAuth';
+import { AdminNav, AdminPage, Btn, fmtDate, Input, Select, Status, Table, Toolbar } from 'components/AdminUi';
+import { adminBase, getAdminSession } from 'lib/adminAuth';
+import type { AdminSession } from 'lib/adminSession';
 import { ORDER_STATUSES, OrderStatus, STATUS_LABEL } from 'lib/adminShared';
 import { formatPrice } from 'lib/catalog';
 import prisma from 'lib/prisma';
 
-type Row = { id: string; createdAt: string; status: string; totalPrice: number; phone: string; email: string; preferredContact: string; itemsCount: number };
-type Props = { base: string; orders: Row[]; q: string; status: string; subscribers: number; counts: Record<string, number> };
+type Row = { id: string; createdAt: string; status: string; totalPrice: number; phone: string; email: string; preferredContact: string; itemsCount: number; hasNote: boolean };
+type Props = { base: string; session: AdminSession; orders: Row[]; q: string; status: string; subscribers: number; counts: Record<string, number> };
 
 export const getServerSideProps: GetServerSideProps<Props> = async (ctx) => {
   const base = adminBase();
-  if (!(await isAdminRequest(ctx))) return { redirect: { destination: `${base}/login`, permanent: false } };
+  const session = await getAdminSession(ctx);
+  if (!session) return { redirect: { destination: `${base}/login`, permanent: false } };
   const q = String(ctx.query.q || '').trim().slice(0, 100);
   const status = String(ctx.query.status || '');
   const where = {
@@ -37,6 +38,7 @@ export const getServerSideProps: GetServerSideProps<Props> = async (ctx) => {
   return {
     props: {
       base,
+      session,
       q,
       status,
       subscribers,
@@ -53,24 +55,21 @@ export const getServerSideProps: GetServerSideProps<Props> = async (ctx) => {
           email: c.email ?? '',
           preferredContact: c.preferredContact ?? '',
           itemsCount: items.reduce((s, i) => s + (i.quantity || 0), 0),
+          hasNote: !!o.note,
         };
       }),
     },
   };
 };
 
-export default function AdminOrders({ base, orders, q, status, subscribers, counts }: Props) {
-  const router = useRouter();
+export default function AdminOrders({ base, session, orders, q, status, subscribers, counts }: Props) {
   const [rows, setRows] = useState(orders);
+  const csvQuery = new URLSearchParams({ ...(q ? { q } : {}), ...(status ? { status } : {}) }).toString();
 
   async function setStatus(id: string, next: string) {
     const res = await fetch(`${base}/api/orders/${id}`, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ status: next }) });
     if (!res.ok) return alert('Не удалось изменить статус');
     setRows((r) => r.map((o) => (o.id === id ? { ...o, status: next } : o)));
-  }
-  async function logout() {
-    await fetch(`${base}/api/logout`, { method: 'POST' });
-    router.replace(`${base}/login`);
   }
 
   return (
@@ -79,17 +78,14 @@ export default function AdminOrders({ base, orders, q, status, subscribers, coun
         <title>Заказы</title>
         <meta name="robots" content="noindex, nofollow" />
       </Head>
-      <AdminHeader>
-        <h1>Заказы</h1>
-        <nav>
-          <span>Подписчиков: {subscribers}</span>
-          {/* eslint-disable-next-line @next/next/no-html-link-for-pages */}
-          <a href={`${base}/api/subscribers.csv`}>CSV подписчиков</a>
-          <Btn type="button" onClick={logout}>
-            Выйти
-          </Btn>
-        </nav>
-      </AdminHeader>
+      <AdminNav base={base} session={session} active="orders" title="Заказы" />
+      <p>
+        Подписчиков: {subscribers} ·{' '}
+        {/* eslint-disable-next-line @next/next/no-html-link-for-pages */}
+        <a href={`${base}/api/subscribers.csv`}>CSV подписчиков</a> ·{' '}
+        {/* eslint-disable-next-line @next/next/no-html-link-for-pages */}
+        <a href={`${base}/api/orders.csv${csvQuery ? `?${csvQuery}` : ''}`}>CSV заказов</a>
+      </p>
       <Toolbar method="get">
         <Input name="q" defaultValue={q} placeholder="Поиск: телефон, email, номер заказа" />
         <Select name="status" defaultValue={status}>
@@ -123,7 +119,7 @@ export default function AdminOrders({ base, orders, q, status, subscribers, coun
             <tr key={o.id}>
               <td>{fmtDate(o.createdAt)}</td>
               <td>
-                <NextLink href={`${base}/orders/${o.id}`}>…{o.id.slice(-6)}</NextLink>
+                <NextLink href={`${base}/orders/${o.id}`}>…{o.id.slice(-6)}</NextLink> {o.hasNote && '📝'}
               </td>
               <td>
                 +7{o.phone}

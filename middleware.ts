@@ -22,8 +22,13 @@ export async function middleware(req: NextRequest) {
     const rest = pathname.slice(adminPath.length) || '/';
     const isApi = rest.startsWith('/api/');
     const isLogin = rest === '/login' || rest === '/api/login';
-    if (!isLogin && !(await verifySession(req.cookies.get(SESSION_COOKIE)?.value, process.env.ADMIN_SESSION_SECRET))) {
+    const session = isLogin ? null : await verifySession(req.cookies.get(SESSION_COOKIE)?.value, process.env.ADMIN_SESSION_SECRET);
+    if (!isLogin && !session) {
       return isApi ? NextResponse.json({ message: 'Unauthorized' }, { status: 401 }) : NextResponse.redirect(new URL(`${adminPath}/login`, req.url));
+    }
+    // Управление пользователями — только роль admin.
+    if ((rest === '/users' || rest.startsWith('/api/users')) && session?.role !== 'admin') {
+      return isApi ? NextResponse.json({ message: 'Недостаточно прав' }, { status: 403 }) : NextResponse.redirect(new URL(adminPath, req.url));
     }
     const target = isApi ? `/api/admin${rest.slice(4)}` : `/admin${rest === '/' ? '' : rest}`;
     const url = req.nextUrl.clone();

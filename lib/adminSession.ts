@@ -4,6 +4,9 @@ const enc = new TextEncoder();
 export const SESSION_COOKIE = '__Host-admin_session';
 export const SESSION_TTL_SEC = 8 * 3600;
 
+export type AdminRole = 'admin' | 'manager';
+export type AdminSession = { user: string; role: AdminRole; exp: number };
+
 const b64url = (bytes: ArrayBuffer | Uint8Array) =>
   btoa(String.fromCharCode(...new Uint8Array(bytes)))
     .replace(/\+/g, '-')
@@ -14,23 +17,25 @@ const fromB64url = (s: string) => Uint8Array.from(atob(s.replace(/-/g, '+').repl
 const hmacKey = (secret: string) =>
   crypto.subtle.importKey('raw', enc.encode(secret), { name: 'HMAC', hash: 'SHA-256' }, false, ['sign', 'verify']);
 
-export async function createSession(secret: string): Promise<string> {
-  const payload = b64url(enc.encode(JSON.stringify({ exp: Date.now() + SESSION_TTL_SEC * 1000, n: b64url(crypto.getRandomValues(new Uint8Array(16))) })));
+export async function createSession(secret: string, user: string, role: AdminRole): Promise<string> {
+  const body = { user, role, exp: Date.now() + SESSION_TTL_SEC * 1000, n: b64url(crypto.getRandomValues(new Uint8Array(16))) };
+  const payload = b64url(enc.encode(JSON.stringify(body)));
   const sig = await crypto.subtle.sign('HMAC', await hmacKey(secret), enc.encode(payload));
   return `${payload}.${b64url(sig)}`;
 }
 
-export async function verifySession(token: string | undefined, secret: string | undefined): Promise<boolean> {
-  if (!token || !secret || secret.length < 32) return false;
+export async function verifySession(token: string | undefined, secret: string | undefined): Promise<AdminSession | null> {
+  if (!token || !secret || secret.length < 32) return null;
   const [payload, sig] = token.split('.');
-  if (!payload || !sig) return false;
+  if (!payload || !sig) return null;
   try {
     const ok = await crypto.subtle.verify('HMAC', await hmacKey(secret), fromB64url(sig), enc.encode(payload));
-    if (!ok) return false;
-    const { exp } = JSON.parse(new TextDecoder().decode(fromB64url(payload)));
-    return typeof exp === 'number' && exp > Date.now();
+    if (!ok) return null;
+    const { user, role, exp } = JSON.parse(new TextDecoder().decode(fromB64url(payload)));
+    if (typeof exp !== 'number' || exp <= Date.now() || typeof user !== 'string' || (role !== 'admin' && role !== 'manager')) return null;
+    return { user, role, exp };
   } catch {
-    return false;
+    return null;
   }
 }
 

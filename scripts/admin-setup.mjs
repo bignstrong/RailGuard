@@ -20,6 +20,7 @@ if (String(code).padStart(6, '0') !== '287082') throw new Error('TOTP self-check
 
 console.log(`# Пароль админки (покажется только сейчас): ${password}\n`);
 console.log(`ADMIN_PATH=${adminPath}`);
+console.log('ADMIN_LOGIN=owner');
 console.log(`ADMIN_PASSWORD_HASH=${hash}`);
 console.log(`ADMIN_SESSION_SECRET=${sessionSecret}`);
 console.log(`ADMIN_TOTP_SECRET=${totp}`);

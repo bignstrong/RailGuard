@@ -1,7 +1,8 @@
 // Серверная часть авторизации админки (Node only): пароль (scrypt), TOTP, защита API-хендлеров.
 import type { GetServerSidePropsContext, NextApiRequest, NextApiResponse } from 'next';
 import { createHmac, randomBytes, scryptSync, timingSafeEqual } from 'crypto';
-import { SESSION_COOKIE, verifySession } from 'lib/adminSession';
+import { AdminRole, AdminSession, SESSION_COOKIE, verifySession } from 'lib/adminSession';
+import prisma from 'lib/prisma';
 
 export function hashPassword(password: string): string {
   const salt = randomBytes(16).toString('hex');
@@ -51,20 +52,38 @@ export function sameOrigin(req: NextApiRequest): boolean {
   return origin === `https://${host}` || origin === `http://${host}`;
 }
 
-// Вторая линия после middleware: API-хендлер сам проверяет сессию.
-export async function requireAdmin(req: NextApiRequest, res: NextApiResponse): Promise<boolean> {
-  const token = req.cookies[SESSION_COOKIE];
-  if (await verifySession(token, process.env.ADMIN_SESSION_SECRET)) return true;
-  res.status(401).json({ message: 'Unauthorized' });
-  return false;
+export const OWNER_LOGIN = process.env.ADMIN_LOGIN || 'owner';
+
+// Сессия без состояния, поэтому отключение/удаление пользователя проверяем по БД на каждом запросе (владелец — из .env).
+async function liveSession(token: string | undefined): Promise<AdminSession | null> {
+  const session = await verifySession(token, process.env.ADMIN_SESSION_SECRET);
+  if (!session || session.user === OWNER_LOGIN) return session;
+  const u = await prisma.adminUser.findUnique({ where: { login: session.user }, select: { disabled: true, role: true } });
+  if (!u || u.disabled) return null;
+  return { ...session, role: u.role === 'admin' ? 'admin' : 'manager' };
 }
+
+// Вторая линия после middleware: API-хендлер сам проверяет сессию. role='admin' — только для администраторов.
+export async function requireAdmin(req: NextApiRequest, res: NextApiResponse, role?: AdminRole): Promise<AdminSession | null> {
+  const session = await liveSession(req.cookies[SESSION_COOKIE]);
+  if (!session) {
+    res.status(401).json({ message: 'Unauthorized' });
+    return null;
+  }
+  if (role === 'admin' && session.role !== 'admin') {
+    res.status(403).json({ message: 'Недостаточно прав' });
+    return null;
+  }
+  return session;
+}
+
+export const getAdminSession = (ctx: GetServerSidePropsContext) => liveSession(ctx.req.cookies[SESSION_COOKIE]);
 
 // Публичный префикс админки (ADMIN_PATH). Страницы получают его через props и строят все ссылки от него.
 export const adminBase = () => (process.env.ADMIN_PATH || '').replace(/\/+$/, '');
 
-export async function isAdminRequest(ctx: GetServerSidePropsContext): Promise<boolean> {
-  return verifySession(ctx.req.cookies[SESSION_COOKIE], process.env.ADMIN_SESSION_SECRET);
-}
+export const randomTotpSecret = () => Array.from(randomBytes(20), (b) => B32[b % 32]).join('');
+export const otpauthUrl = (login: string, secret: string) => `otpauth://totp/RailGuard:${encodeURIComponent(login)}?secret=${secret}&issuer=RailGuard&digits=6&period=30`;
 
 export { ORDER_STATUSES, STATUS_LABEL } from 'lib/adminShared';
 export type { OrderStatus } from 'lib/adminShared';

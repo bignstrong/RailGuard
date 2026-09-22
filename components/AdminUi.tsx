@@ -1,4 +1,7 @@
+import NextLink from 'next/link';
+import { useRouter } from 'next/router';
 import styled from 'styled-components';
+import type { AdminSession } from 'lib/adminSession';
 
 // Минимальный UI админки. Без сайта вокруг: _app рендерит /admin/* голыми.
 export const AdminPage = styled.main`
@@ -134,3 +137,28 @@ export const Status = styled.span<{ $s: string }>`
 `;
 
 export const fmtDate = (iso: string) => new Date(iso).toLocaleString('ru-RU', { timeZone: 'Europe/Moscow' });
+
+type NavKey = 'orders' | 'stats' | 'users';
+
+export function AdminNav({ base, session, active, title }: { base: string; session: AdminSession; active: NavKey; title: string }) {
+  const router = useRouter();
+  async function logout() {
+    await fetch(`${base}/api/logout`, { method: 'POST' });
+    router.replace(`${base}/login`);
+  }
+  const link = (key: NavKey, href: string, label: string) => (active === key ? <b>{label}</b> : <NextLink href={href}>{label}</NextLink>);
+  return (
+    <AdminHeader>
+      <h1>{title}</h1>
+      <nav>
+        {link('orders', base || '/', 'Заказы')}
+        {link('stats', `${base}/stats`, 'Статистика')}
+        {session.role === 'admin' && link('users', `${base}/users`, 'Пользователи')}
+        <span style={{ opacity: 0.7 }}>{session.user}</span>
+        <Btn type="button" onClick={logout}>
+          Выйти
+        </Btn>
+      </nav>
+    </AdminHeader>
+  );
+}

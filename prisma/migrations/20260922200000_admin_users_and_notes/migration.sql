@@ -1,0 +1,18 @@
+-- AlterTable
+ALTER TABLE "Order" ADD COLUMN "note" TEXT;
+
+-- CreateTable
+CREATE TABLE "AdminUser" (
+    "id" TEXT NOT NULL,
+    "login" TEXT NOT NULL,
+    "passwordHash" TEXT NOT NULL,
+    "totpSecret" TEXT NOT NULL,
+    "role" TEXT NOT NULL DEFAULT 'manager',
+    "disabled" BOOLEAN NOT NULL DEFAULT false,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "lastLoginAt" TIMESTAMP(3),
+    CONSTRAINT "AdminUser_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateIndex
+CREATE UNIQUE INDEX "AdminUser_login_key" ON "AdminUser"("login");

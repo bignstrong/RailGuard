@@ -3,18 +3,19 @@ import Head from 'next/head';
 import { useRouter } from 'next/router';
 import { FormEvent, useState } from 'react';
 import { AdminPage, Btn, Card, Input } from 'components/AdminUi';
-import { adminBase, isAdminRequest } from 'lib/adminAuth';
+import { adminBase, getAdminSession } from 'lib/adminAuth';
 
 type Props = { base: string };
 
 export const getServerSideProps: GetServerSideProps<Props> = async (ctx) => {
   const base = adminBase();
-  if (await isAdminRequest(ctx)) return { redirect: { destination: base || '/', permanent: false } };
+  if (await getAdminSession(ctx)) return { redirect: { destination: base || '/', permanent: false } };
   return { props: { base } };
 };
 
 export default function AdminLogin({ base }: Props) {
   const router = useRouter();
+  const [login, setLogin] = useState('');
   const [password, setPassword] = useState('');
   const [code, setCode] = useState('');
   const [error, setError] = useState('');
@@ -28,7 +29,7 @@ export default function AdminLogin({ base }: Props) {
       const res = await fetch(`${base}/api/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ password, code }),
+        body: JSON.stringify({ login, password, code }),
       });
       if (res.ok) {
         router.replace(base);
@@ -49,6 +50,9 @@ export default function AdminLogin({ base }: Props) {
       </Head>
       <Card as="form" onSubmit={onSubmit}>
         <h2>Админка RailGuard</h2>
+        <p>
+          <Input type="text" autoComplete="username" placeholder="Логин" value={login} onChange={(e) => setLogin(e.target.value)} required style={{ width: '100%' }} />
+        </p>
         <p>
           <Input type="password" autoComplete="current-password" placeholder="Пароль" value={password} onChange={(e) => setPassword(e.target.value)} required style={{ width: '100%' }} />
         </p>
