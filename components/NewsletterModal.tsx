@@ -1,3 +1,4 @@
+import NextLink from 'next/link';
 import React, { useState } from 'react';
 import styled, { keyframes } from 'styled-components';
 import useEscClose from 'hooks/useEscKey';
@@ -30,7 +31,7 @@ export default function NewsletterModal({ onClose }: NewsletterModalProps) {
         const res = await fetch('/api/sendEmail', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ email }),
+          body: JSON.stringify({ email, consent: true }),
         });
         if (res.ok) {
           setStatus('success');
@@ -83,6 +84,16 @@ export default function NewsletterModal({ onClose }: NewsletterModalProps) {
                   Подписаться
                 </CustomButton>
               </Row>
+              <ConsentLabel>
+                <input type="checkbox" name="consent" required />
+                <span>
+                  Согласен(на) на обработку персональных данных и получение рекламной рассылки (
+                  <NextLink href="/privacy-policy" target="_blank">
+                    политика
+                  </NextLink>
+                  )
+                </span>
+              </ConsentLabel>
               {message && <ErrorMessage>{message}</ErrorMessage>}
             </>
           )}
@@ -259,5 +270,24 @@ const CloseButton = styled(Button)`
   &:hover {
     background: rgb(var(--primary), 0.85);
     box-shadow: 0 0 0 3px rgba(var(--primary), 0.15);
+  }
+`;
+
+const ConsentLabel = styled.label`
+  display: flex;
+  gap: 0.8rem;
+  align-items: flex-start;
+  margin-top: 1.2rem;
+  font-size: 1.3rem;
+  line-height: 1.4;
+  text-align: left;
+  cursor: pointer;
+
+  input {
+    margin-top: 0.3rem;
+    flex-shrink: 0;
+  }
+  a {
+    text-decoration: underline;
   }
 `;

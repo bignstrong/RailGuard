@@ -3,7 +3,7 @@ import { z } from 'zod';
 import prisma from 'lib/prisma';
 import { rateLimit } from 'lib/rateLimit';
 
-const Body = z.object({ email: z.string().email().max(120) });
+const Body = z.object({ email: z.string().email().max(120), consent: z.literal(true) });
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'POST') {
@@ -20,7 +20,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
   try {
     const { email } = parsed.data;
-    await prisma.subscriber.upsert({ where: { email }, update: {}, create: { email } });
+    const consentAt = new Date();
+    await prisma.subscriber.upsert({ where: { email }, update: { consentAt }, create: { email, consentAt } });
     res.status(200).json({ message: 'Вы успешно подписались!' });
   } catch (error) {
     console.error('Subscription error:', error);

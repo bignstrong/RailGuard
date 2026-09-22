@@ -3,15 +3,14 @@ import Head from 'next/head';
 import { ColorModeScript } from 'nextjs-color-mode';
 import { PropsWithChildren } from 'react';
 import Cart from 'components/Cart/Cart';
+import CookieConsent from 'components/CookieConsent';
 import Footer from 'components/Footer';
 import { GlobalStyle } from 'components/GlobalStyles';
-import GoogleAnalytics from 'components/GoogleAnalytics';
 import ImageLightbox from 'components/ImageLightbox';
 import Navbar from 'components/Navbar';
 import NavigationDrawer from 'components/NavigationDrawer';
 import NewsletterModal from 'components/NewsletterModal';
 import WaveCta from 'components/WaveCta';
-import YandexMetrika from 'components/YandexMetrika';
 import { CartProvider } from 'contexts/cart.context';
 import { LightboxProvider, useLightbox } from 'contexts/lightbox.context';
 import { NewsletterModalContextProvider, useNewsletterModalContext } from 'contexts/newsletter-modal.context';
@@ -35,14 +34,11 @@ function MyApp({ Component, pageProps }: AppProps) {
           <LightboxProvider>
             <GlobalStyle />
             <Head>
-              <link rel="preconnect" href="https://fonts.googleapis.com" />
-              <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
               <link rel="icon" type="image/webp" href="/webp/favicon.webp" />
               {/* <link rel="alternate" type="application/rss+xml" href={EnvVars.URL + 'rss'} title="RSS 2.0" /> */}
               {/* Google Analytics код закомментирован */}
             </Head>
-            <GoogleAnalytics />
-            <YandexMetrika />
+            <CookieConsent />
             <ColorModeScript />
             <Providers>
               <Modals />

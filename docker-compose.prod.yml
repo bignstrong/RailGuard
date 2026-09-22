@@ -6,7 +6,7 @@ services:
     restart: always
     environment:
       POSTGRES_USER: ${POSTGRES_USER:-railguard}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-railguard_password}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD not set in .env}
       POSTGRES_DB: ${POSTGRES_DB:-railguard}
     volumes:
       - postgres_data:/var/lib/postgresql/data
@@ -27,7 +27,7 @@ services:
       - "3000"
     environment:
       - NODE_ENV=production
-      - DATABASE_URL=postgresql://${POSTGRES_USER:-railguard}:${POSTGRES_PASSWORD:-railguard_password}@postgres:5432/${POSTGRES_DB:-railguard}?schema=public
+      - DATABASE_URL=postgresql://${POSTGRES_USER:-railguard}:${POSTGRES_PASSWORD:?POSTGRES_PASSWORD not set in .env}@postgres:5432/${POSTGRES_DB:-railguard}?schema=public
       - NEXT_PUBLIC_SITE_URL=${NEXT_PUBLIC_SITE_URL:-https://railguard.ru}
     depends_on:
       postgres:

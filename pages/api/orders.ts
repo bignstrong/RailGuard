@@ -18,6 +18,8 @@ const OrderSchema = z.object({
     email: z.string().email().max(120),
     preferredContact: z.enum(['phone', 'whatsapp', 'telegram']),
   }),
+  // Явное согласие на обработку ПДн (ст. 9 152-ФЗ); факт и время фиксируем в заказе.
+  consent: z.literal(true),
 });
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
@@ -39,7 +41,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
   try {
     const order = await prisma.order.create({
-      data: { items, contact: parsed.data.contact, totalPrice, status: 'pending' },
+      data: { items, contact: { ...parsed.data.contact, consentAt: new Date().toISOString() }, totalPrice, status: 'pending' },
     });
     return res.status(200).json({ message: 'Order created successfully', orderId: order.id });
   } catch (error) {

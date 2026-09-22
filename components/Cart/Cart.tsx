@@ -1,3 +1,4 @@
+import NextLink from 'next/link';
 import { useRouter } from 'next/router';
 import React, { useCallback, useState } from 'react';
 import InputMask from 'react-input-mask';
@@ -139,11 +140,7 @@ export default function Cart() {
     }
     setIsLoading(true);
     try {
-      const orderData = {
-        items,
-        contact: form,
-        totalPrice,
-      };
+      const orderData = { items, contact: form, consent: true };
       const response = await fetch('/api/orders', {
         method: 'POST',
         headers: {
@@ -318,6 +315,15 @@ export default function Cart() {
                       required
                     />
                   </FormGroup>
+                  <ConsentLabel>
+                    <input type="checkbox" name="consent" required />
+                    <span>
+                      Даю согласие на обработку персональных данных в соответствии с{' '}
+                      <NextLink href="/privacy-policy" target="_blank">
+                        политикой конфиденциальности
+                      </NextLink>
+                    </span>
+                  </ConsentLabel>
                   <SubmitButton as="button" type="submit" disabled={isLoading}>
                     {isLoading ? (
                       <SpinnerWrapper>
@@ -823,5 +829,23 @@ const SpinnerWrapper = styled.span`
     100% {
       transform: rotate(360deg);
     }
+  }
+`;
+
+const ConsentLabel = styled.label`
+  display: flex;
+  gap: 0.8rem;
+  align-items: flex-start;
+  margin: 1.2rem 0;
+  font-size: 1.3rem;
+  line-height: 1.4;
+  cursor: pointer;
+
+  input {
+    margin-top: 0.3rem;
+    flex-shrink: 0;
+  }
+  a {
+    text-decoration: underline;
   }
 `;

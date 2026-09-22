@@ -45,19 +45,6 @@ export default function Footer() {
           ))}
         </ListContainer>
         <BottomBar>
-          {/* <ShareBar>
-            <NextLink href="https://www.twitter.com/my-saas-startup">
-              <TwitterIcon size={50} round={true} />
-            </NextLink>
-
-            <NextLink href="https://www.facebook.com/my-saas-startup">
-              <FacebookIcon size={50} round={true} />
-            </NextLink>
-
-            <NextLink href="https://www.linkedin.com/my-saas-startup">
-              <LinkedinIcon size={50} round={true} />
-            </NextLink>
-          </ShareBar> */}
           <Copyright>&copy; Copyright 2025 RailGuard</Copyright>
         </BottomBar>
       </Container>

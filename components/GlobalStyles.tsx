@@ -10,6 +10,21 @@ import { createGlobalStyle } from 'styled-components';
 // }
 
 export const GlobalStyle = createGlobalStyle`
+  @font-face {
+    font-family: 'Poppins';
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+    src: url('/fonts/poppins-400.woff2') format('woff2');
+  }
+  @font-face {
+    font-family: 'Poppins';
+    font-style: normal;
+    font-weight: 700;
+    font-display: swap;
+    src: url('/fonts/poppins-700.woff2') format('woff2');
+  }
+
 
 .next-dark-theme {
   --background: 251,251,253;
