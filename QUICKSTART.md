@@ -12,7 +12,7 @@ Copy-Item .env.example .env
 notepad .env
 
 # Запустите (требуется Docker Desktop)
-docker compose -f docker-compose.simple.yml up -d
+docker compose up -d
 
 # Проверьте
 docker ps
@@ -40,7 +40,7 @@ cp .env.example .env
 nano .env  # Заполните все переменные!
 
 # 4. Запустите
-docker compose -f docker-compose.simple.yml up -d
+docker compose up -d
 
 # 5. Проверьте логи
 docker compose logs -f
@@ -106,7 +106,7 @@ sudo certbot renew --dry-run
 
 ```bash
 git pull
-docker compose -f docker-compose.simple.yml up -d --build
+docker compose up -d --build
 ```
 
 ## 📊 Управление
@@ -155,10 +155,6 @@ cat backup.sql | docker compose exec -T postgres psql -U railguard -d railguard
 ```env
 # Смените пароль!
 POSTGRES_PASSWORD=ваш_сложный_пароль_здесь
-
-# Telegram бот (получите у @BotFather)
-TELEGRAM_BOT_TOKEN=123456:ABC-DEF1234ghIkl-zyx57W2v1u123ew11
-TELEGRAM_CHAT_ID=123456789
 
 # Ваш домен
 NEXT_PUBLIC_SITE_URL=https://railguard.ru

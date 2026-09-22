@@ -1,9 +1,9 @@
+import styled from 'styled-components';
 import Button from 'components/Button';
 import ButtonGroup from 'components/ButtonGroup';
 import Container from 'components/Container';
 import SectionTitle from 'components/SectionTitle';
 import { useNewsletterModalContext } from 'contexts/newsletter-modal.context';
-import styled from 'styled-components';
 import { media } from 'utils/media';
 
 export default function WaveCta() {
@@ -33,11 +33,6 @@ export default function WaveCta() {
             <Button onClick={() => setIsModalOpened(true)}>
               Подписаться на рассылку <span>&rarr;</span>
             </Button>
-            {/* <NextLink href="/features">
-              <OutlinedButton transparent>
-                Узнать больше <span>&rarr;</span>
-              </OutlinedButton>
-            </NextLink> */}
           </CustomButtonGroup>
         </Container>
       </CtaWrapper>
@@ -85,10 +80,6 @@ const BenefitsList = styled.ul`
   }
 `;
 
-const OutlinedButton = styled(Button)`
-  border: 1px solid rgb(var(--textSecondary));
-  color: rgb(var(--textSecondary));
-`;
 
 const CustomButtonGroup = styled(ButtonGroup)`
   justify-content: center;

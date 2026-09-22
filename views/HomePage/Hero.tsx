@@ -3,14 +3,11 @@ import ButtonGroup from 'components/ButtonGroup';
 import Container from 'components/Container';
 import FilterImage from 'components/FilterImage';
 import OverTitle from 'components/OverTitle';
-import { useNewsletterModalContext } from 'contexts/newsletter-modal.context';
 import NextLink from 'next/link';
 import styled from 'styled-components';
 import { media } from 'utils/media';
 
 export default function Hero() {
-  const { setIsModalOpened } = useNewsletterModalContext();
-
   return (
     <HeroWrapper>
       <Contents>
@@ -98,6 +95,15 @@ const ImageContainer = styled.div`
 
 const Description = styled.p`
   font-size: 1.8rem;
+
+  .highlight {
+    color: #4caf50;
+    font-weight: 600;
+  }
+  strong {
+    color: #1976d2;
+    font-weight: 700;
+  }
   opacity: 0.8;
   line-height: 1.6;
 
@@ -120,15 +126,5 @@ const Heading = styled.h1`
   ${media('<=tablet')} {
     font-size: 4.6rem;
     margin-bottom: 2rem;
-  }
-`;
-const style = styled.style`
-  .highlight {
-    color: #4caf50;
-    font-weight: 600;
-  }
-  strong {
-    color: #1976d2;
-    font-weight: 700;
   }
 `;

@@ -1,5 +1,5 @@
-import Page from 'components/Page';
 import styled from 'styled-components';
+import Page from 'components/Page';
 
 export default function CookiesPolicyPage() {
   return (

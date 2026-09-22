@@ -1,11 +1,11 @@
 import React from 'react';
 import styled, { keyframes } from 'styled-components';
 import { media } from 'utils/media';
-import { useClipboard } from '../hooks/useClipboard';
 import Button from './Button';
 import CloseIcon from './CloseIcon';
 import Container from './Container';
 import Overlay from './Overlay';
+import { useClipboard } from '../hooks/useClipboard';
 
 interface OrderSuccessModalProps {
   orderId: string;

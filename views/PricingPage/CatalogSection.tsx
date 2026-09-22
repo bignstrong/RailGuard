@@ -4,6 +4,8 @@ import Link from 'components/Link';
 import { useCart } from 'contexts/cart.context';
 import { useLightbox } from 'contexts/lightbox.context';
 import { useToast } from 'contexts/toast.context';
+import { EnvVars } from 'env';
+import { CATALOG, formatPrice, ProductId } from 'lib/catalog';
 import Head from 'next/head';
 import NextImage from 'next/image';
 import { useState } from 'react';
@@ -11,12 +13,8 @@ import styled from 'styled-components';
 import { media } from 'utils/media';
 
 interface ProductCardProps {
-  id: string;
-  title: string;
-  price: string;
-  oldPrice?: string;
+  id: ProductId;
   description: string;
-  image: string;
   actionLabel?: string;
   inStock?: boolean;
   aggregateRating?: {
@@ -37,24 +35,22 @@ interface ProductCardProps {
     returnPolicyCategory: string;
     applicableCountry: string;
   };
-  priceValidUntil?: string;
 }
+
+// Страница статическая: дата фиксируется на момент сборки, ~90 дней вперёд.
+const PRICE_VALID_UNTIL = new Date(Date.now() + 90 * 864e5).toISOString().slice(0, 10);
 
 function ProductCard({
   id,
-  title,
-  price,
-  oldPrice,
   description,
-  image,
   actionLabel = 'В корзину',
   inStock = true,
   aggregateRating,
   reviews,
   shippingDetails,
   returnPolicy,
-  priceValidUntil,
 }: ProductCardProps) {
+  const { title, price: priceNum, oldPrice: oldPriceNum, image } = CATALOG[id];
   const { addItem, items, toggleCart } = useCart();
   const { showToast } = useToast();
   const [isPressed, setIsPressed] = useState(false);
@@ -63,19 +59,11 @@ function ProductCard({
   const itemInCart = items.find((item) => item.id === id);
   const quantity = itemInCart ? itemInCart.quantity : 0;
 
-  const oldPriceNum = oldPrice ? parseInt(oldPrice.replace(/[^\d]/g, '')) : 0;
-  const priceNum = parseInt(price.replace(/[^\d]/g, ''));
   const discount = oldPriceNum > 0 ? Math.round(((oldPriceNum - priceNum) / oldPriceNum) * 100) : 0;
 
   const handleAddToCart = () => {
     setIsPressed(true);
-    addItem({
-      id,
-      title,
-      price: parseInt(price.replace(/[^\d]/g, '')),
-      oldPrice: oldPrice ? parseInt(oldPrice.replace(/[^\d]/g, '')) : undefined,
-      image,
-    });
+    addItem({ id, title, price: priceNum, oldPrice: oldPriceNum, image });
     showToast(`${title} добавлен в корзину`, 'success', () => toggleCart());
 
     // Возвращаем кнопку в нормальное состояние через 200мс
@@ -147,10 +135,10 @@ function ProductCard({
     offers: {
       '@type': 'Offer',
       priceCurrency: 'RUB',
-      price: price.replace(/[^\d]/g, ''),
+      price: String(priceNum),
       availability: inStock ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock',
-      url: typeof window !== 'undefined' ? window.location.href : '',
-      priceValidUntil: priceValidUntil || '2025-12-31',
+      url: `${EnvVars.URL}pricing`,
+      priceValidUntil: PRICE_VALID_UNTIL,
       shippingDetails: shippingDetailsObj,
       hasMerchantReturnPolicy: returnPolicyObj,
     },
@@ -182,8 +170,8 @@ function ProductCard({
           </LearnMoreLinkWrapper>
         )}
         <PriceContainer>
-          <PriceTag>{price}</PriceTag>
-          {oldPrice && <OldPriceTag>{oldPrice}</OldPriceTag>}
+          <PriceTag>{formatPrice(priceNum)}</PriceTag>
+          {oldPriceNum > 0 && <OldPriceTag>{formatPrice(oldPriceNum)}</OldPriceTag>}
         </PriceContainer>
         <StockStatus inStock={inStock}>{inStock ? 'В наличии' : 'Нет в наличии'}</StockStatus>
         <CartButton onClick={handleAddToCart} isPressed={isPressed} disabled={!inStock}>
@@ -211,11 +199,7 @@ export default function CatalogSection() {
       <AutofitGrid>
         <ProductCard
           id="fto-cr-standard"
-          title="Корпус фильтра"
-          price="12 000₽"
-          oldPrice="18 000₽"
           description="Базовый корпус фильтра высокого давления для Common Rail систем"
-          image="/webp/corpus.webp"
           inStock={true}
           aggregateRating={{ ratingValue: 4.9, reviewCount: 17 }}
           reviews={[
@@ -224,21 +208,15 @@ export default function CatalogSection() {
           ]}
           shippingDetails={{ shippingRate: 0, deliveryDays: '1-3' }}
           returnPolicy={{ merchantReturnDays: 14, returnPolicyCategory: 'https://schema.org/Refundable', applicableCountry: 'RU' }}
-          priceValidUntil="2025-12-31"
         />
         <ProductCard
           id="cr-10-cartridge"
-          title="Фильтрующий элемент"
-          price="1 200₽"
-          oldPrice="3 000₽"
           description="Сменный фильтрующий элемент"
-          image="/webp/element_2.webp"
           inStock={true}
           aggregateRating={{ ratingValue: 5.0, reviewCount: 9 }}
           reviews={[{ author: 'Пётр', rating: 5, body: 'Меняю регулярно, фильтрует отлично.' }]}
           shippingDetails={{ shippingRate: 0, deliveryDays: '1-3' }}
           returnPolicy={{ merchantReturnDays: 14, returnPolicyCategory: 'https://schema.org/Refundable', applicableCountry: 'RU' }}
-          priceValidUntil="2025-12-31"
         />
       </AutofitGrid>
 
@@ -247,34 +225,24 @@ export default function CatalogSection() {
         <SpecialOfferCard>
           <ProductCard
             id="profi-start-kit"
-            title="Комплект «Старт»"
-            price="14 000₽"
-            oldPrice="24 000₽"
             description="Комплект состоящий из корпуса и двух фильтрующих элементов"
-            image="/webp/start.webp"
             actionLabel="В корзину"
             inStock={true}
             aggregateRating={{ ratingValue: 4.8, reviewCount: 5 }}
             reviews={[{ author: 'Сергей', rating: 5, body: 'Всё в комплекте, удобно!' }]}
             shippingDetails={{ shippingRate: 0, deliveryDays: '1-3' }}
             returnPolicy={{ merchantReturnDays: 14, returnPolicyCategory: 'https://schema.org/Refundable', applicableCountry: 'RU' }}
-            priceValidUntil="2025-12-31"
           />
         </SpecialOfferCard>
         <ProductCard
           id="sto-bulk-kit"
-          title="Оптовый набор СТО"
-          price="60 000₽"
-          oldPrice="120 000₽"
           description="Специальное предложение для автосервисов"
-          image="/webp/large.webp"
           actionLabel="В корзину"
           inStock={true}
           aggregateRating={{ ratingValue: 5.0, reviewCount: 2 }}
           reviews={[{ author: 'СТО «АвтоПрофи»', rating: 5, body: 'Выгодно для сервиса, берём не первый раз.' }]}
           shippingDetails={{ shippingRate: 0, deliveryDays: '1-3' }}
           returnPolicy={{ merchantReturnDays: 14, returnPolicyCategory: 'https://schema.org/Refundable', applicableCountry: 'RU' }}
-          priceValidUntil="2025-12-31"
         />
       </SpecialOffersGrid>
     </Wrapper>

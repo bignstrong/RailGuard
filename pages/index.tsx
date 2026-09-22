@@ -1,14 +1,10 @@
-import BasicSection from 'components/BasicSection';
-import { EnvVars } from 'env';
 import Head from 'next/head';
 import Image from 'next/image';
 import styled from 'styled-components';
+import BasicSection from 'components/BasicSection';
+import { EnvVars } from 'env';
 import Cta from 'views/HomePage/Cta';
-// import Features from 'views/HomePage/Features';
-// import FeaturesGallery from 'views/HomePage/FeaturesGallery';
 import Hero from 'views/HomePage/Hero';
-// import Partners from 'views/HomePage/Partners';
-// import ScrollableBlogPosts from 'views/HomePage/ScrollableBlogPosts';
 
 export default function Homepage() {
   return (
@@ -38,7 +34,6 @@ export default function Homepage() {
       <HomepageWrapper>
         <WhiteBackgroundContainer>
           <Hero />
-          {/* <Partners /> */}
           <BasicSection
             imageComponent={
               <ImageWrapper>
@@ -104,9 +99,6 @@ export default function Homepage() {
         </WhiteBackgroundContainer>
         <DarkerBackgroundContainer>
           <Cta />
-          {/* <FeaturesGallery />
-          <Features />
-          <ScrollableBlogPosts posts={posts} /> */}
         </DarkerBackgroundContainer>
       </HomepageWrapper>
     </>

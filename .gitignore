@@ -94,3 +94,4 @@ docker-compose.override.yml
 nginx/ssl/
 postgres_data/
 *.sql
+!prisma/migrations/**/*.sql

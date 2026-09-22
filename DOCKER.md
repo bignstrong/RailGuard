@@ -3,8 +3,8 @@
 ## Файлы
 
 - `Dockerfile` - образ приложения
-- `docker-compose.simple.yml` - простая версия (БД + Web)
-- `docker-compose.yml` - полная версия (БД + Web + Nginx)
+- `docker-compose.yml` - версия для разработки (БД + Web + Nginx)
+- `docker-compose.prod.yml` - версия для production
 - `.dockerignore` - игнорируемые файлы при сборке
 - `.env.example` - пример переменных окружения
 
@@ -17,10 +17,7 @@
 cp .env.example .env
 nano .env
 
-# 2. Запустите (простая версия)
-docker compose -f docker-compose.simple.yml up -d
-
-# ИЛИ полная версия с Nginx
+# 2. Запустите
 docker compose up -d
 ```
 
@@ -113,9 +110,6 @@ POSTGRES_PASSWORD=your_password_here
 POSTGRES_DB=railguard
 DATABASE_URL=postgresql://railguard:your_password@postgres:5432/railguard
 
-TELEGRAM_BOT_TOKEN=your_bot_token
-TELEGRAM_CHAT_ID=your_chat_id
-
 NEXT_PUBLIC_SITE_URL=https://railguard.ru
 NODE_ENV=production
 ```
@@ -167,7 +161,6 @@ docker compose exec web npx prisma generate
 ## Production Checklist
 
 - [ ] Изменён пароль PostgreSQL в `.env`
-- [ ] Настроены Telegram токены
 - [ ] Указан правильный домен в NEXT_PUBLIC_SITE_URL
 - [ ] Настроен SSL через Certbot
 - [ ] Настроен firewall (ufw)

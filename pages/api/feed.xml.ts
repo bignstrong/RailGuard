@@ -1,4 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
+import { CATALOG } from 'lib/catalog';
 
 export default function handler(req: NextApiRequest, res: NextApiResponse) {
   // Данные о товарах для Яндекс Директа
@@ -8,8 +9,8 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
       typePrefix: 'Фильтр топливный',
       name: 'Корпус фильтра высокого давления RailGuard',
       model: 'FTO-CR-Standard',
-      price: 12000,
-      oldPrice: 18000,
+      price: CATALOG['fto-cr-standard'].price,
+      oldPrice: CATALOG['fto-cr-standard'].oldPrice,
       categoryId: 1,
       picture: 'https://railguard.ru/webp/corpus.webp',
       description:
@@ -31,8 +32,8 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
       typePrefix: 'Фильтрующий элемент',
       name: 'Сменный картридж RailGuard',
       model: 'CR-10',
-      price: 1200,
-      oldPrice: 3000,
+      price: CATALOG['cr-10-cartridge'].price,
+      oldPrice: CATALOG['cr-10-cartridge'].oldPrice,
       categoryId: 1,
       picture: 'https://railguard.ru/webp/element_2.webp',
       description:
@@ -53,8 +54,8 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
       typePrefix: 'Комплект',
       name: 'Комплект «Старт» RailGuard',
       model: 'Start-Kit',
-      price: 14000,
-      oldPrice: 24000,
+      price: CATALOG['profi-start-kit'].price,
+      oldPrice: CATALOG['profi-start-kit'].oldPrice,
       categoryId: 2,
       picture: 'https://railguard.ru/webp/start.webp',
       description:
@@ -75,8 +76,8 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
       typePrefix: 'Набор оптовый',
       name: 'Оптовый набор СТО RailGuard',
       model: 'STO-Bulk',
-      price: 60000,
-      oldPrice: 120000,
+      price: CATALOG['sto-bulk-kit'].price,
+      oldPrice: CATALOG['sto-bulk-kit'].oldPrice,
       categoryId: 2,
       picture: 'https://railguard.ru/webp/large.webp',
       description: 'Специальное предложение для автосервисов: 5 корпусов и 10 фильтрующих элементов по оптовой цене. Скидка 50%.',

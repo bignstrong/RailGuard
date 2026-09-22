@@ -1,16 +1,16 @@
-import Button from 'components/Button';
-import CloseIcon from 'components/CloseIcon';
-import { useCart } from 'contexts/cart.context';
-import { useToast } from 'contexts/toast.context';
 import { useRouter } from 'next/router';
 import React, { useCallback, useState } from 'react';
 import InputMask from 'react-input-mask';
 import styled from 'styled-components';
+import Button from 'components/Button';
+import CloseIcon from 'components/CloseIcon';
+import { useCart } from 'contexts/cart.context';
+import { useToast } from 'contexts/toast.context';
 import { media } from 'utils/media';
 import Link from '../Link';
 import OrderSuccessModal from '../OrderSuccessModal';
 
-interface CheckoutForm {
+interface CheckoutFormValues {
   phone: string;
   email: string;
   preferredContact: 'phone' | 'whatsapp' | 'telegram';
@@ -95,7 +95,7 @@ function formatPhone(phone: string) {
 export default function Cart() {
   const { items, isCartOpen, totalPrice, totalOldPrice, removeItem, updateQuantity, toggleCart, clearCart } = useCart();
   const { showToast } = useToast();
-  const [form, setForm] = useState<CheckoutForm>({
+  const [form, setForm] = useState<CheckoutFormValues>({
     phone: '',
     email: '',
     preferredContact: 'phone',
@@ -744,12 +744,6 @@ const HiddenRadio = styled.input`
   display: none;
 `;
 
-const InputGroup = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 0.8rem;
-  margin-top: 2rem;
-`;
 
 const PhoneInput = styled(Input)`
   font-size: 1.8rem;

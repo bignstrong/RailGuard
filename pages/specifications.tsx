@@ -1,9 +1,9 @@
-import Page from 'components/Page';
-import SliderArrow from 'components/SliderArrow';
-import { useLightbox } from 'contexts/lightbox.context';
 import NextImage from 'next/image';
 import { useState } from 'react';
 import styled from 'styled-components';
+import Page from 'components/Page';
+import SliderArrow from 'components/SliderArrow';
+import { useLightbox } from 'contexts/lightbox.context';
 import { media } from 'utils/media';
 
 const FILTER_BODY_SPECS = [
@@ -334,27 +334,6 @@ const SpecValue = styled.div`
   font-size: 1.6rem;
 `;
 
-const InstallationList = styled.ul`
-  list-style: none;
-  padding: 0;
-  margin: 0;
-  font-size: 1.8rem;
-
-  li {
-    margin: 1rem 0;
-    padding-left: 2rem;
-    position: relative;
-
-    &:before {
-      content: '•';
-      color: rgb(var(--primary));
-      position: absolute;
-      left: 0;
-      font-size: 2rem;
-      line-height: 1.2;
-    }
-  }
-`;
 
 const SliderContainer = styled.div`
   position: relative;

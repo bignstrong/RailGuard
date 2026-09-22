@@ -1,6 +1,6 @@
-import Container from 'components/Container';
 import NextLink from 'next/link';
 import styled from 'styled-components';
+import Container from 'components/Container';
 import { media } from 'utils/media';
 
 type SingleFooterListItem = { title: string; href: string };
@@ -134,11 +134,6 @@ const ListItemWrapper = styled.p`
   }
 `;
 
-const ShareBar = styled.div`
-  & > *:not(:first-child) {
-    margin-left: 1rem;
-  }
-`;
 
 const Copyright = styled.p`
   font-size: 1.5rem;

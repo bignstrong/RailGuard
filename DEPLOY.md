@@ -53,8 +53,6 @@ nano .env
 **Обязательно заполните:**
 ```env
 POSTGRES_PASSWORD=ваш_сильный_пароль_123
-TELEGRAM_BOT_TOKEN=12345:ABCdefGHIjklMNOpqrsTUVwxyz
-TELEGRAM_CHAT_ID=123456789
 NEXT_PUBLIC_SITE_URL=https://railguard.ru
 ```
 

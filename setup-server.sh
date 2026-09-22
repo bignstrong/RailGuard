@@ -50,8 +50,6 @@ if [ ! -f .env ]; then
     echo "   nano /opt/railguard/.env"
     echo ""
     echo "Заполните:"
-    echo "  - TELEGRAM_BOT_TOKEN (получите у @BotFather)"
-    echo "  - TELEGRAM_CHAT_ID (получите у @userinfobot)"
     echo "  - NEXT_PUBLIC_SITE_URL (ваш домен)"
     echo ""
     echo "Пароль БД сгенерирован автоматически: $RANDOM_PASSWORD"

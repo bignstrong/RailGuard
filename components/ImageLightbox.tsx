@@ -1,6 +1,6 @@
-import useEscKey from 'hooks/useEscKey';
 import React, { useState } from 'react';
 import styled from 'styled-components';
+import useEscKey from 'hooks/useEscKey';
 import { media } from 'utils/media';
 import CloseIcon from './CloseIcon';
 

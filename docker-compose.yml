@@ -34,8 +34,6 @@ services:
     environment:
       - NODE_ENV=production
       - DATABASE_URL=postgresql://${POSTGRES_USER:-railguard}:${POSTGRES_PASSWORD:-railguard_password}@postgres:5432/${POSTGRES_DB:-railguard}?schema=public
-      - TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN}
-      - TELEGRAM_CHAT_ID=${TELEGRAM_CHAT_ID}
       - NEXT_PUBLIC_SITE_URL=${NEXT_PUBLIC_SITE_URL:-https://railguard.ru}
     depends_on:
       postgres:

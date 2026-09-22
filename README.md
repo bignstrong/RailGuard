@@ -14,7 +14,6 @@
 ├── hooks/          # Пользовательские React-хуки
 ├── lib/            # Вспомогательные библиотеки и интеграции (например, Prisma)
 ├── pages/          # Страницы Next.js (включая API-роуты)
-├── posts/          # Статьи и контент в формате MDX
 ├── prisma/         # Схема и миграции базы данных
 ├── public/         # Статические файлы (изображения, иконки, стили)
 ├── utils/          # Утилиты и вспомогательные функции
@@ -54,10 +53,6 @@ cp .env.example .env
 **Обязательные переменные:**
 
 - `DATABASE_URL` — строка подключения к PostgreSQL
-- `TELEGRAM_BOT_TOKEN` — токен Telegram-бота для уведомлений о заказах
-- `TELEGRAM_CHAT_ID` — ID чата для уведомлений
-- `BOT_TOKEN` — токен админ-бота для управления заказами
-- `ADMIN_ID` — ваш Telegram ID для доступа к админ-боту
 - `NEXT_PUBLIC_SITE_URL` — публичный URL сайта
 
 ### 4. Миграция базы данных
@@ -84,9 +79,6 @@ npm run dev
 - **TypeScript** — типизация и надежность кода
 - **Prisma** — ORM для работы с PostgreSQL
 - **Styled Components** — стилизация компонентов
-- **Telegram Bot API** — интеграция для уведомлений
-- **Telegram Admin Bot** — бот для управления заказами (в папке `Bot/`)
-- **MDX** — поддержка статей и контента в формате Markdown + JSX
 - **Docker** — контейнеризация для production
 
 ---
@@ -98,15 +90,14 @@ npm run dev
 - `pages/` — страницы сайта и API-роуты (например, `pages/api/orders.ts`)
 - `prisma/` — схема данных и миграции
 - `public/` — изображения, иконки, статические ресурсы
-- `views/` — крупные секции для страниц (Hero, Features, Testimonials и др.)
+- `views/` — крупные секции для страниц (Hero и др.)
 
 ---
 
 ## 🧩 Особенности
 
 - **SSR и SSG** для максимальной производительности и SEO
-- **Корзина и оформление заказов** с уведомлениями в Telegram
-- **Гибкая система статей и блога** на MDX
+- **Корзина и оформление заказов** с интеграцией обработки
 - **Модульная архитектура** — легко расширять и поддерживать
 - **Адаптивный дизайн** для всех устройств
 
@@ -123,13 +114,10 @@ npm run dev
 
 ## 🐳 Docker Deployment
 
-### Запуск всего проекта (Web + Database + Bot + Nginx)
+### Запуск на сервере
 
 ```bash
-# Соберите образ web-приложения
-docker build -t thehandofthelord/railguard:latest .
-
-# Запустите все сервисы
+# Запустите в production
 docker compose -f docker-compose.prod.yml up -d
 ```
 
@@ -148,9 +136,6 @@ docker compose -f docker-compose.prod.yml logs -f
 # Только web
 docker logs -f railguard_web
 
-# Только бот
-docker logs -f railguard_bot
-
 # Только база данных
 docker logs -f railguard_db
 ```
@@ -164,7 +149,6 @@ docker logs -f railguard_db
 **Что включает Docker Compose:**
 - 🗄️ **PostgreSQL** — база данных
 - 🌐 **Next.js** — веб-приложение
-- 🤖 **Telegram Bot** — админ-бот для управления заказами
 - 🔒 **Nginx** — reverse proxy с SSL
 
 ---

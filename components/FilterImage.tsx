@@ -159,30 +159,3 @@ const BackgroundDecoration = styled.div`
   }
 `;
 
-const Certification = styled.div`
-  position: absolute;
-  bottom: 5%;
-  right: 5%;
-  background: rgba(255, 255, 255, 0.95);
-  padding: 1rem 2rem;
-  border-radius: 2rem;
-  font-weight: bold;
-  color: rgb(var(--primary));
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  z-index: 3;
-  font-size: 1.6rem;
-
-  ${media('<=tablet')} {
-    font-size: 1.4rem;
-    padding: 0.8rem 1.6rem;
-  }
-
-  ${media('<=phone')} {
-    font-size: 1.2rem;
-    padding: 0.6rem 1.2rem;
-    right: 50%;
-    transform: translateX(50%);
-    white-space: nowrap;
-    bottom: 2%;
-  }
-`;

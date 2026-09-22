@@ -1,3 +1,7 @@
+import { AppProps } from 'next/dist/shared/lib/router/router';
+import Head from 'next/head';
+import { ColorModeScript } from 'nextjs-color-mode';
+import { PropsWithChildren } from 'react';
 import Cart from 'components/Cart/Cart';
 import Footer from 'components/Footer';
 import { GlobalStyle } from 'components/GlobalStyles';
@@ -12,10 +16,6 @@ import { CartProvider } from 'contexts/cart.context';
 import { LightboxProvider, useLightbox } from 'contexts/lightbox.context';
 import { NewsletterModalContextProvider, useNewsletterModalContext } from 'contexts/newsletter-modal.context';
 import { ToastProvider } from 'contexts/toast.context';
-import { AppProps } from 'next/dist/shared/lib/router/router';
-import Head from 'next/head';
-import { ColorModeScript } from 'nextjs-color-mode';
-import { PropsWithChildren } from 'react';
 import 'swiper/css';
 import 'swiper/css/autoplay';
 import 'swiper/css/bundle';

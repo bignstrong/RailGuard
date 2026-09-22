@@ -1,6 +1,6 @@
-import useEscClose from 'hooks/useEscKey';
 import React, { useState } from 'react';
 import styled, { keyframes } from 'styled-components';
+import useEscClose from 'hooks/useEscKey';
 import { media } from 'utils/media';
 import Button from './Button';
 import CloseIcon from './CloseIcon';

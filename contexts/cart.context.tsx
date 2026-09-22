@@ -20,7 +20,6 @@ export interface CartContextType {
   updateQuantity: (id: string, quantity: number) => void;
   clearCart: () => void;
   toggleCart: () => void;
-  addToCart: (id: string) => void;
 }
 
 export const CartContext = createContext<CartContextType>({
@@ -34,7 +33,6 @@ export const CartContext = createContext<CartContextType>({
   updateQuantity: () => {},
   clearCart: () => {},
   toggleCart: () => {},
-  addToCart: () => {},
 });
 
 export function CartProvider({ children }: { children: React.ReactNode }) {
@@ -75,20 +73,6 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     setIsCartOpen((prev) => !prev);
   }, []);
 
-  const addToCart = useCallback(
-    (id: string) => {
-      const productData = {
-        id,
-        title: id, // This should be replaced with actual product data lookup
-        price: 8500, // This should be replaced with actual product data lookup
-        image: '/Filter.png', // This should be replaced with actual product data lookup
-      };
-      addItem(productData);
-      toggleCart();
-    },
-    [addItem, toggleCart],
-  );
-
   const value = {
     items,
     isCartOpen,
@@ -100,7 +84,6 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     updateQuantity,
     clearCart,
     toggleCart,
-    addToCart,
   };
 
   return <CartContext.Provider value={value}>{children}</CartContext.Provider>;

@@ -10,8 +10,6 @@ services:
       POSTGRES_DB: ${POSTGRES_DB:-railguard}
     volumes:
       - postgres_data:/var/lib/postgresql/data
-    ports:
-      - "5432:5432"
     networks:
       - railguard_network
     healthcheck:
@@ -20,9 +18,9 @@ services:
       timeout: 5s
       retries: 5
 
-  # Next.js Application (готовый образ из Docker Hub)
+  # Next.js Application (собирается на сервере)
   web:
-    image: thehandofthelord/railguard:latest
+    build: .
     container_name: railguard_web
     restart: always
     expose:
@@ -30,8 +28,6 @@ services:
     environment:
       - NODE_ENV=production
       - DATABASE_URL=postgresql://${POSTGRES_USER:-railguard}:${POSTGRES_PASSWORD:-railguard_password}@postgres:5432/${POSTGRES_DB:-railguard}?schema=public
-      - TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN}
-      - TELEGRAM_CHAT_ID=${TELEGRAM_CHAT_ID}
       - NEXT_PUBLIC_SITE_URL=${NEXT_PUBLIC_SITE_URL:-https://railguard.ru}
     depends_on:
       postgres:
@@ -39,6 +35,12 @@ services:
     networks:
       - railguard_network
     command: sh -c "npx prisma migrate deploy && npm start"
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q --spider http://localhost:3000/ || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
 
   # Nginx Reverse Proxy
   nginx:
@@ -57,24 +59,6 @@ services:
     networks:
       - railguard_network
 
-  # Telegram Admin Bot
-  bot:
-    build:
-      context: ./Bot
-      dockerfile: Dockerfile
-    container_name: railguard_bot
-    restart: always
-    environment:
-      - BOT_TOKEN=${BOT_TOKEN}
-      - ADMIN_ID=${ADMIN_ID}
-      - DB_URL=postgresql://${POSTGRES_USER:-railguard}:${POSTGRES_PASSWORD:-railguard_password}@postgres:5432/${POSTGRES_DB:-railguard}?sslmode=disable
-    volumes:
-      - ./Bot/last_order_id.txt:/app/last_order_id.txt
-    depends_on:
-      postgres:
-        condition: service_healthy
-    networks:
-      - railguard_network
 
 volumes:
   postgres_data:

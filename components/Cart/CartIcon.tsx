@@ -1,5 +1,5 @@
-import { useCart } from 'contexts/cart.context';
 import styled from 'styled-components';
+import { useCart } from 'contexts/cart.context';
 import { media } from 'utils/media';
 
 export default function CartIcon() {
