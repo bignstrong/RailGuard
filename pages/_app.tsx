@@ -12,6 +12,24 @@ import { CartProvider } from 'contexts/cart.context';
 import { LightboxProvider } from 'contexts/lightbox.context';
 import { ToastProvider } from 'contexts/toast.context';
 
+const structuredData = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'Organization',
+      name: 'RailGuard',
+      url: 'https://railguard.ru/',
+      logo: 'https://railguard.ru/webp/Logo.webp',
+      email: 'info@railguard.ru',
+    },
+    {
+      '@type': 'WebSite',
+      name: 'RailGuard',
+      url: 'https://railguard.ru/',
+    },
+  ],
+};
+
 export default function MyApp({ Component, pageProps }: AppProps) {
   const { pathname } = useRouter();
   if (pathname.startsWith('/admin')) {
@@ -28,6 +46,7 @@ export default function MyApp({ Component, pageProps }: AppProps) {
         <LightboxProvider>
           <GlobalStyle />
           <Head>
+            <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }} />
             <link rel="icon" href="/favicon.ico" />
             <link rel="apple-touch-icon" href="/favicon.png" />
             <link rel="manifest" href="/manifest.json" />

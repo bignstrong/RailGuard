@@ -1,29 +1,96 @@
-# *
 User-agent: *
 Allow: /
 Disallow: /api/
 Disallow: /admin/
-Disallow: /drafts/
-Disallow: /private/
-Disallow: /404
-Disallow: /500
 
-# Googlebot
-User-agent: Googlebot
+# Machine-readable summary: https://railguard.ru/llms.txt
+
+User-agent: GPTBot
 Allow: /
 Disallow: /api/
 Disallow: /admin/
-Disallow: /drafts/
-Disallow: /private/
-Disallow: /404
-Disallow: /500
 
-# Host
-Host: https://railguard.ru
+User-agent: OAI-SearchBot
+Allow: /
+Disallow: /api/
+Disallow: /admin/
 
-# Sitemaps
+User-agent: ChatGPT-User
+Allow: /
+Disallow: /api/
+Disallow: /admin/
+
+User-agent: ClaudeBot
+Allow: /
+Disallow: /api/
+Disallow: /admin/
+
+User-agent: Claude-User
+Allow: /
+Disallow: /api/
+Disallow: /admin/
+
+User-agent: Claude-SearchBot
+Allow: /
+Disallow: /api/
+Disallow: /admin/
+
+User-agent: anthropic-ai
+Allow: /
+Disallow: /api/
+Disallow: /admin/
+
+User-agent: PerplexityBot
+Allow: /
+Disallow: /api/
+Disallow: /admin/
+
+User-agent: Perplexity-User
+Allow: /
+Disallow: /api/
+Disallow: /admin/
+
+User-agent: Google-Extended
+Allow: /
+Disallow: /api/
+Disallow: /admin/
+
+User-agent: Applebot-Extended
+Allow: /
+Disallow: /api/
+Disallow: /admin/
+
+User-agent: Amazonbot
+Allow: /
+Disallow: /api/
+Disallow: /admin/
+
+User-agent: CCBot
+Allow: /
+Disallow: /api/
+Disallow: /admin/
+
+User-agent: meta-externalagent
+Allow: /
+Disallow: /api/
+Disallow: /admin/
+
+User-agent: YandexBot
+Allow: /
+Disallow: /api/
+Disallow: /admin/
+
+User-agent: Bingbot
+Allow: /
+Disallow: /api/
+Disallow: /admin/
+
+User-agent: DuckAssistBot
+Allow: /
+Disallow: /api/
+Disallow: /admin/
+
 Sitemap: https://railguard.ru/sitemap.xml
 
-# Yandex Direct Feed
 User-agent: YandexDirectFetcher
 Allow: /api/feed.xml
