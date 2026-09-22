@@ -8,8 +8,10 @@ import { media } from 'utils/media';
 import Container from './Container';
 
 export const NAV_ITEMS = [
-  { title: 'Характеристики', href: '/specifications' },
   { title: 'Каталог', href: '/pricing' },
+  { title: 'Характеристики', href: '/specifications' },
+  { title: 'Совместимость', href: '/compatibility' },
+  { title: 'Доставка', href: '/delivery' },
 ];
 
 export default function Navbar() {

@@ -2,7 +2,7 @@ import { NextApiRequest, NextApiResponse } from 'next';
 
 const BASE_URL = 'https://railguard.ru';
 
-const staticPages = ['', '/pricing', '/specifications', '/privacy-policy', '/terms-of-use', '/cookies-policy'];
+const staticPages = ['', '/pricing', '/specifications', '/compatibility', '/delivery', '/privacy-policy', '/terms-of-use', '/cookies-policy'];
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   const urls = staticPages.map((path) => `${BASE_URL}${path}`);

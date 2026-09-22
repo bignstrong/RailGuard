@@ -39,3 +39,18 @@ model Subscriber {
   createdAt DateTime @default(now())
   consentAt DateTime?
 } 
+// Таблица совместимости (двигатели), заполняется в админке; публикуется тумблером Setting["compatibility"] = "on".
+model Vehicle {
+  id        String   @id @default(cuid())
+  brand     String
+  model     String
+  engine    String
+  years     String?
+  note      String?
+  createdAt DateTime @default(now())
+}
+
+model Setting {
+  key   String @id
+  value String
+}
