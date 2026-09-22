@@ -1,16 +1,20 @@
 import NextLink from 'next/link';
 import { useEffect, useState } from 'react';
 import styled from 'styled-components';
+import GoogleAnalytics from 'components/GoogleAnalytics';
 import YandexMetrika from 'components/YandexMetrika';
 
 const KEY = 'cookie-consent';
 type Choice = 'accepted' | 'rejected';
 
 // Метрика грузится только после явного согласия (152-ФЗ: cookie + IP = ПДн).
+// Google Analytics — только для визитов не из РФ (страна из cookie geo-country, см. middleware.ts).
 export default function CookieConsent() {
   const [choice, setChoice] = useState<Choice | 'unknown' | null>(null);
+  const [country, setCountry] = useState('XX');
 
   useEffect(() => {
+    setCountry(document.cookie.match(/(?:^|; )geo-country=([A-Z]{2})/)?.[1] ?? 'XX');
     try {
       const saved = localStorage.getItem(KEY);
       setChoice(saved === 'accepted' || saved === 'rejected' ? saved : 'unknown');
@@ -29,6 +33,7 @@ export default function CookieConsent() {
   return (
     <>
       {choice === 'accepted' && <YandexMetrika />}
+      {choice === 'accepted' && country !== 'RU' && country !== 'XX' && <GoogleAnalytics />}
       {choice === 'unknown' && (
         <Bar role="dialog" aria-live="polite" aria-label="Использование cookies">
           <Text>
