@@ -1,12 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { requireAdmin } from 'lib/adminAuth';
-import { ORDER_STATUSES, OrderStatus } from 'lib/adminShared';
+import { csvField, ORDER_STATUSES, OrderStatus } from 'lib/adminShared';
 import prisma from 'lib/prisma';
-
-// Оборачивает поле в кавычки при наличии ; " или переноса строки, дублируя внутренние кавычки.
-function csvField(v: string): string {
-  return /[;"\n]/.test(v) ? `"${v.replace(/"/g, '""')}"` : v;
-}
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (!(await requireAdmin(req, res))) return;

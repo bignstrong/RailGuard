@@ -5,6 +5,7 @@ import Button from 'components/Button';
 import Container from 'components/Container';
 import Input from 'components/Input';
 import SectionTitle from 'components/SectionTitle';
+import { track } from 'lib/track';
 import { media } from 'utils/media';
 
 // Подписка прямо в блоке, без модалки.
@@ -24,6 +25,9 @@ export default function Newsletter() {
       });
       const data = await res.json().catch(() => ({}));
       setMessage(data.message || (res.ok ? 'Вы подписаны' : 'Ошибка отправки'));
+      if (res.ok) {
+        track('subscribe');
+      }
       setStatus(res.ok ? 'done' : 'error');
     } catch {
       setMessage('Нет связи с сервером');

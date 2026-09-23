@@ -41,7 +41,8 @@ export function verifyTotp(code: string | undefined, secretB32: string | undefin
   return [-1, 0, 1].some((w) => timingSafeEqual(new Uint8Array(Buffer.from(totp(secretB32, c + w))), new Uint8Array(Buffer.from(code as string))));
 }
 
-export const clientIp = (req: NextApiRequest | GetServerSidePropsContext['req']) =>
+type AnyReq = NextApiRequest | GetServerSidePropsContext['req'];
+export const clientIp = (req: AnyReq) =>
   (req.headers['x-real-ip'] as string) || (req.headers['x-forwarded-for'] as string)?.split(',')[0].trim() || req.socket.remoteAddress || 'unknown';
 
 // CSRF: cookie SameSite=Strict + проверка Origin на мутирующих запросах.
@@ -54,10 +55,19 @@ export function sameOrigin(req: NextApiRequest): boolean {
 
 export const OWNER_LOGIN = process.env.ADMIN_LOGIN || 'owner';
 
-// Сессия без состояния, поэтому отключение/удаление пользователя проверяем по БД на каждом запросе (владелец — из .env).
-async function liveSession(token: string | undefined): Promise<AdminSession | null> {
-  const session = await verifySession(token, process.env.ADMIN_SESSION_SECRET);
-  if (!session || session.user === OWNER_LOGIN) return session;
+export const userAgent = (req: AnyReq) => String(req.headers['user-agent'] || '').slice(0, 300);
+
+// Подпись cookie проверяет middleware; здесь по БД — не завершена ли сессия (AdminLogin) и не отключён ли пользователь.
+async function liveSession(req: AnyReq): Promise<AdminSession | null> {
+  const session = await verifySession(req.cookies[SESSION_COOKIE], process.env.ADMIN_SESSION_SECRET);
+  if (!session) return null;
+  const s = await prisma.adminLogin.findUnique({ where: { id: session.sid }, select: { login: true, ok: true, revokedAt: true, lastSeenAt: true, lastIp: true } });
+  if (!s || !s.ok || s.revokedAt || s.login !== session.user) return null;
+  const ip = clientIp(req);
+  if (s.lastIp !== ip || !s.lastSeenAt || Date.now() - s.lastSeenAt.getTime() > 5 * 60_000) {
+    await prisma.adminLogin.update({ where: { id: session.sid }, data: { lastSeenAt: new Date(), lastIp: ip } });
+  }
+  if (session.user === OWNER_LOGIN) return session;
   const u = await prisma.adminUser.findUnique({ where: { login: session.user }, select: { disabled: true, role: true } });
   if (!u || u.disabled) return null;
   return { ...session, role: u.role === 'admin' ? 'admin' : 'manager' };
@@ -65,7 +75,7 @@ async function liveSession(token: string | undefined): Promise<AdminSession | nu
 
 // Вторая линия после middleware: API-хендлер сам проверяет сессию. role='admin' — только для администраторов.
 export async function requireAdmin(req: NextApiRequest, res: NextApiResponse, role?: AdminRole): Promise<AdminSession | null> {
-  const session = await liveSession(req.cookies[SESSION_COOKIE]);
+  const session = await liveSession(req);
   if (!session) {
     res.status(401).json({ message: 'Unauthorized' });
     return null;
@@ -77,7 +87,7 @@ export async function requireAdmin(req: NextApiRequest, res: NextApiResponse, ro
   return session;
 }
 
-export const getAdminSession = (ctx: GetServerSidePropsContext) => liveSession(ctx.req.cookies[SESSION_COOKIE]);
+export const getAdminSession = (ctx: GetServerSidePropsContext) => liveSession(ctx.req);
 
 // Публичный префикс админки (ADMIN_PATH). Страницы получают его через props и строят все ссылки от него.
 export const adminBase = () => (process.env.ADMIN_PATH || '').replace(/\/+$/, '');

@@ -14,7 +14,11 @@ export const getServerSideProps: GetServerSideProps<Props> = async ({ res }) => 
 
 export default function PricingPage({ products }: Props) {
   return (
-    <Page title="Полный каталог RailGuard" canonical="https://railguard.ru/pricing">
+    <Page
+      title="Полный каталог RailGuard"
+      description="Фильтр высокого давления, картридж, комплект и оптовый набор для СТО. Цены, наличие, доставка по России."
+      canonical="https://railguard.ru/pricing"
+    >
       <CatalogSection products={products} />
       <FaqSection />
     </Page>

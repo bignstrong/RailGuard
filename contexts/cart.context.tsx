@@ -1,4 +1,4 @@
-import React, { createContext, useCallback, useContext, useEffect, useState } from 'react';
+import React, { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 
 const STORAGE_KEY = 'railguard-cart';
 
@@ -92,7 +92,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     setIsCartOpen((prev) => !prev);
   }, []);
 
-  const value = {
+  const value = useMemo(() => ({
     items,
     isCartOpen,
     totalItems,
@@ -103,7 +103,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     updateQuantity,
     clearCart,
     toggleCart,
-  };
+  }), [items, isCartOpen, totalItems, totalPrice, totalOldPrice, addItem, removeItem, updateQuantity, clearCart, toggleCart]);
 
   return <CartContext.Provider value={value}>{children}</CartContext.Provider>;
 }

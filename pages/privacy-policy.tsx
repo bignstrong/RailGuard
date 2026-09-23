@@ -3,9 +3,13 @@ import Page from 'components/Page';
 
 export default function PrivacyPolicyPage() {
   return (
-    <Page title="Политика конфиденциальности" canonical="https://railguard.ru/privacy-policy">
+    <Page
+      title="Политика конфиденциальности"
+      description="Информация о сборе и защите персональных данных на сайте RailGuard"
+      canonical="https://railguard.ru/privacy-policy"
+    >
       <PolicyContainer>
-        <h1>Политика конфиденциальности</h1>
+        <h2>Политика конфиденциальности</h2>
         <p>
           <b>Дата вступления в силу:</b> 24 июня 2025 г.
         </p>

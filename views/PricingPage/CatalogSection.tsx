@@ -9,6 +9,7 @@ import { useToast } from 'contexts/toast.context';
 import { EnvVars } from 'env';
 import { formatPrice, ProductId } from 'lib/catalog';
 import type { Product } from 'lib/site';
+import { track } from 'lib/track';
 import { media } from 'utils/media';
 
 const TEXT: Record<ProductId, { description: string; more?: string; best?: boolean }> = {
@@ -42,7 +43,7 @@ function ProductCard({ id, title, price, oldPrice, image, inStock }: Product) {
       priceCurrency: 'RUB',
       price: String(price),
       availability: inStock ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock',
-      url: `${EnvVars.URL}pricing#${id}`,
+      url: `${EnvVars.URL}pricing/${id}`,
       priceValidUntil: PRICE_VALID_UNTIL,
     },
   };
@@ -50,7 +51,7 @@ function ProductCard({ id, title, price, oldPrice, image, inStock }: Product) {
   return (
     <Card id={id} $best={best}>
       <Head>
-        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, '\\u003c') }} />
       </Head>
       {best && <Ribbon>Лучший выбор</Ribbon>}
       <Picture type="button" onClick={() => open([image])} aria-label={`Увеличить: ${title}`}>
@@ -60,7 +61,10 @@ function ProductCard({ id, title, price, oldPrice, image, inStock }: Product) {
       <Body>
         <h3>{title}</h3>
         <p>{description}</p>
-        {more && <Link href={more}>Подробнее</Link>}
+        <Links>
+          <Link href={`/pricing/${id}`}>Товар</Link>
+          {more && <Link href={more}>Характеристики</Link>}
+        </Links>
         <PriceRow>
           <b>{formatPrice(price)}</b>
           {oldPrice > price && <s>{formatPrice(oldPrice)}</s>}
@@ -70,6 +74,7 @@ function ProductCard({ id, title, price, oldPrice, image, inStock }: Product) {
           disabled={!inStock}
           onClick={() => {
             addItem({ id, title, price, oldPrice, image });
+            track('add_to_cart', { id, price });
             showToast(`${title} — в корзине`, 'success', toggleCart);
           }}
         >
@@ -165,6 +170,15 @@ const Body = styled.div`
   }
   a {
     font-size: 1.4rem;
+  }
+`;
+
+const Links = styled.div`
+  display: flex;
+  gap: 1.2rem;
+  margin-top: 0.4rem;
+
+  a {
     align-self: flex-start;
   }
 `;

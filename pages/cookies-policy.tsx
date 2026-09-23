@@ -3,9 +3,13 @@ import Page from 'components/Page';
 
 export default function CookiesPolicyPage() {
   return (
-    <Page title="Политика использования файлов cookies" canonical="https://railguard.ru/cookies-policy">
+    <Page
+      title="Политика использования файлов cookies"
+      description="Как сайт RailGuard использует файлы cookies и аналогичные технологии"
+      canonical="https://railguard.ru/cookies-policy"
+    >
       <PolicyContainer>
-        <h1>Политика использования файлов cookies</h1>
+        <h2>Политика использования файлов cookies</h2>
         <p>
           <b>Дата вступления в силу:</b> 24 июня 2025 г.
         </p>

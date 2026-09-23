@@ -19,6 +19,9 @@ model Order {
   note            String?
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
+
+  @@index([status, createdAt])
+  @@index([createdAt])
 }
 
 model AdminUser {
@@ -48,6 +51,22 @@ model Vehicle {
   years     String?
   note      String?
   createdAt DateTime @default(now())
+}
+
+// Журнал входов в админку. ok=true — сессия (id зашит в cookie, можно завершить), ok=false — неудачная попытка.
+model AdminLogin {
+  id         String    @id @default(cuid())
+  login      String
+  ok         Boolean
+  ip         String
+  userAgent  String
+  createdAt  DateTime  @default(now())
+  lastSeenAt DateTime?
+  lastIp     String?
+  revokedAt  DateTime?
+
+  @@index([login, createdAt])
+  @@index([createdAt])
 }
 
 model Setting {

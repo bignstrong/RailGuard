@@ -21,6 +21,11 @@ const structuredData = {
       url: 'https://railguard.ru/',
       logo: 'https://railguard.ru/webp/Logo.webp',
       email: 'info@railguard.ru',
+      contactPoint: {
+        '@type': 'ContactPoint',
+        contactType: 'Sales',
+        email: 'info@railguard.ru',
+      },
     },
     {
       '@type': 'WebSite',
@@ -46,7 +51,7 @@ export default function MyApp({ Component, pageProps }: AppProps) {
         <LightboxProvider>
           <GlobalStyle />
           <Head>
-            <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }} />
+            <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData).replace(/</g, '\\u003c') }} />
             <link rel="icon" href="/favicon.ico" />
             <link rel="apple-touch-icon" href="/favicon.png" />
             <link rel="manifest" href="/manifest.json" />

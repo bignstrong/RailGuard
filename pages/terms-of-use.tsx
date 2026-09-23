@@ -3,9 +3,13 @@ import Page from 'components/Page';
 
 export default function TermsOfUsePage() {
   return (
-    <Page title="Условия использования" canonical="https://railguard.ru/terms-of-use">
+    <Page
+      title="Условия использования"
+      description="Правила пользования сайтом RailGuard и использования размещённого контента"
+      canonical="https://railguard.ru/terms-of-use"
+    >
       <PolicyContainer>
-        <h1>Условия использования</h1>
+        <h2>Условия использования</h2>
         <p>
           <b>Дата вступления в силу:</b> 24 июня 2025 г.
         </p>

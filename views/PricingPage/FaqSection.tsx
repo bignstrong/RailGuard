@@ -1,4 +1,3 @@
-import Head from 'next/head';
 import styled from 'styled-components';
 import Accordion from 'components/Accordion';
 import SectionTitle from 'components/SectionTitle';
@@ -33,24 +32,8 @@ export const FAQ = [
 ];
 
 export default function FaqSection() {
-  const faqPageSchema = {
-    '@context': 'https://schema.org',
-    '@type': 'FAQPage',
-    mainEntity: FAQ.map(([question, answerText]) => ({
-      '@type': 'Question',
-      name: question,
-      acceptedAnswer: {
-        '@type': 'Answer',
-        text: answerText,
-      },
-    })),
-  };
-
   return (
     <>
-      <Head>
-        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqPageSchema) }} />
-      </Head>
       <Wrapper>
         <SectionTitle>Часто задаваемые вопросы</SectionTitle>
         <List>

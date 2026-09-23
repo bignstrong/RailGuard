@@ -19,6 +19,8 @@ export default class MyDocument extends Document {
       <Html lang="ru">
         <Head>
           <meta name="theme-color" content="#0A121E" />
+          <link rel="preload" href="/fonts/poppins-400.woff2" as="font" type="font/woff2" crossOrigin="anonymous" />
+          <link rel="preload" href="/fonts/poppins-700.woff2" as="font" type="font/woff2" crossOrigin="anonymous" />
         </Head>
         <body>
           <Main />

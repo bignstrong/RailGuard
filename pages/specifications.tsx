@@ -6,7 +6,7 @@ import RichText from 'components/RichText';
 import { useLightbox } from 'contexts/lightbox.context';
 import { media } from 'utils/media';
 
-const SECTIONS = [
+export const SPEC_SECTIONS = [
   {
     id: 'filter-body',
     title: 'Корпус фильтра',
@@ -43,14 +43,14 @@ export default function SpecificationsPage() {
       description="Технические характеристики и преимущества фильтра высокого давления Common Rail"
       canonical="https://railguard.ru/specifications"
     >
-      {SECTIONS.map((s) => (
+      {SPEC_SECTIONS.map((s) => (
         <Section key={s.id} id={s.id}>
           <Title>{s.title}</Title>
           <Grid>
             <Gallery>
               {s.images.map((src, i) => (
                 <Thumb key={src} type="button" onClick={() => open(s.images, i)} aria-label={`${s.title}, фото ${i + 1}`}>
-                  <Image src={src} alt="" fill sizes="(max-width: 768px) 50vw, 25vw" style={{ objectFit: 'contain' }} />
+                  <Image src={src} alt={`${s.title} — фото ${i + 1}`} fill sizes="(max-width: 768px) 50vw, 25vw" style={{ objectFit: 'contain' }} />
                 </Thumb>
               ))}
             </Gallery>

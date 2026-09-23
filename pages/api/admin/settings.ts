@@ -3,13 +3,18 @@ import { z } from 'zod';
 import { clientIp, hashPassword, otpauthUrl, randomTotpSecret, requireAdmin, sameOrigin, verifyPassword, verifyTotp } from 'lib/adminAuth';
 import prisma from 'lib/prisma';
 
-// Настройки текущего пользователя: смена пароля, включение/выключение 2FA.
+// Настройки текущего пользователя: смена пароля, 2FA, завершение сессий (admin может завершить чужую).
 const Body = z.discriminatedUnion('action', [
   z.object({ action: z.literal('password'), current: z.string().min(1).max(200), next: z.string().min(12, 'Пароль не короче 12 символов').max(200) }),
   z.object({ action: z.literal('totp-setup') }),
   z.object({ action: z.literal('totp-enable'), code: z.string().length(6) }),
   z.object({ action: z.literal('totp-disable'), password: z.string().min(1).max(200) }),
+  z.object({ action: z.literal('revoke'), id: z.string().min(1).max(40) }),
+  z.object({ action: z.literal('revoke-others') }),
 ]);
+
+const revokeOthers = (login: string, keep: string) =>
+  prisma.adminLogin.updateMany({ where: { login, ok: true, revokedAt: null, id: { not: keep } }, data: { revokedAt: new Date() } });
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   const session = await requireAdmin(req, res);
@@ -27,6 +32,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     case 'password': {
       if (!verifyPassword(b.current, u.passwordHash)) return res.status(400).json({ message: 'Текущий пароль неверный' });
       await prisma.adminUser.update({ where: { id: u.id }, data: { passwordHash: hashPassword(b.next) } });
+      await revokeOthers(session.user, session.sid);
       console.info(`[admin] ${who} changed own password`);
       return res.status(200).json({ ok: true });
     }
@@ -41,6 +47,19 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       if (!verifyTotp(b.code, u.totpSecret)) return res.status(400).json({ message: 'Код не подошёл, проверьте время на телефоне' });
       await prisma.adminUser.update({ where: { id: u.id }, data: { totpEnabled: true } });
       console.info(`[admin] ${who} enabled 2FA`);
+      return res.status(200).json({ ok: true });
+    }
+    case 'revoke': {
+      const row = await prisma.adminLogin.findUnique({ where: { id: b.id } });
+      if (!row || !row.ok) return res.status(404).json({ message: 'Сессия не найдена' });
+      if (row.login !== session.user && session.role !== 'admin') return res.status(403).json({ message: 'Недостаточно прав' });
+      await prisma.adminLogin.update({ where: { id: row.id }, data: { revokedAt: row.revokedAt ?? new Date() } });
+      console.info(`[admin] ${who} revoked session of ${row.login} (${row.ip})`);
+      return res.status(200).json({ ok: true });
+    }
+    case 'revoke-others': {
+      await revokeOthers(session.user, session.sid);
+      console.info(`[admin] ${who} revoked own other sessions`);
       return res.status(200).json({ ok: true });
     }
     case 'totp-disable': {

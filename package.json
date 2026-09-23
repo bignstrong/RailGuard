@@ -11,26 +11,25 @@
     "postinstall": "prisma generate"
   },
   "dependencies": {
-    "@prisma/client": "^6.11.0",
-    "css-in-js-media": "^2.0.1",
-    "next": "^15.3.4",
-    "nodemailer": "^7",
-    "prisma": "^6.11.0",
+    "@prisma/client": "^6.19.3",
+    "next": "^15.5.26",
+    "nodemailer": "^9.1.1",
+    "prisma": "^6.19.3",
     "react": "18.3.1",
     "react-dom": "18.3.1",
-    "styled-components": "^5.3.5",
+    "styled-components": "^5.3.11",
     "zod": "^3.25.67"
   },
   "devDependencies": {
     "@types/node": "^22",
     "@types/nodemailer": "^8.0.2",
     "@types/react": "^18",
+    "@types/react-dom": "^18",
     "@types/styled-components": "^5.1.25",
     "eslint": "^8.57.0",
-    "eslint-config-next": "^15",
+    "eslint-config-next": "^15.5.26",
     "eslint-config-prettier": "^8.3.0",
-    "typescript": "^5.8.3",
-    "@types/react-dom": "^18"
+    "typescript": "^5.8.3"
   },
   "resolutions": {
     "@types/react": "^18",

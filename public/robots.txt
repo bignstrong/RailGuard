@@ -2,6 +2,7 @@ User-agent: *
 Allow: /
 Disallow: /api/
 Disallow: /admin/
+Clean-param: utm_source&utm_medium&utm_campaign&utm_content&utm_term&yclid&gclid&fbclid /
 
 # Machine-readable summary: https://railguard.ru/llms.txt
 
@@ -86,6 +87,21 @@ Disallow: /api/
 Disallow: /admin/
 
 User-agent: DuckAssistBot
+Allow: /
+Disallow: /api/
+Disallow: /admin/
+
+User-agent: MistralAI-User
+Allow: /
+Disallow: /api/
+Disallow: /admin/
+
+User-agent: YandexAdditional
+Allow: /
+Disallow: /api/
+Disallow: /admin/
+
+User-agent: YandexAdditionalBot
 Allow: /
 Disallow: /api/
 Disallow: /admin/

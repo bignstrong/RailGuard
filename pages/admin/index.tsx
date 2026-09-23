@@ -31,7 +31,7 @@ export const getServerSideProps: GetServerSideProps<Props> = async (ctx) => {
       : {}),
   };
   const [orders, subscribers, grouped] = await Promise.all([
-    prisma.order.findMany({ where, orderBy: { createdAt: 'desc' }, take: 200 }),
+    prisma.order.findMany({ where, orderBy: { createdAt: 'desc' }, take: 200, select: { id: true, createdAt: true, status: true, totalPrice: true, contact: true, items: true, note: true } }),
     prisma.subscriber.count(),
     prisma.order.groupBy({ by: ['status'], _count: { _all: true } }),
   ]);

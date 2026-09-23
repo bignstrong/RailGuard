@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import Page from 'components/Page';
 import RichText from 'components/RichText';
 import { loadSite, SiteConfig } from 'lib/site';
+import { track } from 'lib/track';
 
 type Props = { contacts: SiteConfig['contacts'] };
 
@@ -70,11 +71,20 @@ export default function DeliveryPage({ contacts: CONTACTS }: Props) {
             <ul>
               {CONTACTS.phone && (
                 <li>
-                  Телефон и WhatsApp: <a href={`tel:${CONTACTS.phone.replace(/[^\d+]/g, '')}`}>{CONTACTS.phone}</a>
+                  Телефон и WhatsApp:{' '}
+                  <a
+                    href={`tel:${CONTACTS.phone.replace(/[^\d+]/g, '')}`}
+                    onClick={() => track('contact_click', { type: 'phone' })}
+                  >
+                    {CONTACTS.phone}
+                  </a>
                 </li>
               )}
               <li>
-                Email: <a href={`mailto:${CONTACTS.email}`}>{CONTACTS.email}</a>
+                Email:{' '}
+                <a href={`mailto:${CONTACTS.email}`} onClick={() => track('contact_click', { type: 'email' })}>
+                  {CONTACTS.email}
+                </a>
               </li>
               <li>{CONTACTS.hours}</li>
               {CONTACTS.legal && <li>{CONTACTS.legal}</li>}

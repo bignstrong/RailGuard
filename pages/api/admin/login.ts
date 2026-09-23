@@ -1,6 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { z } from 'zod';
-import { clientIp, OWNER_LOGIN, sameOrigin, verifyPassword, verifyTotp } from 'lib/adminAuth';
+import { clientIp, OWNER_LOGIN, sameOrigin, userAgent, verifyPassword, verifyTotp } from 'lib/adminAuth';
 import { AdminRole, createSession, sessionCookie } from 'lib/adminSession';
 import prisma from 'lib/prisma';
 import { rateLimit } from 'lib/rateLimit';
@@ -35,12 +35,18 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   const secret = process.env.ADMIN_SESSION_SECRET;
   const auth = parsed.success && secret ? await authenticate(parsed.data.login, parsed.data.password, parsed.data.code) : null;
   if (auth && 'needCode' in auth) return res.status(401).json({ needCode: true, message: 'Введите код из приложения' });
+  const ip = clientIp(req);
   if (!auth) {
-    console.warn(`[admin] failed login "${parsed.success ? parsed.data.login : '?'}" from ${clientIp(req)}`);
+    const login = parsed.success ? parsed.data.login : '?';
+    console.warn(`[admin] failed login "${login}" from ${ip}`);
+    // ponytail: неудачи пишем в БД без отдельного лимита; хватает rateLimit выше и чистки старше 90 дней
+    await prisma.adminLogin.create({ data: { login, ok: false, ip, userAgent: userAgent(req) } }).catch(() => {});
     await sleep(1500);
     return res.status(401).json({ message: 'Неверный логин, пароль или код' });
   }
-  console.info(`[admin] login ${auth.user} (${auth.role}) from ${clientIp(req)}`);
-  res.setHeader('Set-Cookie', sessionCookie(await createSession(secret as string, auth.user, auth.role)));
+  console.info(`[admin] login ${auth.user} (${auth.role}) from ${ip}`);
+  const row = await prisma.adminLogin.create({ data: { login: auth.user, ok: true, ip, lastIp: ip, lastSeenAt: new Date(), userAgent: userAgent(req) } });
+  await prisma.adminLogin.deleteMany({ where: { createdAt: { lt: new Date(Date.now() - 90 * 864e5) } } });
+  res.setHeader('Set-Cookie', sessionCookie(await createSession(secret as string, auth.user, auth.role, row.id)));
   return res.status(200).json({ ok: true });
 }
