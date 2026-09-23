@@ -6,6 +6,7 @@ module.exports = {
     return [
       { source: '/sitemap.xml', destination: '/api/sitemap.xml' },
       { source: '/llms.txt', destination: '/api/llms.txt' },
+      { source: '/feed.xml', destination: '/api/feed.xml' },
       { source: '/llms-full.txt', destination: '/api/llms-full.txt' },
       { source: '/indexnow-key.txt', destination: '/api/indexnow-key' },
     ];

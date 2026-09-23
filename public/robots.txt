@@ -110,3 +110,4 @@ Sitemap: https://railguard.ru/sitemap.xml
 
 User-agent: YandexDirectFetcher
 Allow: /api/feed.xml
+Allow: /feed.xml

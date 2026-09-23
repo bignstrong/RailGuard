@@ -126,15 +126,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     <categories>
 ${categories.map((cat) => `      <category id="${cat.id}">${cat.name}</category>`).join('\n')}
     </categories>
-    <delivery-options>
-      <option cost="0" days="1-3" order-before="18"/>
-    </delivery-options>
     <offers>
 ${products
   .filter((product) => !product.hidden)
   .map(
     (product) => `      <offer id="${product.id}" available="${product.available}">
-        <url>https://railguard.ru/pricing#${product.id}</url>
+        <url>https://railguard.ru/pricing/${product.id}</url>
         <price>${product.price}</price>
         <oldprice>${product.oldPrice}</oldprice>
         <currencyId>RUR</currencyId>
@@ -143,7 +140,7 @@ ${products
         <store>false</store>
         <pickup>false</pickup>
         <delivery>true</delivery>
-        <typePrefix>${product.typePrefix}</typePrefix>
+${product.price >= 5000 ? '        <delivery-options><option cost="0" days="1-3" order-before="18"/></delivery-options>\n' : ''}        <typePrefix>${product.typePrefix}</typePrefix>
         <vendor>${product.vendor}</vendor>
         <model>${product.model}</model>
         <name>${product.name}</name>
