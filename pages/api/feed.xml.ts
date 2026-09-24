@@ -25,7 +25,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       params: [
         { name: 'Тонкость фильтрации', value: '8-12 мкм' },
         { name: 'Площадь фильтрации', value: '2000 мм²' },
-        { name: 'Рабочее давление', value: 'до 2500 бар' },
+        { name: 'Давление опрессовки', value: '1800 бар' },
         { name: 'Применение', value: 'Common Rail' },
       ],
     },
