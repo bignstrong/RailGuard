@@ -1,5 +1,6 @@
 import nodemailer from 'nodemailer';
 import { formatPrice } from 'lib/catalog';
+import { loadSite, notifyList } from 'lib/site';
 
 type OrderForMail = {
   id: string;
@@ -8,10 +9,12 @@ type OrderForMail = {
   contact: { phone: string; email: string; preferredContact: string };
 };
 
-// Письмо о новом заказе через SMTP (Яндекс 360). Не настроен SMTP — только предупреждение в лог, заказ уже сохранён.
+// Письмо о новом заказе через SMTP (SpaceWeb). Получатели — из админки «Сайт», иначе ORDER_NOTIFY_TO.
+// Не настроен SMTP — только предупреждение в лог, заказ уже сохранён.
 export async function sendOrderEmail(order: OrderForMail): Promise<void> {
-  const { SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASS, SMTP_FROM, ORDER_NOTIFY_TO } = process.env;
-  if (!SMTP_HOST || !SMTP_USER || !SMTP_PASS || !ORDER_NOTIFY_TO) {
+  const { SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASS, SMTP_FROM, ORDER_NOTIFY_TO = '' } = process.env;
+  const to = notifyList((await loadSite()).orderNotifyTo || ORDER_NOTIFY_TO);
+  if (!SMTP_HOST || !SMTP_USER || !SMTP_PASS || !to.length) {
     console.warn('SMTP is not configured, order email skipped:', order.id);
     return;
   }
@@ -33,7 +36,7 @@ export async function sendOrderEmail(order: OrderForMail): Promise<void> {
   ].join('\n');
   await transport.sendMail({
     from: SMTP_FROM || SMTP_USER,
-    to: ORDER_NOTIFY_TO,
+    to,
     subject: `Заказ #${order.id.slice(-6)} на ${formatPrice(order.totalPrice)}`,
     text,
   });

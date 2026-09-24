@@ -24,13 +24,22 @@ export const SiteSchema = z.object({
       .refine((v) => v === '' || /^https:\/\/t\.me\/[A-Za-z0-9_]{4,}$/.test(v), 'Telegram: ссылка вида https://t.me/имя'),
   }),
   products: z.record(Product),
+  // Кому слать письма о заказах: адреса через запятую. Не публикуется (/api/site отдаёт только объявление).
+  orderNotifyTo: z
+    .string()
+    .trim()
+    .max(500)
+    .refine((v) => notifyList(v).every((e) => z.string().email().safeParse(e).success), 'Получатели заказов: проверьте адреса email'),
 });
+
+export const notifyList = (v: string) => v.split(/[\s,;]+/).filter(Boolean);
 
 export type SiteConfig = z.infer<typeof SiteSchema>;
 export type ProductConfig = z.infer<typeof Product>;
 
 export const DEFAULT_SITE: SiteConfig = {
   announcement: '',
+  orderNotifyTo: '',
   contacts: { phone: '', email: 'info@railguard.ru', hours: 'Пн–Пт, 9:00–18:00 (МСК)', legal: '', telegram: 'https://t.me/railguard_manager' },
   products: Object.fromEntries(
     (Object.keys(CATALOG) as ProductId[]).map((id) => [id, { price: CATALOG[id].price, oldPrice: CATALOG[id].oldPrice, inStock: true, hidden: false }]),

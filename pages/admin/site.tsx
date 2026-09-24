@@ -191,6 +191,20 @@ export default function AdminSite({ base, session, site: initial }: Props) {
         </Card>
 
         <Card>
+          <h2>Уведомления о заказах</h2>
+          <FormGroup>
+            <label>Кому отправлять письмо о новом заказе (через запятую)</label>
+            <Input
+              value={site.orderNotifyTo}
+              onChange={(e) => setSite({ ...site, orderNotifyTo: e.target.value })}
+              disabled={!isAdmin}
+              placeholder="owner@example.ru, manager@example.ru"
+            />
+          </FormGroup>
+          <Hint>Письма уходят с ящика, указанного на сервере (SMTP_USER). Пусто — адрес из ORDER_NOTIFY_TO на сервере.</Hint>
+        </Card>
+
+        <Card>
           <h2>Товары</h2>
           <Table>
             <thead>
