@@ -17,6 +17,10 @@ model Order {
   totalPrice      Float
   status          String   @default("pending")
   note            String?
+  // Атрибуция (lib/attribution.ts): канал последнего значимого перехода, {ft, lt, ymClientId}, устройство.
+  channel         String?
+  attribution     Json?
+  device          String?
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
 
@@ -74,4 +78,15 @@ model Setting {
   value     String
   // Реальная дата правки: sitemap берёт её как lastmod для каталога и товаров.
   updatedAt DateTime @default(now()) @updatedAt
+}
+
+// Счётчики воронки по дням (МСК): visit / view / add / cart в разрезе канала и товара. Без cookie и IP.
+model DailyStat {
+  day     String // YYYY-MM-DD
+  event   String
+  channel String
+  product String @default("")
+  count   Int    @default(0)
+
+  @@id([day, event, channel, product])
 }

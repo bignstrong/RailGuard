@@ -1,6 +1,7 @@
 import type { AppProps } from 'next/app';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
+import { useEffect } from 'react';
 import Cart from 'components/Cart';
 import CookieConsent from 'components/CookieConsent';
 import Footer from 'components/Footer';
@@ -11,6 +12,7 @@ import Newsletter from 'components/Newsletter';
 import { CartProvider } from 'contexts/cart.context';
 import { LightboxProvider } from 'contexts/lightbox.context';
 import { ToastProvider } from 'contexts/toast.context';
+import { startSession } from 'lib/attribution';
 
 const structuredData = {
   '@context': 'https://schema.org',
@@ -38,7 +40,11 @@ const structuredData = {
 
 export default function MyApp({ Component, pageProps }: AppProps) {
   const { pathname } = useRouter();
-  if (pathname.startsWith('/admin')) {
+  const isAdmin = pathname.startsWith('/admin');
+  useEffect(() => {
+    if (!isAdmin) startSession();
+  }, [isAdmin]);
+  if (isAdmin) {
     return (
       <>
         <GlobalStyle />

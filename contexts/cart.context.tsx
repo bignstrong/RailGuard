@@ -1,4 +1,6 @@
 import React, { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
+import { countEvent } from 'lib/attribution';
+import { ecommerce, track } from 'lib/track';
 
 const STORAGE_KEY = 'railguard-cart';
 
@@ -72,6 +74,11 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
 
       return [...currentItems, { ...newItem, quantity: 1 }];
     });
+    // Все «В корзину» идут через addItem — цель, e-commerce и воронка считаются здесь.
+    track('add_to_cart', { id: newItem.id, price: newItem.price });
+    ecommerce('add', [{ id: newItem.id, name: newItem.title, price: newItem.price, quantity: 1 }]);
+    countEvent('add');
+    countEvent('add', newItem.id);
   }, []);
 
   const removeItem = useCallback((id: string) => {

@@ -7,7 +7,6 @@ import { useLightbox } from 'contexts/lightbox.context';
 import { useToast } from 'contexts/toast.context';
 import { formatPrice, ProductId } from 'lib/catalog';
 import type { Product } from 'lib/site';
-import { track } from 'lib/track';
 import { media } from 'utils/media';
 
 const TEXT: Record<ProductId, { description: string; more?: string; best?: boolean }> = {
@@ -51,7 +50,6 @@ function ProductCard({ id, title, price, oldPrice, image, inStock }: Product) {
           disabled={!inStock}
           onClick={() => {
             addItem({ id, title, price, oldPrice, image });
-            track('add_to_cart', { id, price });
             showToast(`${title} — в корзине`, 'success', toggleCart);
           }}
         >

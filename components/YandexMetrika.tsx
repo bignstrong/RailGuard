@@ -1,4 +1,5 @@
 import Script from 'next/script';
+import { YANDEX_COUNTER_ID } from 'lib/track';
 
 export default function YandexMetrika() {
   return (
@@ -12,7 +13,8 @@ export default function YandexMetrika() {
             k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)
           })(window, document, "script", "https://mc.yandex.ru/metrika/tag.js", "ym");
 
-          ym(103169989, "init", {
+          ym(${YANDEX_COUNTER_ID}, "init", {
+            ecommerce: "dataLayer",
             clickmap:true,
             trackLinks:true,
             accurateTrackBounce:true,
@@ -22,7 +24,8 @@ export default function YandexMetrika() {
       </Script>
       <noscript>
         <div>
-          <img src="https://mc.yandex.ru/watch/103169989" style={{ position: 'absolute', left: '-9999px' }} alt="" />
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src={`https://mc.yandex.ru/watch/${YANDEX_COUNTER_ID}`} style={{ position: 'absolute', left: '-9999px' }} alt="" />
         </div>
       </noscript>
     </>

@@ -1,6 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { requireAdmin } from 'lib/adminAuth';
 import { csvField, ORDER_STATUSES, OrderStatus } from 'lib/adminShared';
+import type { Touch } from 'lib/attribution';
 import prisma from 'lib/prisma';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
@@ -24,11 +25,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const c = (o.contact ?? {}) as Record<string, string>;
     const items = (o.items ?? []) as { title: string; quantity: number }[];
     const itemsStr = items.map((i) => `${i.title}×${i.quantity}`).join(', ');
-    return [o.id, o.createdAt.toISOString(), o.status, c.phone ?? '', c.email ?? '', c.preferredContact ?? '', String(o.totalPrice), itemsStr, o.note ?? '']
+    const lt = (o.attribution as { lt?: Touch | null } | null)?.lt;
+    return [o.id, o.createdAt.toISOString(), o.status, c.phone ?? '', c.email ?? '', c.preferredContact ?? '', String(o.totalPrice), itemsStr, o.note ?? '', o.channel ?? '', lt?.source ?? '', lt?.medium ?? '', lt?.campaign ?? '', o.device ?? '']
       .map(csvField)
       .join(';');
   });
-  const csv = ['id;createdAt;status;phone;email;preferredContact;totalPrice;items;note', ...rows].join('\n');
+  const csv = ['id;createdAt;status;phone;email;preferredContact;totalPrice;items;note;channel;utm_source;utm_medium;utm_campaign;device', ...rows].join('\n');
   res.setHeader('Content-Type', 'text/csv; charset=utf-8');
   res.setHeader('Content-Disposition', 'attachment; filename="orders.csv"');
   res.setHeader('Cache-Control', 'no-store');

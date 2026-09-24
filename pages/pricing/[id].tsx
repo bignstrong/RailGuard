@@ -1,6 +1,7 @@
 import type { GetStaticPaths, GetStaticProps } from 'next';
 import Head from 'next/head';
 import Image from 'next/image';
+import { useEffect } from 'react';
 import styled from 'styled-components';
 import Button from 'components/Button';
 import Link from 'components/Link';
@@ -9,9 +10,10 @@ import { useCart } from 'contexts/cart.context';
 import { useLightbox } from 'contexts/lightbox.context';
 import { useToast } from 'contexts/toast.context';
 import { EnvVars } from 'env';
+import { countEvent } from 'lib/attribution';
 import { CATALOG, formatPrice, isProductId, PRODUCT_DESCRIPTIONS, ProductId } from 'lib/catalog';
 import { loadSite, Product } from 'lib/site';
-import { track } from 'lib/track';
+import { ecommerce } from 'lib/track';
 
 type Props = { product: Product };
 
@@ -48,6 +50,11 @@ export default function ProductPage({ product }: Props) {
   const inCart = items.find((i) => i.id === product.id)?.quantity ?? 0;
   const discount = product.oldPrice > product.price ? Math.round(((product.oldPrice - product.price) / product.oldPrice) * 100) : 0;
   const canonical = `${EnvVars.URL}pricing/${product.id}`;
+
+  useEffect(() => {
+    ecommerce('detail', [{ id: product.id, name: product.title, price: product.price }]);
+    countEvent('view', product.id);
+  }, [product.id, product.title, product.price]);
 
   const jsonLd = {
     '@context': 'https://schema.org/',
@@ -105,7 +112,6 @@ export default function ProductPage({ product }: Props) {
               disabled={!product.inStock}
               onClick={() => {
                 addItem(product);
-                track('add_to_cart', { id: product.id, price: product.price });
                 showToast(`${product.title} — в корзине`, 'success', toggleCart);
               }}
             >

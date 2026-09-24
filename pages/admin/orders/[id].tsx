@@ -6,6 +6,7 @@ import { AdminNav, AdminPage, Btn, Card, fmtDate, Input, Select, Status, Table }
 import { adminBase, getAdminSession } from 'lib/adminAuth';
 import type { AdminSession } from 'lib/adminSession';
 import { ORDER_STATUSES, OrderStatus, STATUS_LABEL } from 'lib/adminShared';
+import { Channel, CHANNEL_LABEL, Touch } from 'lib/attribution';
 import { formatPrice } from 'lib/catalog';
 import prisma from 'lib/prisma';
 
@@ -13,8 +14,13 @@ type Item = { id: string; title: string; price: number; quantity: number };
 type Props = {
   base: string;
   session: AdminSession;
-  order: { id: string; createdAt: string; updatedAt: string; status: string; totalPrice: number; items: Item[]; contact: Record<string, string>; note: string | null };
+  order: { id: string; createdAt: string; updatedAt: string; status: string; totalPrice: number; items: Item[]; contact: Record<string, string>; note: string | null; channel: string | null; device: string | null; attribution: { ft?: Touch | null; lt?: Touch | null; ymClientId?: string } | null };
 };
+
+const touchText = (t?: Touch | null) =>
+  t
+    ? [`${t.source} / ${t.medium}`, t.campaign && `кампания ${t.campaign}`, t.term && `запрос ${t.term}`, t.yclid && 'yclid', `вход ${t.landing}`, fmtDate(t.at)].filter(Boolean).join(' · ')
+    : '—';
 
 export const getServerSideProps: GetServerSideProps<Props> = async (ctx) => {
   const base = adminBase();
@@ -35,6 +41,9 @@ export const getServerSideProps: GetServerSideProps<Props> = async (ctx) => {
         items: (o.items ?? []) as Item[],
         contact: (o.contact ?? {}) as Record<string, string>,
         note: o.note,
+        channel: o.channel,
+        device: o.device,
+        attribution: (o.attribution ?? null) as Props['order']['attribution'],
       },
     },
   };
@@ -139,6 +148,16 @@ export default function AdminOrder({ base, session, order }: Props) {
           <dd>{c.preferredContact}</dd>
           <dt>Согласие на ПДн</dt>
           <dd>{c.consentAt ? fmtDate(c.consentAt) : 'нет отметки'}</dd>
+          <dt>Канал</dt>
+          <dd>{order.channel ? CHANNEL_LABEL[order.channel as Channel] ?? order.channel : 'нет данных'}</dd>
+          <dt>Последний источник</dt>
+          <dd>{touchText(order.attribution?.lt)}</dd>
+          <dt>Первый источник</dt>
+          <dd>{touchText(order.attribution?.ft)}</dd>
+          <dt>Устройство</dt>
+          <dd>{order.device ?? '—'}</dd>
+          <dt>ClientID Метрики</dt>
+          <dd>{order.attribution?.ymClientId ?? '— (нет согласия на cookie)'}</dd>
         </dl>
         <h2 style={{ marginTop: '2rem' }}>Изменить контакты</h2>
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.8rem', alignItems: 'center' }}>

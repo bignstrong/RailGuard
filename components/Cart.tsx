@@ -5,9 +5,10 @@ import Button from 'components/Button';
 import Input from 'components/Input';
 import { useCart } from 'contexts/cart.context';
 import { useToast } from 'contexts/toast.context';
-import { track } from 'lib/track';
+import { countEvent, readAttribution } from 'lib/attribution';
 import { formatPrice } from 'lib/catalog';
 import { formatPhone, phoneDigits } from 'lib/phone.mjs';
+import { ecommerce, track, ymClientId } from 'lib/track';
 import { media } from 'utils/media';
 
 const CONTACTS = [
@@ -26,6 +27,7 @@ export default function Cart() {
   useEffect(() => {
     if (!isCartOpen) return;
     track('cart_open');
+    countEvent('cart');
     const onKey = (e: KeyboardEvent) => e.key === 'Escape' && toggleCart();
     window.addEventListener('keydown', onKey);
     document.body.style.overflow = 'hidden';
@@ -50,12 +52,18 @@ export default function Cart() {
           items: items.map(({ id, quantity }) => ({ id, quantity })),
           contact: { phone, email: form.get('email'), preferredContact: form.get('preferredContact') },
           consent: form.get('consent') === 'on',
+          attribution: { ...readAttribution(), ymClientId: await ymClientId() },
         }),
       });
       const data = await res.json().catch(() => ({}));
       if (!res.ok) return showToast(data.message || 'Не удалось оформить заказ. Попробуйте ещё раз.', 'error');
       clearCart();
       setOrderId(data.orderId);
+      ecommerce(
+        'purchase',
+        items.map((i) => ({ id: i.id, name: i.title, price: i.price, quantity: i.quantity })),
+        data.orderId,
+      );
       track('order_submit', {
         value: totalPrice,
         currency: 'RUB',
