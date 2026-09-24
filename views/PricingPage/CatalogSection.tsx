@@ -1,4 +1,3 @@
-import Head from 'next/head';
 import Image from 'next/image';
 import styled from 'styled-components';
 import Button from 'components/Button';
@@ -6,7 +5,6 @@ import Link from 'components/Link';
 import { useCart } from 'contexts/cart.context';
 import { useLightbox } from 'contexts/lightbox.context';
 import { useToast } from 'contexts/toast.context';
-import { EnvVars } from 'env';
 import { formatPrice, ProductId } from 'lib/catalog';
 import type { Product } from 'lib/site';
 import { track } from 'lib/track';
@@ -20,7 +18,6 @@ const TEXT: Record<ProductId, { description: string; more?: string; best?: boole
 };
 
 // Страница статическая: дата фиксируется на момент сборки, ~90 дней вперёд.
-const PRICE_VALID_UNTIL = new Date(Date.now() + 90 * 864e5).toISOString().slice(0, 10);
 
 function ProductCard({ id, title, price, oldPrice, image, inStock }: Product) {
   const { description, more, best } = TEXT[id];
@@ -30,29 +27,9 @@ function ProductCard({ id, title, price, oldPrice, image, inStock }: Product) {
   const inCart = items.find((i) => i.id === id)?.quantity ?? 0;
   const discount = oldPrice > price ? Math.round(((oldPrice - price) / oldPrice) * 100) : 0;
 
-  const jsonLd = {
-    '@context': 'https://schema.org/',
-    '@type': 'Product',
-    name: title,
-    image: [`${EnvVars.URL}${image.slice(1)}`],
-    description,
-    sku: id,
-    brand: { '@type': 'Brand', name: 'RailGuard' },
-    offers: {
-      '@type': 'Offer',
-      priceCurrency: 'RUB',
-      price: String(price),
-      availability: inStock ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock',
-      url: `${EnvVars.URL}pricing/${id}`,
-      priceValidUntil: PRICE_VALID_UNTIL,
-    },
-  };
 
   return (
     <Card id={id} $best={best}>
-      <Head>
-        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, '\\u003c') }} />
-      </Head>
       {best && <Ribbon>Лучший выбор</Ribbon>}
       <Picture type="button" onClick={() => open([image])} aria-label={`Увеличить: ${title}`}>
         {discount > 0 && <Badge>−{discount}%</Badge>}
