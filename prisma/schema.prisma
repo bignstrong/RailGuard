@@ -70,6 +70,8 @@ model AdminLogin {
 }
 
 model Setting {
-  key   String @id
-  value String
+  key       String   @id
+  value     String
+  // Реальная дата правки: sitemap берёт её как lastmod для каталога и товаров.
+  updatedAt DateTime @default(now()) @updatedAt
 }
