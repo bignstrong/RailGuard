@@ -36,7 +36,7 @@ ${PRODUCT_DESCRIPTIONS[p.id as ProductId]}`,
     : 'Подходит для большинства двигателей Common Rail объёмом до 2,7 л. Подробная таблица по моделям готовится; до её публикации подбор по VIN или модели двигателя делает менеджер.';
 
   const faq = FAQ.map(([q, a]) => `### ${q}\n\n${a}`).join('\n\n');
-  const contacts = [site.contacts.email && `- Email: ${site.contacts.email}`, site.contacts.phone && `- Телефон: ${site.contacts.phone}`, site.contacts.hours && `- ${site.contacts.hours}`]
+  const contacts = [site.contacts.email && `- Email: ${site.contacts.email}`, site.contacts.phone && `- Телефон: ${site.contacts.phone}`, site.contacts.telegram && `- Telegram: ${site.contacts.telegram}`, site.contacts.hours && `- ${site.contacts.hours}`]
     .filter(Boolean)
     .join('\n');
 

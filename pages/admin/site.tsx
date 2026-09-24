@@ -118,6 +118,7 @@ export default function AdminSite({ base, session, site: initial }: Props) {
   const handleEmailChange = (value: string) => setSite({ ...site, contacts: { ...site.contacts, email: value } });
   const handleHoursChange = (value: string) => setSite({ ...site, contacts: { ...site.contacts, hours: value } });
   const handleLegalChange = (value: string) => setSite({ ...site, contacts: { ...site.contacts, legal: value } });
+  const handleTelegramChange = (value: string) => setSite({ ...site, contacts: { ...site.contacts, telegram: value } });
 
   const handleProductChange = (id: ProductId, field: 'price' | 'oldPrice' | 'inStock' | 'hidden', value: string | boolean) => {
     const numValue = typeof value === 'string' ? parseInt(value, 10) || 0 : value;
@@ -178,6 +179,12 @@ export default function AdminSite({ base, session, site: initial }: Props) {
             <FormGroup>
               <label>Реквизиты (ИП/ООО, ИНН, ОГРН)</label>
               <Input value={site.contacts.legal} onChange={(e) => handleLegalChange(e.target.value)} disabled={!isAdmin} />
+            </FormGroup>
+          </FormRow>
+          <FormRow>
+            <FormGroup>
+              <label>Telegram (ссылка https://t.me/…)</label>
+              <Input value={site.contacts.telegram} onChange={(e) => handleTelegramChange(e.target.value)} disabled={!isAdmin} placeholder="https://t.me/railguard_manager" />
             </FormGroup>
           </FormRow>
           <Hint>Пустые поля на сайте не показываются.</Hint>

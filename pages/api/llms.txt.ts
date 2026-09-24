@@ -12,7 +12,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   const products = visibleProducts(site)
     .map((p) => `- [${p.title}](${BASE_URL}/pricing/${p.id}): ${formatPrice(p.price)}${p.oldPrice > p.price ? ` вместо ${formatPrice(p.oldPrice)}` : ''}, ${p.inStock ? 'в наличии' : 'нет в наличии'}`)
     .join('\n');
-  const contacts = [site.contacts.email && `email ${site.contacts.email}`, site.contacts.phone && `телефон ${site.contacts.phone}`, site.contacts.hours].filter(Boolean).join(', ');
+  const contacts = [site.contacts.email && `email ${site.contacts.email}`, site.contacts.phone && `телефон ${site.contacts.phone}`, site.contacts.telegram && `Telegram ${site.contacts.telegram}`, site.contacts.hours].filter(Boolean).join(', ');
 
   const content = `# RailGuard
 

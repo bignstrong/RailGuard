@@ -68,34 +68,11 @@ export default function ProductPage({ product }: Props) {
           priceValidUntil: PRICE_VALID_UNTIL,
         },
       },
-      {
-        '@type': 'BreadcrumbList',
-        itemListElement: [
-          {
-            '@type': 'ListItem',
-            position: 1,
-            name: 'RailGuard',
-            item: EnvVars.URL,
-          },
-          {
-            '@type': 'ListItem',
-            position: 2,
-            name: 'Каталог',
-            item: `${EnvVars.URL}pricing`,
-          },
-          {
-            '@type': 'ListItem',
-            position: 3,
-            name: product.title,
-            item: canonical,
-          },
-        ],
-      },
     ],
   };
 
   return (
-    <Page title={product.title} description={PRODUCT_DESCRIPTIONS[product.id as ProductId]} canonical={canonical}>
+    <Page title={product.title} description={PRODUCT_DESCRIPTIONS[product.id as ProductId]} canonical={canonical} crumbs={[{ name: 'Каталог', url: `${EnvVars.URL}pricing` }]}>
       <Head>
         <script
           type="application/ld+json"

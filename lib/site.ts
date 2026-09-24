@@ -17,6 +17,11 @@ export const SiteSchema = z.object({
     email: z.string().trim().email().max(120),
     hours: z.string().trim().max(80),
     legal: z.string().trim().max(200),
+    telegram: z
+      .string()
+      .trim()
+      .max(100)
+      .refine((v) => v === '' || /^https:\/\/t\.me\/[A-Za-z0-9_]{4,}$/.test(v), 'Telegram: ссылка вида https://t.me/имя'),
   }),
   products: z.record(Product),
 });
@@ -26,7 +31,7 @@ export type ProductConfig = z.infer<typeof Product>;
 
 export const DEFAULT_SITE: SiteConfig = {
   announcement: '',
-  contacts: { phone: '', email: 'info@railguard.ru', hours: 'Пн–Пт, 9:00–18:00 (МСК)', legal: '' },
+  contacts: { phone: '', email: 'info@railguard.ru', hours: 'Пн–Пт, 9:00–18:00 (МСК)', legal: '', telegram: 'https://t.me/railguard_manager' },
   products: Object.fromEntries(
     (Object.keys(CATALOG) as ProductId[]).map((id) => [id, { price: CATALOG[id].price, oldPrice: CATALOG[id].oldPrice, inStock: true, hidden: false }]),
   ),

@@ -12,7 +12,7 @@ export default function Homepage() {
   return (
     <>
       <Head>
-        <title>{EnvVars.SITE_NAME}</title>
+        <title>RailGuard — топливный фильтр высокого давления для Common Rail</title>
         <meta name="description" content={DESCRIPTION} />
         <link rel="canonical" href={EnvVars.URL} />
         <meta property="og:type" content="website" />

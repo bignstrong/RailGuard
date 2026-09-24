@@ -86,6 +86,14 @@ export default function DeliveryPage({ contacts: CONTACTS }: Props) {
                   {CONTACTS.email}
                 </a>
               </li>
+              {CONTACTS.telegram && (
+                <li>
+                  Telegram:{' '}
+                  <a href={CONTACTS.telegram} target="_blank" rel="noopener noreferrer" onClick={() => track('contact_click', { type: 'telegram' })}>
+                    @{CONTACTS.telegram.replace('https://t.me/', '')}
+                  </a>
+                </li>
+              )}
               <li>{CONTACTS.hours}</li>
               {CONTACTS.legal && <li>{CONTACTS.legal}</li>}
             </ul>

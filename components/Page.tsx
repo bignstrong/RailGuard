@@ -9,12 +9,21 @@ export interface PageProps {
   title: string;
   description?: string;
   canonical?: string;
+  // Хлебные крошки между главной и текущей страницей (для товара — «Каталог»). Только разметка, для сниппета.
+  crumbs?: { name: string; url: string }[];
 }
 
-export default function Page({ title, description, canonical, children }: PropsWithChildren<PageProps>) {
+export default function Page({ title, description, canonical, crumbs = [], children }: PropsWithChildren<PageProps>) {
   const fullTitle = `${title} | ${EnvVars.SITE_NAME}`;
   const ogImage = `${EnvVars.URL}og-image.png`;
   const url = canonical || EnvVars.URL;
+  // BreadcrumbList по правилам Яндекса (JSON-LD, name/url/position, до 3 элементов) и Google (item).
+  const chain = [{ name: 'Главная', url: EnvVars.URL }, ...crumbs, { name: title, url }];
+  const breadcrumbs = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: chain.map((c, i) => ({ '@type': 'ListItem', position: i + 1, name: c.name, item: c.url, url: c.url })),
+  };
   return (
     <>
       <Head>
@@ -34,6 +43,7 @@ export default function Page({ title, description, canonical, children }: PropsW
         <meta name="twitter:title" content={fullTitle} />
         {description && <meta name="twitter:description" content={description} />}
         <meta name="twitter:image" content={ogImage} />
+        {canonical && <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbs).replace(/</g, '\\u003c') }} />}
       </Head>
       <Header>
         <Container>

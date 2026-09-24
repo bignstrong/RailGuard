@@ -21,6 +21,7 @@ const structuredData = {
       url: 'https://railguard.ru/',
       logo: 'https://railguard.ru/webp/Logo.webp',
       email: 'info@railguard.ru',
+      sameAs: ['https://t.me/railguard_manager'],
       contactPoint: {
         '@type': 'ContactPoint',
         contactType: 'Sales',
@@ -52,8 +53,9 @@ export default function MyApp({ Component, pageProps }: AppProps) {
           <GlobalStyle />
           <Head>
             <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData).replace(/</g, '\\u003c') }} />
-            <link rel="icon" href="/favicon.ico" />
-            <link rel="apple-touch-icon" href="/favicon.png" />
+            <link rel="icon" href="/favicon.ico" sizes="48x48" />
+            <link rel="icon" href="/favicon-120.png" type="image/png" sizes="120x120" />
+            <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
             <link rel="manifest" href="/manifest.json" />
           </Head>
           <Navbar />
