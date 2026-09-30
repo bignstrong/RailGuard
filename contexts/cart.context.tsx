@@ -60,9 +60,22 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     } catch {}
   }, [items, hydrated]);
 
+  // Цены в localStorage могли устареть (правка в админке): при открытии корзины берём актуальные,
+  // скрытые и закончившиеся товары убираем — сервер их всё равно не примет.
+  useEffect(() => {
+    if (!isCartOpen) return;
+    fetch('/api/site', { cache: 'no-store' })
+      .then((r) => r.json())
+      .then(({ products }: { products?: Record<string, { price: number; oldPrice: number; inStock: boolean }> }) => {
+        if (!products) return;
+        setItems((cur) => cur.filter((i) => products[i.id]?.inStock).map((i) => ({ ...i, price: products[i.id].price, oldPrice: products[i.id].oldPrice })));
+      })
+      .catch(() => {});
+  }, [isCartOpen]);
+
   const totalItems = items.reduce((sum, item) => sum + item.quantity, 0);
   const totalPrice = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
-  const totalOldPrice = items.reduce((sum, item) => sum + (item.oldPrice || item.price) * item.quantity, 0);
+  const totalOldPrice = items.reduce((sum, item) => sum + Math.max(item.oldPrice ?? 0, item.price) * item.quantity, 0);
 
   const addItem = useCallback((newItem: Omit<CartItem, 'quantity'>) => {
     setItems((currentItems) => {

@@ -118,7 +118,7 @@ export default function Cart() {
                   <div>
                     <b>{item.title}</b>
                     <Price>
-                      {formatPrice(item.price)} {item.oldPrice && <s>{formatPrice(item.oldPrice)}</s>}
+                      {formatPrice(item.price)} {(item.oldPrice ?? 0) > item.price && <s>{formatPrice(item.oldPrice as number)}</s>}
                     </Price>
                   </div>
                   <Qty>

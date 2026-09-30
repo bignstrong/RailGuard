@@ -53,6 +53,11 @@ export function sameOrigin(req: NextApiRequest): boolean {
   return origin === `https://${host}` || origin === `http://${host}`;
 }
 
+// [id] из пути. После rewrite в middleware Next не кладёт динамический сегмент в req.query (req.url остаётся исходным),
+// поэтому берём последний сегмент пути.
+export const routeId = (req: NextApiRequest) =>
+  typeof req.query.id === 'string' ? req.query.id : decodeURIComponent((req.url || '').split('?')[0].split('/').pop() || '');
+
 export const OWNER_LOGIN = process.env.ADMIN_LOGIN || 'owner';
 
 export const userAgent = (req: AnyReq) => String(req.headers['user-agent'] || '').slice(0, 300);

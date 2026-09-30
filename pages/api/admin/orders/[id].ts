@@ -1,6 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { z } from 'zod';
-import { clientIp, requireAdmin, sameOrigin } from 'lib/adminAuth';
+import { clientIp, requireAdmin, routeId, sameOrigin } from 'lib/adminAuth';
 import { ORDER_STATUSES } from 'lib/adminShared';
 import prisma from 'lib/prisma';
 
@@ -26,7 +26,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   const session = await requireAdmin(req, res);
   if (!session) return;
   if (!sameOrigin(req)) return res.status(403).json({ message: 'Forbidden' });
-  const id = String(req.query.id);
+  const id = routeId(req);
   const who = `${session.user}@${clientIp(req)}`;
 
   if (req.method === 'PATCH') {

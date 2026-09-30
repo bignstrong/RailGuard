@@ -99,7 +99,7 @@ export default function AdminSite({ base, session, site: initial }: Props) {
   const [message, setMessage] = useState('');
   const isAdmin = session.role === 'admin';
 
-  const api = (path: string, init: RequestInit) => fetch(`${base}/api/admin${path}`, { ...init, headers: { 'Content-Type': 'application/json' } });
+  const api = (path: string, init: RequestInit) => fetch(`${base}/api${path}`, { ...init, headers: { 'Content-Type': 'application/json' } });
 
   async function handleSave(e: FormEvent) {
     e.preventDefault();
@@ -270,7 +270,7 @@ export default function AdminSite({ base, session, site: initial }: Props) {
           <Btn type="submit" disabled={!isAdmin || saving}>
             {saving ? 'Сохранение...' : 'Сохранить'}
           </Btn>
-          {message && <Message $error={message.includes('Ошибка')}>{message}</Message>}
+          {message && <Message $error={message !== 'Сохранено'}>{message}</Message>}
         </Card>
       </form>
     </AdminPage>

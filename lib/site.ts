@@ -4,8 +4,8 @@ import { CATALOG, ProductId } from 'lib/catalog';
 import prisma from 'lib/prisma';
 
 const Product = z.object({
-  price: z.number().int().positive(),
-  oldPrice: z.number().int().nonnegative(),
+  price: z.number({ invalid_type_error: 'Цена: введите число' }).int('Цена: целое число').positive('Цена товара должна быть больше 0'),
+  oldPrice: z.number({ invalid_type_error: 'Старая цена: введите число' }).int('Старая цена: целое число').nonnegative('Старая цена не может быть меньше 0'),
   inStock: z.boolean(),
   hidden: z.boolean(),
 });
@@ -14,7 +14,7 @@ export const SiteSchema = z.object({
   announcement: z.string().trim().max(200),
   contacts: z.object({
     phone: z.string().trim().max(40),
-    email: z.string().trim().email().max(120),
+    email: z.string().trim().email('Контакты: проверьте email').max(120),
     hours: z.string().trim().max(80),
     legal: z.string().trim().max(200),
     telegram: z

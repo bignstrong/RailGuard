@@ -85,6 +85,8 @@ export default function AdminOrder({ base, session, order }: Props) {
       return;
     }
     setContactMsg({ ok: true, text: `Сохранено, ${fmtDate(new Date().toISOString())}` });
+    // Перечитать props: блок с контактами выше показывает данные с сервера.
+    router.replace(router.asPath, undefined, { scroll: false });
   }
 
   async function saveNote() {

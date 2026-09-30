@@ -1,6 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { z } from 'zod';
-import { clientIp, hashPassword, OWNER_LOGIN, requireAdmin, sameOrigin } from 'lib/adminAuth';
+import { clientIp, hashPassword, OWNER_LOGIN, requireAdmin, routeId, sameOrigin } from 'lib/adminAuth';
 import prisma from 'lib/prisma';
 
 const Patch = z
@@ -16,7 +16,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   const session = await requireAdmin(req, res, 'admin');
   if (!session) return;
   if (!sameOrigin(req)) return res.status(403).json({ message: 'Forbidden' });
-  const id = String(req.query.id);
+  const id = routeId(req);
   const who = `${session.user}@${clientIp(req)}`;
   const user = await prisma.adminUser.findUnique({ where: { id } });
   if (!user) return res.status(404).json({ message: 'Пользователь не найден' });
