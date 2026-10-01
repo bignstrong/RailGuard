@@ -5,7 +5,7 @@ import styled from 'styled-components';
 import { AdminNav, AdminPage, Btn, Card, Input, Table, Toolbar } from 'components/AdminUi';
 import { adminBase, getAdminSession } from 'lib/adminAuth';
 import type { AdminSession } from 'lib/adminSession';
-import { ORDER_STATUSES, OrderStatus, STATUS_LABEL } from 'lib/adminShared';
+import { ORDER_STATUSES, OrderStatus, STATUS_COLOR, STATUS_LABEL } from 'lib/adminShared';
 import { Channel, CHANNEL_LABEL, CHANNELS, Touch } from 'lib/attribution';
 import { CATALOG, formatPrice, isProductId } from 'lib/catalog';
 import prisma from 'lib/prisma';
@@ -270,13 +270,6 @@ const METRICS = [
   { key: 'adds', label: 'Корзины', kind: 'count' },
 ] as const;
 type MetricKey = (typeof METRICS)[number]['key'];
-
-const STATUS_COLOR: Record<string, string> = {
-  pending: 'rgb(var(--accent))',
-  processing: 'rgb(var(--ink))',
-  completed: 'rgba(var(--ink), 0.45)',
-  cancelled: 'rgba(var(--ink), 0.15)',
-};
 
 // ───────── стили ─────────
 

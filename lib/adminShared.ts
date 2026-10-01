@@ -14,3 +14,40 @@ export function csvField(v: string): string {
   const safe = /^[=+\-@\t\r]/.test(v) && !/^[+-]?[\d\s()-]+$/.test(v) ? `'${v}` : v;
   return /[;"\n\r]/.test(safe) ? `"${safe.replace(/"/g, '""')}"` : safe;
 }
+
+// Цвета статусов: заливка в статистике и в селекте статуса на странице заказов.
+export const STATUS_COLOR: Record<string, string> = {
+  pending: 'rgb(var(--accent))',
+  processing: 'rgb(var(--ink))',
+  completed: 'rgba(var(--ink), 0.45)',
+  cancelled: 'rgba(var(--ink), 0.15)',
+};
+
+// Строка списка заказов: её отдают и SSR страницы, и поток новых заказов (SSE).
+export const ORDER_ROW_SELECT = { id: true, createdAt: true, status: true, totalPrice: true, contact: true, items: true, note: true } as const;
+export type OrderRow = {
+  id: string;
+  createdAt: string;
+  status: string;
+  totalPrice: number;
+  phone: string;
+  email: string;
+  preferredContact: string;
+  items: { title: string; quantity: number }[];
+  hasNote: boolean;
+};
+export function toOrderRow(o: { id: string; createdAt: Date; status: string; totalPrice: number; contact: unknown; items: unknown; note: string | null }): OrderRow {
+  const c = (o.contact ?? {}) as Record<string, string>;
+  const items = ((o.items ?? []) as { title?: string; quantity?: number }[]).map((i) => ({ title: i.title ?? '', quantity: i.quantity ?? 0 }));
+  return {
+    id: o.id,
+    createdAt: o.createdAt.toISOString(),
+    status: o.status,
+    totalPrice: o.totalPrice,
+    phone: c.phone ?? '',
+    email: c.email ?? '',
+    preferredContact: c.preferredContact ?? '',
+    items,
+    hasNote: !!o.note,
+  };
+}

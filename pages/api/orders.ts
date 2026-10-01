@@ -1,8 +1,10 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { z } from 'zod';
+import { toOrderRow } from 'lib/adminShared';
 import { channelOf, deviceOf } from 'lib/attribution';
 import { isProductId } from 'lib/catalog';
 import { sendOrderEmail } from 'lib/mailer';
+import { emitOrder } from 'lib/orderEvents';
 import prisma from 'lib/prisma';
 import { rateLimit } from 'lib/rateLimit';
 import { loadSite, visibleProducts } from 'lib/site';
@@ -86,6 +88,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         device: deviceOf(req.headers['user-agent'] || ''),
       },
     });
+    emitOrder(toOrderRow(order));
     sendOrderEmail({ id: order.id, totalPrice, items, contact: parsed.data.contact, channel: order.channel ?? undefined, createdAt: order.createdAt }).catch((e) => console.error('Order email failed:', e));
     return res.status(200).json({ message: 'Order created successfully', orderId: order.id, totalPrice });
   } catch (error) {
