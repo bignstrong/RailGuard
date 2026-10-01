@@ -135,11 +135,13 @@ export async function sendOrderEmail(order: OrderForMail): Promise<void> {
     '',
     `Открыть в админке: ${adminUrl}`,
   ].join('\n');
-  await transport.sendMail({
+  const info = await transport.sendMail({
     from: SMTP_FROM || SMTP_USER,
     to,
     subject: `Заказ #${order.id.slice(-6).toUpperCase()} на ${formatPrice(order.totalPrice)}`,
     text,
     html: orderEmailHtml(order, site, adminUrl),
   });
+  // SMTP может принять письмо не для всех адресов — без этой строки по логам не понять, кому ушло.
+  console.info(`Order email ${order.id}: accepted=${info.accepted.join(',')} rejected=${info.rejected.join(',') || '-'} ${info.response}`);
 }
