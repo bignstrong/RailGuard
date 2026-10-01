@@ -24,7 +24,16 @@ export const STATUS_COLOR: Record<string, string> = {
 };
 
 // Строка списка заказов: её отдают и SSR страницы, и поток новых заказов (SSE).
-export const ORDER_ROW_SELECT = { id: true, createdAt: true, status: true, totalPrice: true, contact: true, items: true, note: true } as const;
+export const ORDER_ROW_SELECT = {
+  id: true,
+  createdAt: true,
+  status: true,
+  totalPrice: true,
+  contact: true,
+  items: true,
+  note: true,
+  payments: { where: { status: 'succeeded' }, select: { id: true }, take: 1 },
+} as const;
 export type OrderRow = {
   id: string;
   createdAt: string;
@@ -35,8 +44,9 @@ export type OrderRow = {
   preferredContact: string;
   items: { title: string; quantity: number }[];
   hasNote: boolean;
+  paid: boolean;
 };
-export function toOrderRow(o: { id: string; createdAt: Date; status: string; totalPrice: number; contact: unknown; items: unknown; note: string | null }): OrderRow {
+export function toOrderRow(o: { id: string; createdAt: Date; status: string; totalPrice: number; contact: unknown; items: unknown; note: string | null; payments?: unknown[] }): OrderRow {
   const c = (o.contact ?? {}) as Record<string, string>;
   const items = ((o.items ?? []) as { title?: string; quantity?: number }[]).map((i) => ({ title: i.title ?? '', quantity: i.quantity ?? 0 }));
   return {
@@ -49,5 +59,6 @@ export function toOrderRow(o: { id: string; createdAt: Date; status: string; tot
     preferredContact: c.preferredContact ?? '',
     items,
     hasNote: !!o.note,
+    paid: !!o.payments?.length,
   };
 }

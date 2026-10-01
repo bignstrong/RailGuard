@@ -10,13 +10,16 @@ import type { AdminSession } from 'lib/adminSession';
 import { ORDER_STATUSES, OrderStatus, STATUS_LABEL } from 'lib/adminShared';
 import { Channel, CHANNEL_LABEL, Touch } from 'lib/attribution';
 import { formatPrice } from 'lib/catalog';
+import { loadPaymentSettings } from 'lib/payments';
+import { isConfigured, PAY_STATUS_LABEL, PayStatus, PROVIDER_LABEL, ProviderKey } from 'lib/paymentsShared';
 import prisma from 'lib/prisma';
 
 type Item = { id: string; title: string; price: number; oldPrice?: number; quantity: number };
 type Props = {
   base: string;
   session: AdminSession;
-  order: { id: string; createdAt: string; updatedAt: string; status: string; totalPrice: number; items: Item[]; contact: Record<string, string>; note: string | null; channel: string | null; device: string | null; customer: { id: string; orders: number } | null; attribution: { ft?: Touch | null; lt?: Touch | null; ymClientId?: string } | null };
+  payProvider: ProviderKey | null;
+  order: { id: string; createdAt: string; updatedAt: string; status: string; totalPrice: number; items: Item[]; contact: Record<string, string>; note: string | null; channel: string | null; device: string | null; customer: { id: string; orders: number } | null; payments: { id: string; provider: string; amount: number; status: string; url: string | null; error: string | null; createdAt: string }[]; attribution: { ft?: Touch | null; lt?: Touch | null; ymClientId?: string } | null };
 };
 
 const touchText = (t?: Touch | null) =>
@@ -28,12 +31,14 @@ export const getServerSideProps: GetServerSideProps<Props> = async (ctx) => {
   const base = adminBase();
   const session = await getAdminSession(ctx);
   if (!session) return { redirect: { destination: `${base}/login`, permanent: false } };
-  const o = await prisma.order.findUnique({ where: { id: String(ctx.params?.id) }, include: { customer: { select: { id: true, _count: { select: { orders: true } } } } } });
+  const o = await prisma.order.findUnique({ where: { id: String(ctx.params?.id) }, include: { customer: { select: { id: true, _count: { select: { orders: true } } } }, payments: { orderBy: { createdAt: 'desc' } } } });
+  const pay = await loadPaymentSettings();
   if (!o) return { notFound: true };
   return {
     props: {
       base,
       session,
+      payProvider: pay.provider && isConfigured(pay, pay.provider) ? pay.provider : null,
       order: {
         id: o.id,
         createdAt: o.createdAt.toISOString(),
@@ -46,6 +51,7 @@ export const getServerSideProps: GetServerSideProps<Props> = async (ctx) => {
         channel: o.channel,
         device: o.device,
         customer: o.customer && { id: o.customer.id, orders: o.customer._count.orders },
+        payments: o.payments.map((p) => ({ id: p.id, provider: p.provider, amount: p.amount / 100, status: p.status, url: p.url, error: p.error, createdAt: p.createdAt.toISOString() })),
         attribution: (o.attribution ?? null) as Props['order']['attribution'],
       },
     },
@@ -303,7 +309,7 @@ const Danger = styled.button`
 
 // ───────── страница ─────────
 
-export default function AdminOrder({ base, session, order }: Props) {
+export default function AdminOrder({ base, session, payProvider, order }: Props) {
   const router = useRouter();
   const [status, setStatus] = useState(order.status);
   const [statusSaving, setStatusSaving] = useState(false);
@@ -380,6 +386,26 @@ export default function AdminOrder({ base, session, order }: Props) {
       setNoteMsg({ ok: false, text: 'Нет связи с сервером' });
     } finally {
       setNoteSaving(false);
+    }
+  }
+
+  const [payments, setPayments] = useState(order.payments);
+  const [payBusy, setPayBusy] = useState(false);
+  const [payMsg, setPayMsg] = useState<{ ok: boolean; text: string } | null>(null);
+  async function createPayLink() {
+    setPayBusy(true);
+    setPayMsg(null);
+    try {
+      const res = await fetch(`${base}/api/payments`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ orderId: order.id }) });
+      const body = await res.json().catch(() => ({}));
+      if (!res.ok) return setPayMsg({ ok: false, text: body.message || 'Шлюз не ответил' });
+      await navigator.clipboard?.writeText(body.url).catch(() => {});
+      setPayMsg({ ok: true, text: 'Ссылка создана и скопирована — отправьте её покупателю' });
+      setPayments((p) => [{ id: body.id, provider: payProvider ?? '', amount: order.totalPrice, status: 'pending', url: body.url, error: null, createdAt: new Date().toISOString() }, ...p]);
+    } catch {
+      setPayMsg({ ok: false, text: 'Нет связи с сервером' });
+    } finally {
+      setPayBusy(false);
     }
   }
 
@@ -484,6 +510,45 @@ export default function AdminOrder({ base, session, order }: Props) {
               </Btn>
               {noteMsg && <Msg $ok={noteMsg.ok}>{noteMsg.text}</Msg>}
               {!noteMsg && note !== savedNote && <Msg $ok={false}>Есть несохранённые изменения</Msg>}
+            </div>
+          </Card>
+
+          <Card>
+            <h2>Оплата</h2>
+            {payments.length === 0 && <Facts as="p" style={{ display: 'block', margin: '0 0 1.2rem', color: 'rgba(var(--ink), 0.6)' }}>Онлайн-платежей по заказу нет.</Facts>}
+            <Lines>
+              {payments.map((p) => (
+                <div key={p.id}>
+                  <span>
+                    {PROVIDER_LABEL[p.provider as ProviderKey] ?? p.provider} · {PAY_STATUS_LABEL[p.status as PayStatus] ?? p.status}
+                  </span>
+                  <b>{formatPrice(p.amount)}</b>
+                  <small>
+                    {fmtDate(p.createdAt)}
+                    {p.error && ` · ${p.error}`}
+                    {p.status === 'pending' && p.url && (
+                      <>
+                        {' · '}
+                        <a href="#" onClick={(e) => (e.preventDefault(), navigator.clipboard?.writeText(p.url!))} style={{ color: 'rgb(var(--accent))' }}>
+                          копировать ссылку
+                        </a>
+                      </>
+                    )}
+                  </small>
+                </div>
+              ))}
+            </Lines>
+            <div style={{ marginTop: '1.2rem', display: 'flex', flexWrap: 'wrap', gap: '1.2rem', alignItems: 'center' }}>
+              {payProvider ? (
+                <Ghost type="button" disabled={payBusy || payments.some((p) => p.status === 'succeeded')} onClick={createPayLink}>
+                  Создать ссылку на оплату ({PROVIDER_LABEL[payProvider]})
+                </Ghost>
+              ) : (
+                <Msg $ok={false} style={{ color: 'rgba(var(--ink), 0.6)' }}>
+                  Шлюз не настроен — раздел <NextLink href={`${base}/payments`}>«Оплата»</NextLink>
+                </Msg>
+              )}
+              {payMsg && <Msg $ok={payMsg.ok}>{payMsg.text}</Msg>}
             </div>
           </Card>
         </div>

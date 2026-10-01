@@ -24,6 +24,7 @@ model Order {
   // Покупатель (lib/customers.ts): совпали и телефон, и email — заказы под одним покупателем.
   customerId      String?
   customer        Customer? @relation(fields: [customerId], references: [id], onDelete: SetNull)
+  payments        Payment[]
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
 
@@ -105,4 +106,23 @@ model DailyStat {
   count   Int    @default(0)
 
   @@id([day, event, channel, product])
+}
+
+// Онлайн-платёж по заказу (lib/payments.ts). Сумма в копейках. На один заказ может быть несколько попыток.
+model Payment {
+  id         String   @id @default(cuid())
+  orderId    String
+  order      Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  provider   String // yookassa | tbank
+  providerId String? // id платежа у шлюза
+  amount     Int
+  status     String   @default("pending") // pending | succeeded | canceled | refunded | failed
+  url        String? // ссылка на оплату у шлюза
+  error      String?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@unique([provider, providerId])
+  @@index([orderId])
+  @@index([createdAt])
 }

@@ -533,6 +533,7 @@ export default function AdminOrders({ base, session, orders, q, status, customer
                 <NextLink href={`${base}/orders/${o.id}`} onClick={(e) => e.stopPropagation()}>
                   #{o.id.slice(-6).toUpperCase()}
                 </NextLink>
+                {o.paid && <Pill style={{ background: 'rgba(22, 163, 74, 0.12)', color: '#15803d' }}>оплачен</Pill>}
                 {o.hasNote && <Pill title="Есть заметка">заметка</Pill>}
                 <small title={fmtDate(o.createdAt)}>{ago(o.createdAt, now)}</small>
               </div>

@@ -76,6 +76,8 @@ export default function Cart() {
         currency: 'RUB',
         items: items.length,
       });
+      // Онлайн-оплата включена в админке — уводим на страницу шлюза. Иначе показываем номер заказа, как раньше.
+      if (data.paymentUrl) window.location.href = data.paymentUrl;
     } catch {
       showToast('Нет связи с сервером. Проверьте интернет и попробуйте ещё раз.', 'error');
     } finally {

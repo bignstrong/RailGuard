@@ -69,6 +69,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
   if (req.method === 'DELETE') {
     if (session.role !== 'admin') return res.status(403).json({ message: 'Удалять заказы может только администратор' });
+    // Оплаченный онлайн заказ — это бухгалтерия: сначала возврат, потом удаление.
+    if (await prisma.payment.count({ where: { orderId: id, status: 'succeeded' } })) {
+      return res.status(400).json({ message: 'Заказ оплачен онлайн. Сначала сделайте возврат в разделе «Оплата».' });
+    }
     try {
       const deleted = await prisma.order.delete({ where: { id } });
       await dropIfEmpty(deleted.customerId);

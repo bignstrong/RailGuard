@@ -6,6 +6,7 @@ import { isProductId } from 'lib/catalog';
 import { customerFor } from 'lib/customers';
 import { sendOrderEmail } from 'lib/mailer';
 import { emitOrder } from 'lib/orderEvents';
+import { checkoutProvider, loadPaymentSettings, startPayment } from 'lib/payments';
 import prisma from 'lib/prisma';
 import { rateLimit } from 'lib/rateLimit';
 import { loadSite, visibleProducts } from 'lib/site';
@@ -95,7 +96,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     });
     emitOrder(toOrderRow(order));
     sendOrderEmail({ id: order.id, totalPrice, items, contact: parsed.data.contact, channel: order.channel ?? undefined, createdAt: order.createdAt }).catch((e) => console.error('Order email failed:', e));
-    return res.status(200).json({ message: 'Order created successfully', orderId: order.id, totalPrice });
+    // Онлайн-оплата включена в админке — сразу отдаём ссылку на оплату. Шлюз не ответил — заказ всё равно принят, менеджер свяжется.
+    const pay = await loadPaymentSettings()
+      .then((s) => {
+        const provider = checkoutProvider(s);
+        return provider ? startPayment(order.id, provider, s) : null;
+      })
+      .catch((e) => console.error('Checkout payment failed:', e));
+    return res.status(200).json({ message: 'Order created successfully', orderId: order.id, totalPrice, paymentUrl: pay?.url ?? undefined });
   } catch (error) {
     console.error('Error processing order:', error);
     return res.status(500).json({ message: 'Не удалось сохранить заказ. Попробуйте позже.' });
