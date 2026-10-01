@@ -37,6 +37,13 @@ export default function Cart() {
     };
   }, [isCartOpen, toggleCart]);
 
+  useEffect(() => {
+    if (!isCartOpen) {
+      setOrderId(null);
+      setPhone('');
+    }
+  }, [isCartOpen]);
+
   if (!isCartOpen) return null;
 
   async function submit(e: FormEvent<HTMLFormElement>) {
@@ -80,7 +87,7 @@ export default function Cart() {
 
   return (
     <Overlay onClick={toggleCart}>
-      <Panel onClick={(e) => e.stopPropagation()} role="dialog" aria-label="Корзина">
+      <Panel onClick={(e) => e.stopPropagation()} role="dialog" aria-label="Корзина" aria-modal="true">
         <Header>
           <h2>Корзина</h2>
           <IconButton type="button" aria-label="Закрыть" onClick={toggleCart}>

@@ -48,8 +48,20 @@ export const DEFAULT_SITE: SiteConfig = {
 
 export async function loadSite(): Promise<SiteConfig> {
   const row = await prisma.setting.findUnique({ where: { key: 'site' } });
-  const parsed = row ? SiteSchema.deepPartial().safeParse(JSON.parse(row.value)) : null;
-  const saved = parsed?.success ? parsed.data : {};
+  let saved: Record<string, any> = {};
+  if (row) {
+    try {
+      const json = JSON.parse(row.value);
+      const parsed = SiteSchema.deepPartial().safeParse(json);
+      if (parsed.success) {
+        saved = parsed.data;
+      } else {
+        console.error('Site config parse failed:', parsed.error.issues);
+      }
+    } catch (err) {
+      console.error('Site JSON parse failed:', err);
+    }
+  }
   const products = { ...DEFAULT_SITE.products };
   for (const id of Object.keys(products)) products[id] = { ...products[id], ...saved.products?.[id] };
   return { ...DEFAULT_SITE, ...saved, contacts: { ...DEFAULT_SITE.contacts, ...saved.contacts }, products } as SiteConfig;

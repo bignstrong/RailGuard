@@ -31,7 +31,8 @@ const OrderSchema = z.object({
         quantity: z.number().int().positive().max(1000),
       }),
     )
-    .nonempty(),
+    .nonempty()
+    .max(20),
   contact: z.object({
     phone: z.string().regex(/^\d{10}$/, 'Введите номер полностью'),
     email: z.string().email().max(120),
@@ -47,7 +48,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   if (req.method !== 'POST') {
     return res.status(405).json({ message: 'Method not allowed' });
   }
-  if (!rateLimit(req, 5)) {
+  if (!rateLimit(req, 5, 60_000, 'orders')) {
     return res.status(429).json({ message: 'Слишком много попыток. Подождите минуту и попробуйте снова.' });
   }
 
@@ -60,8 +61,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   // Цены берём только из настроек сайта: клиентскому totalPrice не доверяем. Скрытые и отсутствующие товары не продаём.
   const { attribution } = parsed.data;
   const products = visibleProducts(await loadSite());
+  const itemsByIdMap = new Map<string, typeof parsed.data.items[0]>();
+  for (const item of parsed.data.items) {
+    const existing = itemsByIdMap.get(item.id);
+    itemsByIdMap.set(item.id, existing ? { ...existing, quantity: existing.quantity + item.quantity } : item);
+  }
   const items = [];
-  for (const { id, quantity } of parsed.data.items) {
+  for (const { id, quantity } of itemsByIdMap.values()) {
     const p = products.find((x) => x.id === id);
     if (!p || !p.inStock) return res.status(400).json({ message: 'Товар временно недоступен, обновите корзину' });
     items.push({ id, quantity, title: p.title, price: p.price, oldPrice: p.oldPrice, image: p.image });
@@ -80,8 +86,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         device: deviceOf(req.headers['user-agent'] || ''),
       },
     });
-    sendOrderEmail({ id: order.id, totalPrice, items, contact: parsed.data.contact }).catch((e) => console.error('Order email failed:', e));
-    return res.status(200).json({ message: 'Order created successfully', orderId: order.id });
+    sendOrderEmail({ id: order.id, totalPrice, items, contact: parsed.data.contact, channel: order.channel ?? undefined, createdAt: order.createdAt }).catch((e) => console.error('Order email failed:', e));
+    return res.status(200).json({ message: 'Order created successfully', orderId: order.id, totalPrice });
   } catch (error) {
     console.error('Error processing order:', error);
     return res.status(500).json({ message: 'Не удалось сохранить заказ. Попробуйте позже.' });

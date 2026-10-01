@@ -97,6 +97,7 @@ export default function AdminSite({ base, session, site: initial }: Props) {
   const [site, setSite] = useState<SiteConfig>(initial);
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState('');
+  const [editedPrices, setEditedPrices] = useState<Record<string, Record<'price' | 'oldPrice', string>>>({});
   const isAdmin = session.role === 'admin';
 
   const api = (path: string, init: RequestInit) => fetch(`${base}/api${path}`, { ...init, headers: { 'Content-Type': 'application/json' } });
@@ -104,12 +105,24 @@ export default function AdminSite({ base, session, site: initial }: Props) {
   async function handleSave(e: FormEvent) {
     e.preventDefault();
     setMessage('');
+    const toSave = { ...site };
+    for (const [id, prices] of Object.entries(editedPrices)) {
+      if (!prices.price && !prices.oldPrice) continue;
+      const price = prices.price ? parseInt(prices.price, 10) : undefined;
+      const oldPrice = prices.oldPrice ? parseInt(prices.oldPrice, 10) : undefined;
+      if (price !== undefined && (isNaN(price) || price <= 0)) return setMessage('Цена должна быть больше 0');
+      if (oldPrice !== undefined && (isNaN(oldPrice) || oldPrice <= 0)) return setMessage('Старая цена должна быть больше 0');
+      toSave.products[id as ProductId] = { ...toSave.products[id as ProductId] };
+      if (price !== undefined) toSave.products[id as ProductId].price = price;
+      if (oldPrice !== undefined) toSave.products[id as ProductId].oldPrice = oldPrice;
+    }
     setSaving(true);
-    const res = await api('/site', { method: 'PUT', body: JSON.stringify(site) });
+    const res = await api('/site', { method: 'PUT', body: JSON.stringify(toSave) });
     setSaving(false);
     const data = await res.json().catch(() => ({}));
     if (!res.ok) return setMessage(data.message || 'Ошибка при сохранении');
     setMessage('Сохранено');
+    setEditedPrices({});
     setTimeout(() => setMessage(''), 3000);
   }
 
@@ -121,14 +134,20 @@ export default function AdminSite({ base, session, site: initial }: Props) {
   const handleTelegramChange = (value: string) => setSite({ ...site, contacts: { ...site.contacts, telegram: value } });
 
   const handleProductChange = (id: ProductId, field: 'price' | 'oldPrice' | 'inStock' | 'hidden', value: string | boolean) => {
-    const numValue = typeof value === 'string' ? parseInt(value, 10) || 0 : value;
-    setSite({
-      ...site,
-      products: {
-        ...site.products,
-        [id]: { ...site.products[id], [field]: numValue },
-      },
-    });
+    if (field === 'price' || field === 'oldPrice') {
+      setEditedPrices({
+        ...editedPrices,
+        [id]: { ...editedPrices[id], [field]: value as string },
+      });
+    } else {
+      setSite({
+        ...site,
+        products: {
+          ...site.products,
+          [id]: { ...site.products[id], [field]: value },
+        },
+      });
+    }
   };
 
   return (
@@ -223,7 +242,7 @@ export default function AdminSite({ base, session, site: initial }: Props) {
                   <td>
                     <Input
                       type="number"
-                      value={site.products[id].price}
+                      value={editedPrices[id]?.price ?? site.products[id].price}
                       onChange={(e) => handleProductChange(id, 'price', e.target.value)}
                       disabled={!isAdmin}
                       style={{ width: '100%', maxWidth: '10rem' }}
@@ -232,7 +251,7 @@ export default function AdminSite({ base, session, site: initial }: Props) {
                   <td>
                     <Input
                       type="number"
-                      value={site.products[id].oldPrice}
+                      value={editedPrices[id]?.oldPrice ?? site.products[id].oldPrice}
                       onChange={(e) => handleProductChange(id, 'oldPrice', e.target.value)}
                       disabled={!isAdmin}
                       style={{ width: '100%', maxWidth: '10rem' }}

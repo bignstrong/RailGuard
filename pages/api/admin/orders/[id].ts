@@ -50,17 +50,28 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       data.contact = { ...contact, consentAt: prevContact.consentAt };
       changed.push('contact');
     }
-    const order = await prisma.order.update({ where: { id }, data }).catch(() => null);
-    if (!order) return res.status(404).json({ message: 'Заказ не найден' });
+    let order;
+    try {
+      order = await prisma.order.update({ where: { id }, data });
+    } catch (err: any) {
+      if (err.code === 'P2025') return res.status(404).json({ message: 'Заказ не найден' });
+      console.error('Order update failed:', err);
+      return res.status(500).json({ message: 'Ошибка при обновлении заказа' });
+    }
     console.info(`[admin] ${who} updated order ${id} fields=${changed.join(',')}`);
     return res.status(200).json({ ok: true, status: order.status, note: order.note, contact: order.contact });
   }
   if (req.method === 'DELETE') {
     if (session.role !== 'admin') return res.status(403).json({ message: 'Удалять заказы может только администратор' });
-    const deleted = await prisma.order.delete({ where: { id } }).catch(() => null);
-    if (!deleted) return res.status(404).json({ message: 'Заказ не найден' });
-    console.info(`[admin] ${who} deleted order ${id}`);
-    return res.status(200).json({ ok: true });
+    try {
+      const deleted = await prisma.order.delete({ where: { id } });
+      console.info(`[admin] ${who} deleted order ${id}`);
+      return res.status(200).json({ ok: true });
+    } catch (err: any) {
+      if (err.code === 'P2025') return res.status(404).json({ message: 'Заказ не найден' });
+      console.error('Order delete failed:', err);
+      return res.status(500).json({ message: 'Ошибка при удалении заказа' });
+    }
   }
   return res.status(405).end();
 }

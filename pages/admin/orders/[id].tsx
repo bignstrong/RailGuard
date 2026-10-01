@@ -65,52 +65,70 @@ export default function AdminOrder({ base, session, order }: Props) {
   const [noteSaving, setNoteSaving] = useState(false);
 
   async function changeStatus(next: string) {
-    const res = await fetch(`${base}/api/orders/${order.id}`, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ status: next }) });
-    if (!res.ok) return alert('Не удалось изменить статус');
-    setStatus(next);
+    try {
+      const res = await fetch(`${base}/api/orders/${order.id}`, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ status: next }) });
+      if (!res.ok) return alert('Не удалось изменить статус');
+      setStatus(next);
+    } catch {
+      alert('Нет связи с сервером');
+    }
   }
 
   async function saveContact() {
     setContactSaving(true);
     setContactMsg(null);
-    const res = await fetch(`${base}/api/orders/${order.id}`, {
-      method: 'PATCH',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ contact: { phone, email, preferredContact } }),
-    });
-    setContactSaving(false);
-    if (!res.ok) {
-      const body = await res.json().catch(() => null);
-      setContactMsg({ ok: false, text: body?.message || 'Не удалось сохранить контакты' });
-      return;
+    try {
+      const res = await fetch(`${base}/api/orders/${order.id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ contact: { phone, email, preferredContact } }),
+      });
+      if (!res.ok) {
+        const body = await res.json().catch(() => null);
+        setContactMsg({ ok: false, text: body?.message || 'Не удалось сохранить контакты' });
+        return;
+      }
+      setContactMsg({ ok: true, text: `Сохранено, ${fmtDate(new Date().toISOString())}` });
+      // Перечитать props: блок с контактами выше показывает данные с сервера.
+      router.replace(router.asPath, undefined, { scroll: false });
+    } catch {
+      setContactMsg({ ok: false, text: 'Нет связи с сервером' });
+    } finally {
+      setContactSaving(false);
     }
-    setContactMsg({ ok: true, text: `Сохранено, ${fmtDate(new Date().toISOString())}` });
-    // Перечитать props: блок с контактами выше показывает данные с сервера.
-    router.replace(router.asPath, undefined, { scroll: false });
   }
 
   async function saveNote() {
     setNoteSaving(true);
     setNoteMsg(null);
-    const res = await fetch(`${base}/api/orders/${order.id}`, {
-      method: 'PATCH',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ note }),
-    });
-    setNoteSaving(false);
-    if (!res.ok) {
-      const body = await res.json().catch(() => null);
-      setNoteMsg({ ok: false, text: body?.message || 'Не удалось сохранить заметку' });
-      return;
+    try {
+      const res = await fetch(`${base}/api/orders/${order.id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ note }),
+      });
+      if (!res.ok) {
+        const body = await res.json().catch(() => null);
+        setNoteMsg({ ok: false, text: body?.message || 'Не удалось сохранить заметку' });
+        return;
+      }
+      setNoteMsg({ ok: true, text: `Сохранено, ${fmtDate(new Date().toISOString())}` });
+    } catch {
+      setNoteMsg({ ok: false, text: 'Нет связи с сервером' });
+    } finally {
+      setNoteSaving(false);
     }
-    setNoteMsg({ ok: true, text: `Сохранено, ${fmtDate(new Date().toISOString())}` });
   }
 
   async function remove() {
     if (!window.confirm('Удалить заказ безвозвратно? Персональные данные клиента будут стёрты.')) return;
-    const res = await fetch(`${base}/api/orders/${order.id}`, { method: 'DELETE' });
-    if (!res.ok) return alert('Не удалось удалить');
-    router.replace(base);
+    try {
+      const res = await fetch(`${base}/api/orders/${order.id}`, { method: 'DELETE' });
+      if (!res.ok) return alert('Не удалось удалить');
+      router.replace(base);
+    } catch {
+      alert('Нет связи с сервером');
+    }
   }
 
   return (

@@ -9,9 +9,9 @@ const dayFmt = new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/Moscow', yea
 // Счётчик воронки (lib/attribution.ts → countEvent). Пишем только агрегат day/event/channel/product.
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'POST') return res.status(405).end();
-  if (!rateLimit(req, 30) || /bot|crawl|spider|headless|lighthouse/i.test(req.headers['user-agent'] || '')) return res.status(204).end();
-  const { e, ch, p = '' } = (req.body ?? {}) as Record<string, string>;
-  if (!FUNNEL_EVENTS.includes(e as never) || !CHANNELS.includes(ch as never) || (p !== '' && !isProductId(p))) return res.status(400).end();
+  if (!rateLimit(req, 30, 60_000, 'track') || /bot|crawl|spider|headless|lighthouse/i.test(req.headers['user-agent'] || '')) return res.status(204).end();
+  const { e, ch, p = '' } = (req.body ?? {}) as Record<string, unknown>;
+  if (typeof e !== 'string' || typeof ch !== 'string' || typeof p !== 'string' || !FUNNEL_EVENTS.includes(e as never) || !CHANNELS.includes(ch as never) || (p !== '' && !isProductId(p))) return res.status(400).end();
   const key = { day: dayFmt.format(new Date()), event: e, channel: ch, product: p };
   await prisma.dailyStat
     .upsert({ where: { day_event_channel_product: key }, create: { ...key, count: 1 }, update: { count: { increment: 1 } } })

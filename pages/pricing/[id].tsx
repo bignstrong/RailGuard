@@ -15,9 +15,7 @@ import { CATALOG, formatPrice, isProductId, PRODUCT_DESCRIPTIONS, ProductId } fr
 import { loadSite, Product } from 'lib/site';
 import { ecommerce } from 'lib/track';
 
-type Props = { product: Product };
-
-const PRICE_VALID_UNTIL = new Date(Date.now() + 90 * 864e5).toISOString().slice(0, 10);
+type Props = { product: Product; priceValidUntil: string };
 
 // Пути пустые: при docker build нет БД. Страница рендерится при первом запросе и кешируется (ISR).
 export const getStaticPaths: GetStaticPaths = async () => ({ paths: [], fallback: 'blocking' });
@@ -36,14 +34,15 @@ export const getStaticProps: GetStaticProps<Props> = async ({ params }) => {
   }
 
   const product: Product = { id, ...CATALOG[id], ...site.products[id] };
+  const priceValidUntil = new Date(Date.now() + 90 * 864e5).toISOString().slice(0, 10);
 
   return {
-    props: { product },
+    props: { product, priceValidUntil },
     revalidate: 60,
   };
 };
 
-export default function ProductPage({ product }: Props) {
+export default function ProductPage({ product, priceValidUntil }: Props) {
   const { addItem, items, toggleCart } = useCart();
   const showToast = useToast();
   const { open } = useLightbox();
@@ -72,7 +71,7 @@ export default function ProductPage({ product }: Props) {
           price: String(product.price),
           availability: product.inStock ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock',
           url: canonical,
-          priceValidUntil: PRICE_VALID_UNTIL,
+          priceValidUntil,
         },
       },
     ],
@@ -111,7 +110,7 @@ export default function ProductPage({ product }: Props) {
               type="button"
               disabled={!product.inStock}
               onClick={() => {
-                addItem(product);
+                addItem({ id: product.id, title: product.title, price: product.price, oldPrice: product.oldPrice, image: product.image });
                 showToast(`${product.title} — в корзине`, 'success', toggleCart);
               }}
             >

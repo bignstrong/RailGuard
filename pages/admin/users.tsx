@@ -42,37 +42,53 @@ export default function AdminUsers({ base, session, users: initial, owner }: Pro
   const [role, setRole] = useState<'admin' | 'manager'>('manager');
   const [error, setError] = useState('');
   const [secret, setSecret] = useState<Secret | null>(null);
+  const [creating, setCreating] = useState(false);
 
   const api = (path: string, init: RequestInit) => fetch(`${base}/api/users${path}`, { ...init, headers: { 'Content-Type': 'application/json' } });
 
   async function create(e: FormEvent) {
     e.preventDefault();
     setError('');
-    const res = await api('', { method: 'POST', body: JSON.stringify({ login, password, role }) });
-    const data = await res.json().catch(() => ({}));
-    if (!res.ok) return setError(data.message || 'Ошибка');
-    setUsers((u) => [...u, { id: data.id, login, role, disabled: false, totpEnabled: false, createdAt: new Date().toISOString(), lastLoginAt: null }]);
-    setSecret({ login, password });
-    setLogin('');
-    setPassword('');
+    setCreating(true);
+    try {
+      const res = await api('', { method: 'POST', body: JSON.stringify({ login, password, role }) });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) return setError(data.message || 'Ошибка');
+      setUsers((u) => [...u, { id: data.id, login, role, disabled: false, totpEnabled: false, createdAt: new Date().toISOString(), lastLoginAt: null }]);
+      setSecret({ login, password });
+      setLogin('');
+      setPassword('');
+    } catch {
+      setError('Нет связи с сервером');
+    } finally {
+      setCreating(false);
+    }
   }
   async function patch(u: User, body: Record<string, unknown>) {
-    const res = await api(`/${u.id}`, { method: 'PATCH', body: JSON.stringify(body) });
-    const data = await res.json().catch(() => ({}));
-    if (!res.ok) return alert(data.message || 'Ошибка');
-    setUsers((list) =>
-      list.map((x) =>
-        x.id === u.id
-          ? { ...x, ...('role' in body ? { role: body.role as string } : {}), ...('disabled' in body ? { disabled: body.disabled as boolean } : {}), ...('resetTotp' in body ? { totpEnabled: false } : {}) }
-          : x,
-      ),
-    );
+    try {
+      const res = await api(`/${u.id}`, { method: 'PATCH', body: JSON.stringify(body) });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) return alert(data.message || 'Ошибка');
+      setUsers((list) =>
+        list.map((x) =>
+          x.id === u.id
+            ? { ...x, ...('role' in body ? { role: body.role as string } : {}), ...('disabled' in body ? { disabled: body.disabled as boolean } : {}), ...('resetTotp' in body ? { totpEnabled: false } : {}) }
+            : x,
+        ),
+      );
+    } catch {
+      alert('Нет связи с сервером');
+    }
   }
   async function remove(u: User) {
     if (!window.confirm(`Удалить пользователя ${u.login}?`)) return;
-    const res = await api(`/${u.id}`, { method: 'DELETE' });
-    if (!res.ok) return alert('Не удалось удалить');
-    setUsers((list) => list.filter((x) => x.id !== u.id));
+    try {
+      const res = await api(`/${u.id}`, { method: 'DELETE' });
+      if (!res.ok) return alert('Не удалось удалить');
+      setUsers((list) => list.filter((x) => x.id !== u.id));
+    } catch {
+      alert('Нет связи с сервером');
+    }
   }
   function resetPassword(u: User) {
     const pw = window.prompt(`Новый пароль для ${u.login} (не короче 12 символов):`);
@@ -107,11 +123,11 @@ export default function AdminUsers({ base, session, users: initial, owner }: Pro
         <Toolbar onSubmit={create}>
           <Input placeholder="Логин" value={login} onChange={(e) => setLogin(e.target.value)} required minLength={3} />
           <Input type="text" placeholder="Пароль (12+ символов)" value={password} onChange={(e) => setPassword(e.target.value)} required minLength={12} autoComplete="off" />
-          <Select value={role} onChange={(e) => setRole(e.target.value as 'admin' | 'manager')}>
+          <Select value={role} onChange={(e) => setRole(e.target.value as 'admin' | 'manager')} disabled={creating}>
             <option value="manager">Менеджер</option>
             <option value="admin">Администратор</option>
           </Select>
-          <Btn type="submit">Создать</Btn>
+          <Btn type="submit" disabled={creating}>Создать</Btn>
         </Toolbar>
         {error && <p style={{ color: 'rgb(var(--accent))' }}>{error}</p>}
         <p style={{ opacity: 0.7 }}>Менеджер: заказы, статистика, экспорт. Администратор: плюс удаление заказов и пользователи.</p>

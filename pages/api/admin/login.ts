@@ -16,7 +16,9 @@ async function authenticate(login: string, password: string, code: string | unde
   if (!u && login === OWNER_LOGIN && verifyPassword(password, process.env.ADMIN_PASSWORD_HASH)) {
     u = await prisma.adminUser.create({ data: { login, passwordHash: process.env.ADMIN_PASSWORD_HASH as string, role: 'admin' } });
   }
-  if (!u || u.disabled || !verifyPassword(password, u.passwordHash)) return null;
+  // scrypt считаем и для несуществующего логина, иначе по времени ответа видно, какие логины есть.
+  const ok = verifyPassword(password, u?.passwordHash || 'scrypt:00:00');
+  if (!u || u.disabled || !ok) return null;
   if (u.totpEnabled && u.totpSecret) {
     if (!code) return { needCode: true };
     if (!verifyTotp(code, u.totpSecret)) return null;
@@ -29,7 +31,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   if (req.method !== 'POST') return res.status(405).end();
   if (!sameOrigin(req)) return res.status(403).json({ message: 'Forbidden' });
   // 5 попыток за 15 минут с одного IP, плюс задержка на каждую неудачу.
-  if (!rateLimit(req, 5, 15 * 60_000)) return res.status(429).json({ message: 'Слишком много попыток. Подождите 15 минут.' });
+  if (!rateLimit(req, 5, 15 * 60_000, 'admin-login')) return res.status(429).json({ message: 'Слишком много попыток. Подождите 15 минут.' });
 
   const parsed = Body.safeParse(req.body);
   const secret = process.env.ADMIN_SESSION_SECRET;

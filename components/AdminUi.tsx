@@ -26,7 +26,8 @@ export const AdminHeader = styled.header`
   }
   nav {
     display: flex;
-    gap: 1.6rem;
+    flex-wrap: wrap;
+    gap: 0.8rem 1.6rem;
     align-items: center;
   }
   a {

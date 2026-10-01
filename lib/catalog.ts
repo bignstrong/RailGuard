@@ -16,6 +16,6 @@ export const PRODUCT_DESCRIPTIONS: Record<ProductId, string> = {
   'sto-bulk-kit': 'Для автосервисов: 5 корпусов и 10 фильтрующих элементов по оптовой цене, скидка 50%.',
 };
 
-export const isProductId = (id: string): id is ProductId => id in CATALOG;
+export const isProductId = (id: string): id is ProductId => Object.hasOwn(CATALOG, id);
 
 export const formatPrice = (n: number) => `${n.toLocaleString('ru-RU')}₽`;

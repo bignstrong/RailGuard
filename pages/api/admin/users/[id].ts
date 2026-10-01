@@ -23,6 +23,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   if (user.login === OWNER_LOGIN && (req.method === 'DELETE' || req.body?.disabled || req.body?.role === 'manager')) {
     return res.status(400).json({ message: 'Владельца нельзя удалить, отключить или понизить' });
   }
+  if (user.login === OWNER_LOGIN && (req.body?.password || req.body?.resetTotp) && session.user !== OWNER_LOGIN) {
+    return res.status(400).json({ message: 'Пароль и 2FA владельца может менять только сам владелец' });
+  }
 
   if (req.method === 'PATCH') {
     const parsed = Patch.safeParse(req.body);
@@ -33,6 +36,18 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       where: { id },
       data: { role, disabled, passwordHash: password ? hashPassword(password) : undefined, ...(resetTotp ? { totpEnabled: false, totpSecret: null } : {}) },
     });
+    // Отозвать все живые сессии если меняли пароль/2FA, но не текущую, если сам себе меняет
+    if (password || resetTotp) {
+      await prisma.adminLogin.updateMany({
+        where: {
+          login: user.login,
+          revokedAt: null,
+          ok: true,
+          ...(user.login === session.user ? { id: { not: session.sid } } : {}),
+        },
+        data: { revokedAt: new Date() },
+      });
+    }
     console.info(`[admin] ${who} updated user ${user.login}: ${Object.keys(parsed.data).join(',')}`);
     return res.status(200).json({ ok: true });
   }

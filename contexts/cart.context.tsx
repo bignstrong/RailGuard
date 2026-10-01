@@ -48,7 +48,16 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     try {
       const saved = localStorage.getItem(STORAGE_KEY);
-      if (saved) setItems(JSON.parse(saved));
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed)) {
+          setItems(parsed.filter((item: unknown) => {
+            if (typeof item !== 'object' || item === null) return false;
+            const i = item as Record<string, unknown>;
+            return typeof i.id === 'string' && typeof i.quantity === 'number' && i.quantity > 0 && isFinite(i.quantity);
+          }));
+        }
+      }
     } catch {}
     setHydrated(true);
   }, []);

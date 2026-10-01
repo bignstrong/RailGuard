@@ -7,13 +7,17 @@ const ToastContext = createContext<ShowToast>(() => {});
 
 export function ToastProvider({ children }: { children: React.ReactNode }) {
   const [toast, setToast] = useState<Omit<ToastProps, 'onClose'> | null>(null);
-  const showToast = useCallback<ShowToast>((message, type, onClick) => setToast({ message, type, onClick }), []);
+  const [toastKey, setToastKey] = useState(0);
+  const showToast = useCallback<ShowToast>((message, type, onClick) => {
+    setToast({ message, type, onClick });
+    setToastKey((k) => k + 1);
+  }, []);
   const close = useCallback(() => setToast(null), []);
 
   return (
     <ToastContext.Provider value={showToast}>
       {children}
-      {toast && <Toast {...toast} onClose={close} />}
+      {toast && <Toast key={toastKey} {...toast} onClose={close} />}
     </ToastContext.Provider>
   );
 }

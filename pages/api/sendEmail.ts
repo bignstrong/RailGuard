@@ -9,7 +9,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   if (req.method !== 'POST') {
     return res.status(405).json({ message: 'Method not allowed' });
   }
-  if (!rateLimit(req, 5)) {
+  if (!rateLimit(req, 5, 60_000, 'subscribe')) {
     return res.status(429).json({ message: 'Слишком много запросов' });
   }
 
