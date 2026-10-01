@@ -1,3 +1,4 @@
+import Image from 'next/image';
 import NextLink from 'next/link';
 import { useRouter } from 'next/router';
 import styled from 'styled-components';
@@ -13,26 +14,118 @@ export const AdminPage = styled.main`
 `;
 
 export const AdminHeader = styled.header`
-  display: flex;
-  flex-wrap: wrap;
-  gap: 1.2rem;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  grid-template-areas: 'brand links user';
   align-items: center;
-  justify-content: space-between;
-  margin-bottom: 2rem;
+  gap: 0.8rem 2.4rem;
+  margin: -2rem -1.6rem 2.4rem;
+  padding: 1.2rem 1.6rem;
+  background: rgba(var(--bg), 0.9);
+  backdrop-filter: blur(8px);
+  border-bottom: 1px solid rgba(var(--ink), 0.08);
 
-  h1 {
-    font-size: 2.4rem;
-    margin: 0;
+  @media (max-width: 900px) {
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-areas: 'brand user' 'links links';
   }
-  nav {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.8rem 1.6rem;
-    align-items: center;
-  }
+`;
+
+const Brand = styled(NextLink)`
+  grid-area: brand;
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  font-weight: 700;
+  font-size: 1.7rem;
+  color: rgb(var(--ink));
+  text-decoration: none;
+
+`;
+
+const Links = styled.nav`
+  grid-area: links;
+  display: flex;
+  gap: 0.2rem;
+  overflow-x: auto;
+  scrollbar-width: none;
+
   a {
-    color: rgb(var(--accent));
+    position: relative;
+    padding: 0.7rem 1.2rem;
+    border-radius: 0.6rem;
+    font-size: 1.4rem;
+    white-space: nowrap;
+    color: rgba(var(--ink), 0.6);
+    text-decoration: none;
+    transition: color 0.15s, background 0.15s;
   }
+  a:hover {
+    color: rgb(var(--ink));
+    background: rgba(var(--ink), 0.04);
+  }
+  a[aria-current='page'] {
+    color: rgb(var(--ink));
+    font-weight: 600;
+    background: rgba(var(--ink), 0.06);
+  }
+  a[aria-current='page']::after {
+    content: '';
+    position: absolute;
+    left: 1.2rem;
+    right: 1.2rem;
+    bottom: 0.2rem;
+    height: 2px;
+    border-radius: 1px;
+    background: rgb(var(--accent));
+  }
+`;
+
+const User = styled.div`
+  grid-area: user;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  font-size: 1.4rem;
+  color: rgba(var(--ink), 0.7);
+
+  i {
+    display: grid;
+    place-items: center;
+    width: 3rem;
+    height: 3rem;
+    border-radius: 50%;
+    font-style: normal;
+    font-weight: 600;
+    text-transform: uppercase;
+    color: rgb(var(--accent));
+    background: rgba(var(--accent), 0.12);
+  }
+  button {
+    font: inherit;
+    padding: 0.6rem 1.2rem;
+    border-radius: 0.6rem;
+    border: 1px solid rgba(var(--ink), 0.15);
+    background: transparent;
+    color: rgb(var(--ink));
+    cursor: pointer;
+  }
+  button:hover {
+    border-color: rgba(var(--ink), 0.4);
+  }
+  @media (max-width: 480px) {
+    span {
+      display: none;
+    }
+  }
+`;
+
+const Title = styled.h1`
+  font-size: 2.6rem;
+  margin: 0 0 2rem;
 `;
 
 export const Table = styled.table`
@@ -159,23 +252,36 @@ export function AdminNav({ base, session, active, title }: { base: string; sessi
     await fetch(`${base}/api/logout`, { method: 'POST' });
     router.replace(`${base}/login`);
   }
-  const link = (key: NavKey, href: string, label: string) => (active === key ? <b>{label}</b> : <NextLink href={href}>{label}</NextLink>);
+  const link = (key: NavKey, href: string, label: string) => (
+    <NextLink href={href} aria-current={active === key ? 'page' : undefined}>
+      {label}
+    </NextLink>
+  );
   return (
-    <AdminHeader>
-      <h1>{title}</h1>
-      <nav>
-        {link('orders', base || '/', 'Заказы')}
-        {link('site', `${base}/site`, 'Сайт')}
-        {link('stats', `${base}/stats`, 'Статистика')}
-        {link('utm', `${base}/utm`, 'UTM')}
-        {session.role === 'admin' && link('users', `${base}/users`, 'Пользователи')}
-        {link('compatibility', `${base}/compatibility`, 'Совместимость')}
-        {link('settings', `${base}/settings`, 'Настройки')}
-        <span style={{ opacity: 0.7 }}>{session.user}</span>
-        <Btn type="button" onClick={logout}>
-          Выйти
-        </Btn>
-      </nav>
-    </AdminHeader>
+    <>
+      <AdminHeader>
+        <Brand href={base || '/'}>
+          <Image src="/webp/Logo.webp" alt="" width={26} height={26} />
+          RailGuard
+        </Brand>
+        <Links aria-label="Разделы админки">
+          {link('orders', base || '/', 'Заказы')}
+          {link('stats', `${base}/stats`, 'Статистика')}
+          {link('site', `${base}/site`, 'Сайт')}
+          {link('compatibility', `${base}/compatibility`, 'Совместимость')}
+          {link('utm', `${base}/utm`, 'UTM')}
+          {session.role === 'admin' && link('users', `${base}/users`, 'Пользователи')}
+          {link('settings', `${base}/settings`, 'Настройки')}
+        </Links>
+        <User>
+          <i aria-hidden="true">{session.user.slice(0, 1)}</i>
+          <span>{session.user}</span>
+          <button type="button" onClick={logout}>
+            Выйти
+          </button>
+        </User>
+      </AdminHeader>
+      <Title>{title}</Title>
+    </>
   );
 }
