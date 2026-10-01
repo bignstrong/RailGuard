@@ -3,6 +3,7 @@ import NextLink from 'next/link';
 import { useRouter } from 'next/router';
 import styled from 'styled-components';
 import type { AdminSession } from 'lib/adminSession';
+import { STATUS_COLOR } from 'lib/adminShared';
 
 // Минимальный UI админки. Без сайта вокруг: _app рендерит /admin/* голыми.
 export const AdminPage = styled.main`
@@ -24,8 +25,7 @@ export const AdminHeader = styled.header`
   gap: 0.8rem 2.4rem;
   margin: -2rem -1.6rem 2.4rem;
   padding: 1.2rem 1.6rem;
-  background: rgba(var(--bg), 0.9);
-  backdrop-filter: blur(8px);
+  background: rgb(var(--bg));
   border-bottom: 1px solid rgba(var(--ink), 0.08);
 
   @media (max-width: 900px) {
@@ -240,6 +240,46 @@ export const Status = styled.span<{ $s: string }>`
     p.$s === 'cancelled'
       ? `color: rgba(var(--ink), 0.6); border: 1px solid rgba(var(--ink), 0.3);`
       : ''}
+`;
+
+export const PREFERRED: Record<string, string> = { phone: 'Звонок', whatsapp: 'WhatsApp', telegram: 'Telegram' };
+export const fmtPhone = (p: string) => (p.length === 10 ? `+7 ${p.slice(0, 3)} ${p.slice(3, 6)}-${p.slice(6, 8)}-${p.slice(8)}` : p);
+
+// Статус как цветная кнопка-селект: список заказов и карточка заказа.
+export const StatusSelect = styled.select<{ $s: string }>`
+  width: 100%;
+  font: inherit;
+  font-size: 1.35rem;
+  font-weight: 600;
+  padding: 0.6rem 2.6rem 0.6rem 1.2rem;
+  border-radius: 2rem;
+  border: 1px solid ${(p) => (p.$s === 'cancelled' ? 'rgba(var(--ink), 0.25)' : 'transparent')};
+  appearance: none;
+  cursor: pointer;
+  color: ${(p) => (p.$s === 'cancelled' || p.$s === 'completed' ? 'rgb(var(--ink))' : 'rgb(var(--bg))')};
+  background: ${(p) => (p.$s === 'cancelled' ? 'transparent' : p.$s === 'completed' ? 'rgba(var(--ink), 0.12)' : STATUS_COLOR[p.$s] ?? 'rgba(var(--ink), 0.3)')}
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M1 1l4 4 4-4' fill='none' stroke='%23888' stroke-width='1.5'/%3E%3C/svg%3E")
+    no-repeat right 1rem center;
+
+  &:disabled {
+    opacity: 0.6;
+  }
+  option {
+    color: rgb(var(--ink));
+    background: rgb(var(--bg));
+  }
+`;
+
+export const Pill = styled.span`
+  display: inline-block;
+  margin-left: 0.6rem;
+  padding: 0.1rem 0.7rem;
+  border-radius: 1rem;
+  font-size: 1.15rem;
+  font-weight: 400;
+  background: rgba(var(--ink), 0.06);
+  color: rgba(var(--ink), 0.75);
+  vertical-align: middle;
 `;
 
 export const fmtDate = (iso: string) => new Date(iso).toLocaleString('ru-RU', { timeZone: 'Europe/Moscow' });

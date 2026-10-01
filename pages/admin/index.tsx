@@ -4,10 +4,10 @@ import NextLink from 'next/link';
 import { useRouter } from 'next/router';
 import { useEffect, useRef, useState } from 'react';
 import styled, { keyframes } from 'styled-components';
-import { AdminNav, AdminPage, Btn, fmtDate, Input } from 'components/AdminUi';
+import { AdminNav, AdminPage, Btn, fmtDate, fmtPhone, Input, Pill, PREFERRED, StatusSelect } from 'components/AdminUi';
 import { adminBase, getAdminSession } from 'lib/adminAuth';
 import type { AdminSession } from 'lib/adminSession';
-import { ORDER_ROW_SELECT, ORDER_STATUSES, OrderRow, OrderStatus, STATUS_COLOR, STATUS_LABEL, toOrderRow } from 'lib/adminShared';
+import { ORDER_ROW_SELECT, ORDER_STATUSES, OrderRow, OrderStatus, STATUS_LABEL, toOrderRow } from 'lib/adminShared';
 import { formatPrice } from 'lib/catalog';
 import prisma from 'lib/prisma';
 
@@ -68,8 +68,6 @@ export const getServerSideProps: GetServerSideProps<Props> = async (ctx) => {
 
 // ───────── форматирование ─────────
 
-const PREFERRED: Record<string, string> = { phone: 'Звонок', whatsapp: 'WhatsApp', telegram: 'Telegram' };
-const fmtPhone = (p: string) => (p.length === 10 ? `+7 ${p.slice(0, 3)} ${p.slice(3, 6)}-${p.slice(6, 8)}-${p.slice(8)}` : p);
 const timeFmt = new Intl.DateTimeFormat('ru-RU', { timeZone: 'Europe/Moscow', hour: '2-digit', minute: '2-digit' });
 const shortFmt = new Intl.DateTimeFormat('ru-RU', { timeZone: 'Europe/Moscow', day: 'numeric', month: 'short' });
 function ago(iso: string, now: number) {
@@ -295,42 +293,6 @@ const Sum = styled.div`
   text-align: right;
   font-weight: 600;
   font-variant-numeric: tabular-nums;
-`;
-
-const Pill = styled.span`
-  display: inline-block;
-  margin-left: 0.6rem;
-  padding: 0.1rem 0.7rem;
-  border-radius: 1rem;
-  font-size: 1.15rem;
-  font-weight: 400;
-  background: rgba(var(--ink), 0.06);
-  color: rgba(var(--ink), 0.75);
-  vertical-align: middle;
-`;
-
-const StatusSelect = styled.select<{ $s: string }>`
-  width: 100%;
-  font: inherit;
-  font-size: 1.35rem;
-  font-weight: 600;
-  padding: 0.6rem 2.6rem 0.6rem 1.2rem;
-  border-radius: 2rem;
-  border: 1px solid ${(p) => (p.$s === 'cancelled' ? 'rgba(var(--ink), 0.25)' : 'transparent')};
-  appearance: none;
-  cursor: pointer;
-  color: ${(p) => (p.$s === 'cancelled' || p.$s === 'completed' ? 'rgb(var(--ink))' : 'rgb(var(--bg))')};
-  background: ${(p) => (p.$s === 'cancelled' ? 'transparent' : p.$s === 'completed' ? 'rgba(var(--ink), 0.12)' : STATUS_COLOR[p.$s] ?? 'rgba(var(--ink), 0.3)')}
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M1 1l4 4 4-4' fill='none' stroke='%23888' stroke-width='1.5'/%3E%3C/svg%3E")
-    no-repeat right 1rem center;
-
-  &:disabled {
-    opacity: 0.6;
-  }
-  option {
-    color: rgb(var(--ink));
-    background: rgb(var(--bg));
-  }
 `;
 
 const Toast = styled.div`
