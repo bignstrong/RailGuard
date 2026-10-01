@@ -17,6 +17,7 @@ type Props = {
   orders: OrderRow[];
   q: string;
   status: string;
+  customer: { id: string; phone: string; email: string } | null;
   subscribers: number;
   counts: Record<string, number>;
   today: { orders: number; revenue: number };
@@ -31,8 +32,11 @@ export const getServerSideProps: GetServerSideProps<Props> = async (ctx) => {
   if (!session) return { redirect: { destination: `${base}/login`, permanent: false } };
   const q = String(ctx.query.q || '').trim().slice(0, 100);
   const status = String(ctx.query.status || '');
+  const customerId = String(ctx.query.customer || '');
+  const customer = customerId ? await prisma.customer.findUnique({ where: { id: customerId }, select: { id: true, phone: true, email: true } }) : null;
   const where = {
     ...(ORDER_STATUSES.includes(status as OrderStatus) ? { status } : {}),
+    ...(customer ? { customerId: customer.id } : {}),
     ...(q
       ? {
           OR: [
@@ -57,6 +61,7 @@ export const getServerSideProps: GetServerSideProps<Props> = async (ctx) => {
       session,
       q,
       status,
+      customer,
       subscribers,
       counts: Object.fromEntries(grouped.map((g) => [g.status, g._count._all])),
       today: { orders: today._count._all, revenue: today._sum.totalPrice ?? 0 },
@@ -348,7 +353,7 @@ const Exports = styled.p`
 
 // ───────── страница ─────────
 
-export default function AdminOrders({ base, session, orders, q, status, subscribers, counts: initialCounts, today: initialToday, serverNow }: Props) {
+export default function AdminOrders({ base, session, orders, q, status, customer, subscribers, counts: initialCounts, today: initialToday, serverNow }: Props) {
   const router = useRouter();
   const [rows, setRows] = useState(orders);
   const [counts, setCounts] = useState(initialCounts);
@@ -398,7 +403,7 @@ export default function AdminOrders({ base, session, orders, q, status, subscrib
       const row: OrderRow = JSON.parse((e as MessageEvent).data);
       if (seen.current.has(row.id)) return;
       seen.current.add(row.id);
-      if (!q && (!status || status === row.status)) setRows((r) => [row, ...r]);
+      if (!q && !customer && (!status || status === row.status)) setRows((r) => [row, ...r]);
       setCounts((c) => ({ ...c, [row.status]: (c[row.status] ?? 0) + 1 }));
       setToday((t) => ({ orders: t.orders + 1, revenue: t.revenue + row.totalPrice }));
       setFresh((f) => new Set(f).add(row.id));
@@ -413,7 +418,7 @@ export default function AdminOrders({ base, session, orders, q, status, subscrib
       }
     });
     return () => es.close();
-  }, [base, latest, q, status]);
+  }, [base, latest, q, status, customer]);
 
   useEffect(() => {
     if (!toast) return;
@@ -438,6 +443,10 @@ export default function AdminOrders({ base, session, orders, q, status, subscrib
 
   const total = Object.values(counts).reduce((a, b) => a + b, 0);
   const href = (s: string) => `${base || '/'}${s ? `?status=${s}` : ''}`;
+  const chipHref = (s: string) => {
+    const p = new URLSearchParams({ ...(s ? { status: s } : {}), ...(customer ? { customer: customer.id } : {}) }).toString();
+    return `${base || '/'}${p ? `?${p}` : ''}`;
+  };
   const csvQuery = new URLSearchParams({ ...(q ? { q } : {}), ...(status ? { status } : {}) }).toString();
 
   return (
@@ -475,11 +484,11 @@ export default function AdminOrders({ base, session, orders, q, status, subscrib
 
       <Controls>
         <Chips>
-          <NextLink href={href('')} aria-current={!status ? 'page' : undefined}>
+          <NextLink href={chipHref('')} aria-current={!status ? 'page' : undefined}>
             Все <b>{total}</b>
           </NextLink>
           {ORDER_STATUSES.map((s) => (
-            <NextLink key={s} href={href(s)} aria-current={status === s ? 'page' : undefined}>
+            <NextLink key={s} href={chipHref(s)} aria-current={status === s ? 'page' : undefined}>
               {STATUS_LABEL[s]} <b>{counts[s] ?? 0}</b>
             </NextLink>
           ))}
@@ -500,9 +509,9 @@ export default function AdminOrders({ base, session, orders, q, status, subscrib
             </button>
           )}
         </Live>
-        {q && (
+        {(q || customer) && (
           <span style={{ fontSize: '1.3rem' }}>
-            Поиск «{q}» · <NextLink href={href(status)}>сбросить</NextLink>
+            {customer ? `Покупатель ${fmtPhone(customer.phone)}, ${customer.email}` : `Поиск «${q}»`} · <NextLink href={href(status)}>сбросить</NextLink>
           </span>
         )}
       </Controls>
@@ -515,7 +524,7 @@ export default function AdminOrders({ base, session, orders, q, status, subscrib
           <span>Сумма</span>
           <span>Статус</span>
         </ListHead>
-        {rows.length === 0 && <Empty>{q || status ? 'Ничего не найдено' : 'Заказов пока нет'}</Empty>}
+        {rows.length === 0 && <Empty>{q || status || customer ? 'Ничего не найдено' : 'Заказов пока нет'}</Empty>}
         {rows.map((o) => {
           const qty = o.items.reduce((s, i) => s + i.quantity, 0);
           return (

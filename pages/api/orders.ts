@@ -3,6 +3,7 @@ import { z } from 'zod';
 import { toOrderRow } from 'lib/adminShared';
 import { channelOf, deviceOf } from 'lib/attribution';
 import { isProductId } from 'lib/catalog';
+import { customerFor } from 'lib/customers';
 import { sendOrderEmail } from 'lib/mailer';
 import { emitOrder } from 'lib/orderEvents';
 import prisma from 'lib/prisma';
@@ -77,8 +78,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   const totalPrice = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
 
   try {
+    // Без покупателя заказ всё равно сохраняем: привязка — не повод терять заказ.
+    const { phone, email } = parsed.data.contact;
+    const customer = await customerFor(phone, email).catch((e) => console.error('Customer upsert failed:', e));
     const order = await prisma.order.create({
       data: {
+        customerId: customer?.id,
         items,
         contact: { ...parsed.data.contact, consentAt: new Date().toISOString() },
         totalPrice,

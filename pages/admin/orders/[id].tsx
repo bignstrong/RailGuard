@@ -16,7 +16,7 @@ type Item = { id: string; title: string; price: number; oldPrice?: number; quant
 type Props = {
   base: string;
   session: AdminSession;
-  order: { id: string; createdAt: string; updatedAt: string; status: string; totalPrice: number; items: Item[]; contact: Record<string, string>; note: string | null; channel: string | null; device: string | null; attribution: { ft?: Touch | null; lt?: Touch | null; ymClientId?: string } | null };
+  order: { id: string; createdAt: string; updatedAt: string; status: string; totalPrice: number; items: Item[]; contact: Record<string, string>; note: string | null; channel: string | null; device: string | null; customer: { id: string; orders: number } | null; attribution: { ft?: Touch | null; lt?: Touch | null; ymClientId?: string } | null };
 };
 
 const touchText = (t?: Touch | null) =>
@@ -28,7 +28,7 @@ export const getServerSideProps: GetServerSideProps<Props> = async (ctx) => {
   const base = adminBase();
   const session = await getAdminSession(ctx);
   if (!session) return { redirect: { destination: `${base}/login`, permanent: false } };
-  const o = await prisma.order.findUnique({ where: { id: String(ctx.params?.id) } });
+  const o = await prisma.order.findUnique({ where: { id: String(ctx.params?.id) }, include: { customer: { select: { id: true, _count: { select: { orders: true } } } } } });
   if (!o) return { notFound: true };
   return {
     props: {
@@ -45,6 +45,7 @@ export const getServerSideProps: GetServerSideProps<Props> = async (ctx) => {
         note: o.note,
         channel: o.channel,
         device: o.device,
+        customer: o.customer && { id: o.customer.id, orders: o.customer._count.orders },
         attribution: (o.attribution ?? null) as Props['order']['attribution'],
       },
     },
@@ -506,6 +507,17 @@ export default function AdminOrder({ base, session, order }: Props) {
               <dd>{PREFERRED[c.preferredContact] ?? c.preferredContact ?? '—'}</dd>
               <dt>Согласие на ПДн</dt>
               <dd>{c.consentAt ? fmtDate(c.consentAt) : 'нет отметки'}</dd>
+              <dt>Заказов всего</dt>
+              <dd>
+                {order.customer ? (
+                  <NextLink href={`${base || '/'}?customer=${order.customer.id}`} style={{ color: 'rgb(var(--accent))' }}>
+                    {order.customer.orders} — показать все
+                  </NextLink>
+                ) : (
+                  '—'
+                )}
+                {order.customer && order.customer.orders > 1 && <Pill>постоянный</Pill>}
+              </dd>
             </Facts>
             {!editing ? (
               <Ghost type="button" style={{ marginTop: '1.4rem' }} onClick={() => setEditing(true)}>

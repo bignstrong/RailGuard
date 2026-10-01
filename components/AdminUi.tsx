@@ -284,7 +284,7 @@ export const Pill = styled.span`
 
 export const fmtDate = (iso: string) => new Date(iso).toLocaleString('ru-RU', { timeZone: 'Europe/Moscow' });
 
-type NavKey = 'orders' | 'stats' | 'utm' | 'users' | 'compatibility' | 'site' | 'settings';
+type NavKey = 'orders' | 'customers' | 'stats' | 'utm' | 'users' | 'compatibility' | 'site' | 'settings';
 
 export function AdminNav({ base, session, active, title }: { base: string; session: AdminSession; active: NavKey; title: string }) {
   const router = useRouter();
@@ -306,6 +306,7 @@ export function AdminNav({ base, session, active, title }: { base: string; sessi
         </Brand>
         <Links aria-label="Разделы админки">
           {link('orders', base || '/', 'Заказы')}
+          {link('customers', `${base}/customers`, 'Покупатели')}
           {link('stats', `${base}/stats`, 'Статистика')}
           {link('site', `${base}/site`, 'Сайт')}
           {link('compatibility', `${base}/compatibility`, 'Совместимость')}

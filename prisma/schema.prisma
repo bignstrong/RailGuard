@@ -21,11 +21,27 @@ model Order {
   channel         String?
   attribution     Json?
   device          String?
+  // Покупатель (lib/customers.ts): совпали и телефон, и email — заказы под одним покупателем.
+  customerId      String?
+  customer        Customer? @relation(fields: [customerId], references: [id], onDelete: SetNull)
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
 
   @@index([status, createdAt])
   @@index([createdAt])
+  @@index([customerId])
+}
+
+// Покупатель — пара «телефон + email» из заказов. Заготовка под личный кабинет; входа пока нет.
+// Без заказов не живёт: удаляется вместе с последним заказом.
+model Customer {
+  id        String   @id @default(cuid())
+  phone     String // 10 цифр без +7, как в Order.contact
+  email     String // в нижнем регистре
+  createdAt DateTime @default(now())
+  orders    Order[]
+
+  @@unique([phone, email])
 }
 
 model AdminUser {

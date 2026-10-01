@@ -2,6 +2,7 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 import { z } from 'zod';
 import { clientIp, requireAdmin, routeId, sameOrigin } from 'lib/adminAuth';
 import { ORDER_STATUSES } from 'lib/adminShared';
+import { customerFor, dropIfEmpty } from 'lib/customers';
 import prisma from 'lib/prisma';
 
 const Patch = z
@@ -34,7 +35,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     if (!parsed.success) return res.status(400).json({ message: 'Некорректные данные' });
     const { status, note, contact } = parsed.data;
     const changed: string[] = [];
-    const data: { status?: string; note?: string | null; contact?: object } = {};
+    const data: { status?: string; note?: string | null; contact?: object; customerId?: string } = {};
+    let prevCustomerId: string | null = null;
     if (status !== undefined) {
       data.status = status;
       changed.push('status');
@@ -44,10 +46,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       changed.push('note');
     }
     if (contact !== undefined) {
-      const existing = await prisma.order.findUnique({ where: { id }, select: { contact: true } });
+      const existing = await prisma.order.findUnique({ where: { id }, select: { contact: true, customerId: true } });
       if (!existing) return res.status(404).json({ message: 'Заказ не найден' });
       const prevContact = (existing.contact ?? {}) as Record<string, unknown>;
       data.contact = { ...contact, consentAt: prevContact.consentAt };
+      // Исправили телефон или почту — заказ переезжает к покупателю с новой парой.
+      data.customerId = (await customerFor(contact.phone, contact.email)).id;
+      prevCustomerId = existing.customerId;
       changed.push('contact');
     }
     let order;
@@ -58,6 +63,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       console.error('Order update failed:', err);
       return res.status(500).json({ message: 'Ошибка при обновлении заказа' });
     }
+    if (prevCustomerId !== order.customerId) await dropIfEmpty(prevCustomerId);
     console.info(`[admin] ${who} updated order ${id} fields=${changed.join(',')}`);
     return res.status(200).json({ ok: true, status: order.status, note: order.note, contact: order.contact });
   }
@@ -65,6 +71,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     if (session.role !== 'admin') return res.status(403).json({ message: 'Удалять заказы может только администратор' });
     try {
       const deleted = await prisma.order.delete({ where: { id } });
+      await dropIfEmpty(deleted.customerId);
       console.info(`[admin] ${who} deleted order ${id}`);
       return res.status(200).json({ ok: true });
     } catch (err: any) {
