@@ -98,3 +98,6 @@ postgres_data/
 
 # отдельный репозиторий бота, в основной не коммитим
 railguardbot/
+
+# Python
+__pycache__/

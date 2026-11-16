@@ -91,6 +91,8 @@ ${contacts || `См. ${BASE_URL}/delivery`}
 - [Совместимость](${BASE_URL}/compatibility)
 - [Доставка и оплата](${BASE_URL}/delivery)
 - [Вопросы и ответы](${BASE_URL}/faq)
+- [Износ форсунок Common Rail](${BASE_URL}/articles/injectors)
+- [Стружка в топливной системе](${BASE_URL}/articles/tnvd)
 `;
 
   res.setHeader('Content-Type', 'text/plain; charset=utf-8');

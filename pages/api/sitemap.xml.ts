@@ -6,7 +6,18 @@ const BASE_URL = 'https://railguard.ru';
 
 // loc совпадает с canonical страницы. lastmod только там, где знаем реальную дату правки (цены/наличие из админки):
 // дата сборки или запуска сервера менялась бы каждую ночь, и поисковики перестали бы доверять lastmod.
-const STATIC = ['/', '/specifications', '/compatibility', '/delivery', '/faq', '/privacy-policy', '/terms-of-use', '/cookies-policy'];
+const STATIC = [
+  '/',
+  '/specifications',
+  '/compatibility',
+  '/delivery',
+  '/faq',
+  '/articles/injectors',
+  '/articles/tnvd',
+  '/privacy-policy',
+  '/terms-of-use',
+  '/cookies-policy',
+];
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   const [site, row] = await Promise.all([loadSite(), prisma.setting.findUnique({ where: { key: 'site' }, select: { updatedAt: true } })]);

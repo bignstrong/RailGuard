@@ -7,14 +7,18 @@ import SectionTitle from './SectionTitle';
 
 export interface PageProps {
   title: string;
+  // Заголовок для сниппета (title и og:title), если он длиннее или точнее H1.
+  metaTitle?: string;
   description?: string;
   canonical?: string;
+  // Для статей — 'article', остальным 'website'.
+  ogType?: 'website' | 'article';
   // Хлебные крошки между главной и текущей страницей (для товара — «Каталог»). Только разметка, для сниппета.
   crumbs?: { name: string; url: string }[];
 }
 
-export default function Page({ title, description, canonical, crumbs = [], children }: PropsWithChildren<PageProps>) {
-  const fullTitle = `${title} | ${EnvVars.SITE_NAME}`;
+export default function Page({ title, metaTitle, description, canonical, ogType = 'website', crumbs = [], children }: PropsWithChildren<PageProps>) {
+  const fullTitle = `${metaTitle || title} | ${EnvVars.SITE_NAME}`;
   const ogImage = `${EnvVars.URL}og-image.png`;
   const url = canonical || EnvVars.URL;
   // BreadcrumbList по правилам Яндекса (JSON-LD, name/url/position, до 3 элементов) и Google (item).
@@ -30,7 +34,7 @@ export default function Page({ title, description, canonical, crumbs = [], child
         <title>{fullTitle}</title>
         {description && <meta name="description" content={description} />}
         <link rel="canonical" href={url} />
-        <meta property="og:type" content="website" />
+        <meta property="og:type" content={ogType} />
         <meta property="og:title" content={fullTitle} />
         {description && <meta property="og:description" content={description} />}
         <meta property="og:site_name" content={EnvVars.SITE_NAME} />

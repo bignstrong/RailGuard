@@ -11,7 +11,7 @@ import { useLightbox } from 'contexts/lightbox.context';
 import { useToast } from 'contexts/toast.context';
 import { EnvVars } from 'env';
 import { countEvent } from 'lib/attribution';
-import { CATALOG, formatPrice, isProductId, PRODUCT_DESCRIPTIONS, ProductId } from 'lib/catalog';
+import { CATALOG, formatPrice, isProductId, PRODUCT_DESCRIPTIONS, PRODUCT_SEO_TITLES, ProductId } from 'lib/catalog';
 import { loadSite, Product } from 'lib/site';
 import { ecommerce } from 'lib/track';
 
@@ -78,7 +78,13 @@ export default function ProductPage({ product, priceValidUntil }: Props) {
   };
 
   return (
-    <Page title={product.title} description={PRODUCT_DESCRIPTIONS[product.id as ProductId]} canonical={canonical} crumbs={[{ name: 'Каталог', url: `${EnvVars.URL}pricing` }]}>
+    <Page
+      title={product.title}
+      metaTitle={PRODUCT_SEO_TITLES[product.id as ProductId]}
+      description={PRODUCT_DESCRIPTIONS[product.id as ProductId]}
+      canonical={canonical}
+      crumbs={[{ name: 'Каталог', url: `${EnvVars.URL}pricing` }]}
+    >
       <Head>
         <script
           type="application/ld+json"

@@ -4,6 +4,11 @@ import Container from 'components/Container';
 import { media } from 'utils/media';
 import { NAV_ITEMS } from './Navbar';
 
+const GUIDES = [
+  { title: 'Износ форсунок Common Rail', href: '/articles/injectors' },
+  { title: 'Стружка в топливной системе', href: '/articles/tnvd' },
+];
+
 const LEGAL = [
   { title: 'Политика конфиденциальности', href: '/privacy-policy' },
   { title: 'Условия использования', href: '/terms-of-use' },
@@ -18,6 +23,14 @@ export default function Footer() {
           <Column>
             <Heading>Компания</Heading>
             {NAV_ITEMS.map((i) => (
+              <NextLink key={i.href} href={i.href}>
+                {i.title}
+              </NextLink>
+            ))}
+          </Column>
+          <Column>
+            <Heading>Полезное</Heading>
+            {GUIDES.map((i) => (
               <NextLink key={i.href} href={i.href}>
                 {i.title}
               </NextLink>
