@@ -45,7 +45,7 @@ export default function Newsletter() {
         ) : (
           <Form onSubmit={onSubmit}>
             <Row>
-              <Input name="email" type="email" required placeholder="Ваш email" aria-label="Email" />
+              <Input name="email" type="email" autoComplete="email" inputMode="email" required placeholder="Ваш email" aria-label="Email" />
               <Button type="submit" disabled={status === 'sending'}>
                 Подписаться
               </Button>

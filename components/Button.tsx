@@ -7,20 +7,26 @@ const Button = styled.button<{ $outline?: boolean }>`
   align-items: center;
   justify-content: center;
   gap: 1rem;
+  min-height: 4.4rem;
   padding: 1.6rem 2.4rem;
-  border: 2px solid rgb(var(--accent));
+  border: 2px solid ${(p) => (p.$outline ? 'rgb(var(--accent-text))' : 'rgb(var(--accent))')};
   border-radius: 0.4rem;
   background: ${(p) => (p.$outline ? 'transparent' : 'rgb(var(--accent))')};
-  color: ${(p) => (p.$outline ? 'rgb(var(--accent))' : 'rgb(var(--bg))')};
-  font-size: 1.3rem;
+  /* Белый на оранжевом — 2,86:1. Тёмный текст на заливке — 6,58:1. */
+  color: ${(p) => (p.$outline ? 'rgb(var(--accent-text))' : 'rgb(var(--ink))')};
+  font-size: 1.4rem;
   font-weight: 700;
   letter-spacing: 0.04em;
   text-transform: uppercase;
   cursor: pointer;
-  transition: opacity 0.15s;
+  transition: opacity 0.15s, transform 0.1s;
 
   &:hover {
     opacity: 0.85;
+  }
+
+  &:active {
+    transform: scale(0.98);
   }
 
   &:disabled {

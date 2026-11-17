@@ -9,7 +9,6 @@ export default function PrivacyPolicyPage() {
       canonical="https://railguard.ru/privacy-policy"
     >
       <PolicyContainer>
-        <h2>Политика конфиденциальности</h2>
         <p>
           <b>Дата вступления в силу:</b> 24 июня 2025 г.
         </p>
@@ -57,10 +56,11 @@ export default function PrivacyPolicyPage() {
         <h2>5. Передача и раскрытие данных</h2>
         <ul>
           <li>
-            5.1. Персональные данные не передаются третьим лицам и не распространяются, за исключением случаев, прямо предусмотренных
-            законом.
+            5.1. Персональные данные не продаются и не распространяются. Для работы сайта и аналитики используются Яндекс.Метрика и, за
+            пределами России, Google Analytics; при онлайн-оплате данные передаются платёжному сервису. Эти сервисы обрабатывают данные по
+            своим политикам конфиденциальности.
           </li>
-          <li>5.2. Мы не осуществляем трансграничную передачу персональных данных.</li>
+          <li>5.2. При использовании зарубежного сервиса аналитики возможна передача обезличенных данных за пределы Российской Федерации.</li>
         </ul>
         <h2>6. Хранение и защита данных</h2>
         <ul>
@@ -85,7 +85,7 @@ export default function PrivacyPolicyPage() {
         <h2>9. Контактная информация</h2>
         <p>По вопросам, связанным с обработкой персональных данных, вы можете связаться с нами:</p>
         <p>
-          📧 Email: <span>скоро появится</span>
+          Email: <a href="mailto:info@railguard.ru">info@railguard.ru</a>
         </p>
       </PolicyContainer>
     </Page>
@@ -98,15 +98,10 @@ const PolicyContainer = styled.div`
   padding: 4rem 2rem;
   background: rgb(var(--bg));
   color: rgb(var(--ink));
-  font-size: 1.35rem;
+  font-size: 1.6rem;
   line-height: 2;
-  h1 {
-    font-size: 2.2rem;
-    margin-bottom: 2rem;
-    text-align: center;
-  }
   h2 {
-    font-size: 1.3rem;
+    font-size: 1.8rem;
     margin-top: 2.2rem;
     margin-bottom: 0.7rem;
     color: rgb(var(--ink));
@@ -120,7 +115,7 @@ const PolicyContainer = styled.div`
     margin-bottom: 1.1rem;
   }
   a {
-    color: rgb(var(--accent));
+    color: rgb(var(--accent-text));
     text-decoration: underline;
   }
 `;

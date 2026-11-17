@@ -34,7 +34,7 @@ const Details = styled.details`
     &::after {
       content: '+';
       flex-shrink: 0;
-      color: rgb(var(--accent));
+      color: rgb(var(--accent-text));
       font-size: 2.4rem;
       line-height: 1;
     }

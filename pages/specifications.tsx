@@ -49,7 +49,7 @@ export default function SpecificationsPage() {
           <Grid>
             <Gallery>
               {s.images.map((src, i) => (
-                <Thumb key={src} type="button" onClick={() => open(s.images, i)} aria-label={`${s.title}, фото ${i + 1}`}>
+                <Thumb key={src} type="button" onClick={() => open(s.images, i, `${s.title} — фото ${i + 1}`)} aria-label={`${s.title}, фото ${i + 1}`}>
                   <Image src={src} alt={`${s.title} — фото ${i + 1}`} fill sizes="(max-width: 768px) 50vw, 25vw" style={{ objectFit: 'contain' }} />
                 </Thumb>
               ))}
@@ -71,8 +71,8 @@ export default function SpecificationsPage() {
         <BasicCard as={RichText}>
           <h3>Что это и где ставится</h3>
           <p>
-            Фильтр устанавливают на двигатели Common Rail между ТНВД и рампой форсунок, сразу после основного фильтра. Он задерживает
-            металлическую стружку от ТНВД/ТННД и мелкий абразив, прошедший через основной фильтр.
+            Фильтр устанавливают на двигатели Common Rail между ТНВД и рампой форсунок. Он задерживает металлическую стружку от ТНВД/ТННД
+            и мелкий абразив, прошедший через основной фильтр.
           </p>
           <h3>Как обслуживать</h3>
           <ul>
@@ -82,7 +82,7 @@ export default function SpecificationsPage() {
           </ul>
           <h3>Прочее</h3>
           <ul>
-            <li>Подходит почти ко всем моторам Common Rail независимо от марки автомобиля.</li>
+            <li>Подходит для большинства двигателей Common Rail объёмом до 2,7 л.</li>
             <li>Остальные вопросы — нашему менеджеру.</li>
           </ul>
         </BasicCard>

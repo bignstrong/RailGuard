@@ -93,7 +93,7 @@ const Placeholder = styled.p`
   text-align: center;
 
   a {
-    color: rgb(var(--accent));
+    color: rgb(var(--accent-text));
     border-bottom: 1px solid currentColor;
   }
 `;

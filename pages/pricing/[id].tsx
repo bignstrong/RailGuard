@@ -94,7 +94,11 @@ export default function ProductPage({ product, priceValidUntil }: Props) {
       <Container>
         <Grid>
           <ImageSection>
-            <Picture type="button" onClick={() => open([product.image])} aria-label={`Увеличить: ${product.title}`}>
+            <Picture
+              type="button"
+              onClick={() => open([product.image], 0, product.title)}
+              aria-label={`Увеличить: ${product.title}${discount > 0 ? `, скидка ${discount}%` : ''}`}
+            >
               {discount > 0 && <Badge>−{discount}%</Badge>}
               <Image
                 src={product.image}
@@ -122,6 +126,17 @@ export default function ProductPage({ product, priceValidUntil }: Props) {
             >
               {product.inStock ? `В корзину${inCart > 0 ? ` (${inCart})` : ''}` : 'Нет в наличии'}
             </Button>
+            {product.id === 'fto-cr-standard' && (
+              <Important>В комплект входит только корпус. Сменный фильтрующий элемент заказывается отдельно.</Important>
+            )}
+            <Trust>
+              <li>Доставка 1–3 дня по центральным регионам, бесплатно от 5 000 ₽</li>
+              <li>Оплата переводом или по счёту для юрлиц</li>
+              <li>Возврат неустановленного товара — 14 дней</li>
+              <li>
+                <Link href="/delivery">Условия доставки, оплаты и гарантии</Link>
+              </li>
+            </Trust>
             <BackLink href="/pricing">← Вернуться в каталог</BackLink>
             <Note>Производитель может менять форму и цвет изделия без ухудшения его функциональности.</Note>
           </InfoSection>
@@ -174,7 +189,7 @@ const Badge = styled.span`
   padding: 0.4rem 1rem;
   border-radius: 0.4rem;
   background: rgb(var(--accent));
-  color: rgb(var(--bg));
+  color: rgb(var(--ink));
   font-size: 1.4rem;
   font-weight: 700;
 `;
@@ -201,12 +216,53 @@ const PriceRow = styled.div`
 const Price = styled.span`
   font-size: 3.2rem;
   font-weight: 700;
-  color: rgb(var(--accent));
+  color: rgb(var(--accent-text));
 `;
 
 const OldPrice = styled.s`
   font-size: 2rem;
-  color: rgba(var(--ink), 0.5);
+  color: rgba(var(--ink), 0.6);
+`;
+
+const Important = styled.p`
+  padding: 1.2rem 1.6rem;
+  border: 2px solid rgb(var(--accent));
+  border-radius: 0.4rem;
+  font-size: 1.4rem;
+  line-height: 1.4;
+`;
+
+const Trust = styled.ul`
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  margin: 0;
+  padding: 1.6rem 0 0;
+  border-top: var(--line);
+  list-style: none;
+  font-size: 1.4rem;
+  line-height: 1.4;
+  color: rgba(var(--ink), 0.8);
+
+  li {
+    position: relative;
+    padding-left: 1.8rem;
+
+    &::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0.55em;
+      width: 0.8rem;
+      height: 2px;
+      background: rgb(var(--accent-text));
+    }
+  }
+
+  a {
+    color: rgb(var(--accent-text));
+    text-decoration: underline;
+  }
 `;
 
 const BackLink = styled(Link)`
@@ -216,6 +272,6 @@ const BackLink = styled(Link)`
 
 const Note = styled.small`
   font-size: 1.2rem;
-  color: rgba(var(--ink), 0.5);
+  color: rgba(var(--ink), 0.6);
   margin-top: 1rem;
 `;

@@ -9,7 +9,6 @@ export default function TermsOfUsePage() {
       canonical="https://railguard.ru/terms-of-use"
     >
       <PolicyContainer>
-        <h2>Условия использования</h2>
         <p>
           <b>Дата вступления в силу:</b> 24 июня 2025 г.
         </p>
@@ -58,7 +57,7 @@ export default function TermsOfUsePage() {
           <li>4.1. Пользователь может добровольно подписаться на рассылку, предоставив свой адрес электронной почты.</li>
           <li>
             4.2. Пользователь может в любой момент отписаться от рассылки, перейдя по соответствующей ссылке в письме либо написав на адрес:{' '}
-            <span>скоро появится</span>
+            <a href="mailto:info@railguard.ru">info@railguard.ru</a>
           </li>
         </ul>
         <h2>5. Отключение и ограничения</h2>
@@ -74,7 +73,7 @@ export default function TermsOfUsePage() {
         <h2>7. Контакты</h2>
         <p>По всем вопросам, связанным с работой Сайта и настоящими Условиями, вы можете обратиться по адресу:</p>
         <p>
-          📧 Email: <span>скоро появится</span>
+          Email: <a href="mailto:info@railguard.ru">info@railguard.ru</a>
         </p>
       </PolicyContainer>
     </Page>
@@ -87,15 +86,10 @@ const PolicyContainer = styled.div`
   padding: 4rem 2rem;
   background: rgb(var(--bg));
   color: rgb(var(--ink));
-  font-size: 1.35rem;
+  font-size: 1.6rem;
   line-height: 2;
-  h1 {
-    font-size: 2.2rem;
-    margin-bottom: 2rem;
-    text-align: center;
-  }
   h2 {
-    font-size: 1.3rem;
+    font-size: 1.8rem;
     margin-top: 2.2rem;
     margin-bottom: 0.7rem;
     color: rgb(var(--ink));
@@ -109,7 +103,7 @@ const PolicyContainer = styled.div`
     margin-bottom: 1.1rem;
   }
   a {
-    color: rgb(var(--accent));
+    color: rgb(var(--accent-text));
     text-decoration: underline;
   }
 `;

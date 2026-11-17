@@ -17,7 +17,14 @@ export default function Toast({ message, type = 'success', onClose, onClick }: T
   return (
     <Box $error={type === 'error'} onClick={onClick} role="status">
       {message}
-      <Close type="button" aria-label="Закрыть" onClick={onClose}>
+      <Close
+        type="button"
+        aria-label="Закрыть"
+        onClick={(e) => {
+          e.stopPropagation();
+          onClose();
+        }}
+      >
         ✕
       </Close>
     </Box>
@@ -35,7 +42,7 @@ const Box = styled.div<{ $error: boolean }>`
   padding: 1.2rem 1.6rem;
   border-radius: 0.4rem;
   background: ${(p) => (p.$error ? 'rgb(var(--accent))' : 'rgb(var(--ink))')};
-  color: rgb(var(--bg));
+  color: ${(p) => (p.$error ? 'rgb(var(--ink))' : 'rgb(var(--bg))')};
   font-size: 1.4rem;
   cursor: ${(p) => (p.onClick ? 'pointer' : 'default')};
 `;

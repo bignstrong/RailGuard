@@ -6,7 +6,7 @@ const OverTitle = styled.span`
   font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: rgb(var(--accent));
+  color: rgb(var(--accent-text));
 `;
 
 export default OverTitle;

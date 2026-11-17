@@ -9,7 +9,6 @@ export default function CookiesPolicyPage() {
       canonical="https://railguard.ru/cookies-policy"
     >
       <PolicyContainer>
-        <h2>Политика использования файлов cookies</h2>
         <p>
           <b>Дата вступления в силу:</b> 24 июня 2025 г.
         </p>
@@ -64,13 +63,8 @@ const PolicyContainer = styled.div`
   color: rgb(var(--ink));
   font-size: 1.35rem;
   line-height: 2;
-  h1 {
-    font-size: 2.2rem;
-    margin-bottom: 2rem;
-    text-align: center;
-  }
   h2 {
-    font-size: 1.3rem;
+    font-size: 1.8rem;
     margin-top: 2.2rem;
     margin-bottom: 0.7rem;
     color: rgb(var(--ink));
@@ -84,7 +78,7 @@ const PolicyContainer = styled.div`
     margin-bottom: 1.1rem;
   }
   a {
-    color: rgb(var(--accent));
+    color: rgb(var(--accent-text));
     text-decoration: underline;
   }
 `;

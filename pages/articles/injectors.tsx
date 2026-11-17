@@ -152,7 +152,7 @@ const Article = styled.article`
     margin-bottom: 0.6rem;
   }
   a {
-    color: rgb(var(--accent));
+    color: rgb(var(--accent-text));
     text-decoration: underline;
   }
 `;

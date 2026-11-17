@@ -30,12 +30,16 @@ function ProductCard({ id, title, price, oldPrice, image, inStock }: Product) {
   return (
     <Card id={id} $best={best}>
       {best && <Ribbon>Лучший выбор</Ribbon>}
-      <Picture type="button" onClick={() => open([image])} aria-label={`Увеличить: ${title}`}>
+      <Picture
+        type="button"
+        onClick={() => open([image], 0, title)}
+        aria-label={`Увеличить: ${title}${discount > 0 ? `, скидка ${discount}%` : ''}`}
+      >
         {discount > 0 && <Badge>−{discount}%</Badge>}
         <Image src={image} alt={title} fill sizes="(max-width: 768px) 100vw, 33vw" style={{ objectFit: 'contain' }} />
       </Picture>
       <Body>
-        <h3>{title}</h3>
+        <h2>{title}</h2>
         <p>{description}</p>
         <Links>
           <Link href={`/pricing/${id}`}>Товар</Link>
@@ -95,7 +99,7 @@ const Ribbon = styled.span`
   padding: 0.4rem 1rem;
   border-radius: 0.4rem;
   background: rgb(var(--accent));
-  color: rgb(var(--bg));
+  color: rgb(var(--ink));
   font-size: 1.2rem;
   font-weight: 700;
   text-transform: uppercase;
@@ -124,7 +128,7 @@ const Badge = styled.span`
   padding: 0.4rem 1rem;
   border-radius: 0.4rem;
   background: rgb(var(--accent));
-  color: rgb(var(--bg));
+  color: rgb(var(--ink));
   font-size: 1.4rem;
   font-weight: 700;
 `;
@@ -136,7 +140,7 @@ const Body = styled.div`
   gap: 1.2rem;
   padding: 2.4rem;
 
-  h3 {
+  h2 {
     font-size: 2rem;
   }
   p {
@@ -167,15 +171,15 @@ const PriceRow = styled.div`
 
   b {
     font-size: 2.6rem;
-    color: rgb(var(--accent));
+    color: rgb(var(--accent-text));
   }
   s {
     font-size: 1.6rem;
-    color: rgba(var(--ink), 0.5);
+    color: rgba(var(--ink), 0.6);
   }
 `;
 
 const Note = styled.small`
   font-size: 1.2rem;
-  color: rgba(var(--ink), 0.5);
+  color: rgba(var(--ink), 0.6);
 `;

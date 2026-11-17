@@ -22,6 +22,7 @@ export interface CartContextType {
   addItem: (item: Omit<CartItem, 'quantity'>) => void;
   removeItem: (id: string) => void;
   updateQuantity: (id: string, quantity: number) => void;
+  replaceItems: (items: CartItem[]) => void;
   clearCart: () => void;
   toggleCart: () => void;
 }
@@ -35,6 +36,7 @@ export const CartContext = createContext<CartContextType>({
   addItem: () => {},
   removeItem: () => {},
   updateQuantity: () => {},
+  replaceItems: () => {},
   clearCart: () => {},
   toggleCart: () => {},
 });
@@ -69,19 +71,6 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     } catch {}
   }, [items, hydrated]);
 
-  // Цены в localStorage могли устареть (правка в админке): при открытии корзины берём актуальные,
-  // скрытые и закончившиеся товары убираем — сервер их всё равно не примет.
-  useEffect(() => {
-    if (!isCartOpen) return;
-    fetch('/api/site', { cache: 'no-store' })
-      .then((r) => r.json())
-      .then(({ products }: { products?: Record<string, { price: number; oldPrice: number; inStock: boolean }> }) => {
-        if (!products) return;
-        setItems((cur) => cur.filter((i) => products[i.id]?.inStock).map((i) => ({ ...i, price: products[i.id].price, oldPrice: products[i.id].oldPrice })));
-      })
-      .catch(() => {});
-  }, [isCartOpen]);
-
   const totalItems = items.reduce((sum, item) => sum + item.quantity, 0);
   const totalPrice = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
   const totalOldPrice = items.reduce((sum, item) => sum + Math.max(item.oldPrice ?? 0, item.price) * item.quantity, 0);
@@ -113,6 +102,10 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     setItems((currentItems) => currentItems.map((item) => (item.id === id ? { ...item, quantity } : item)));
   }, []);
 
+  const replaceItems = useCallback((next: CartItem[]) => {
+    setItems(next);
+  }, []);
+
   const clearCart = useCallback(() => {
     setItems([]);
   }, []);
@@ -130,9 +123,10 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     addItem,
     removeItem,
     updateQuantity,
+    replaceItems,
     clearCart,
     toggleCart,
-  }), [items, isCartOpen, totalItems, totalPrice, totalOldPrice, addItem, removeItem, updateQuantity, clearCart, toggleCart]);
+  }), [items, isCartOpen, totalItems, totalPrice, totalOldPrice, addItem, removeItem, updateQuantity, replaceItems, clearCart, toggleCart]);
 
   return <CartContext.Provider value={value}>{children}</CartContext.Provider>;
 }

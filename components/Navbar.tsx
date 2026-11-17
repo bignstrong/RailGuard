@@ -4,8 +4,10 @@ import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { useCart } from 'contexts/cart.context';
+import { getSiteInfo } from 'lib/siteClient';
 import { media } from 'utils/media';
 import Container from './Container';
+import { CloseIcon, MenuIcon } from './Icons';
 
 export const NAV_ITEMS = [
   { title: 'Каталог', href: '/pricing' },
@@ -22,12 +24,15 @@ export default function Navbar() {
   const [announcement, setAnnouncement] = useState('');
 
   useEffect(() => setOpen(false), [pathname]);
+  useEffect(() => {
+    if (!open) return;
+    const onKey = (e: KeyboardEvent) => e.key === 'Escape' && setOpen(false);
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [open]);
   // Полоса-объявление из админки; грузится после первого рендера, чтобы страницы оставались статическими.
   useEffect(() => {
-    fetch('/api/site')
-      .then((r) => r.json())
-      .then((d) => setAnnouncement(d.announcement || ''))
-      .catch(() => {});
+    getSiteInfo().then((d) => setAnnouncement(d.announcement || ''));
   }, []);
 
   return (
@@ -38,7 +43,7 @@ export default function Navbar() {
           <Image src="/webp/Logo.webp" alt="" width={40} height={40} />
           RailGuard
         </Logo>
-        <Menu $open={open}>
+        <Menu $open={open} id="site-menu" aria-label="Основное меню">
           {NAV_ITEMS.map((item) => (
             <MenuLink key={item.href} href={item.href} $active={pathname === item.href}>
               {item.title}
@@ -46,11 +51,11 @@ export default function Navbar() {
           ))}
         </Menu>
         <Actions>
-          <CartButton type="button" onClick={toggleCart} aria-label="Корзина">
-            Корзина{totalItems > 0 && <Badge>{totalItems}</Badge>}
+          <CartButton type="button" onClick={toggleCart} aria-label={totalItems > 0 ? `Корзина, товаров: ${totalItems}` : 'Корзина'}>
+            Корзина{totalItems > 0 && <Badge aria-hidden="true">{totalItems}</Badge>}
           </CartButton>
-          <Burger type="button" aria-label="Меню" aria-expanded={open} onClick={() => setOpen((v) => !v)}>
-            {open ? '✕' : '☰'}
+          <Burger type="button" aria-label="Меню" aria-expanded={open} aria-controls="site-menu" onClick={() => setOpen((v) => !v)}>
+            {open ? <CloseIcon /> : <MenuIcon />}
           </Burger>
         </Actions>
       </Content>
@@ -69,7 +74,7 @@ const Bar = styled.header`
 const Announcement = styled.p`
   padding: 0.8rem 2rem;
   background: rgb(var(--accent));
-  color: rgb(var(--bg));
+  color: rgb(var(--ink));
   font-size: 1.4rem;
   font-weight: 700;
   text-align: center;
@@ -114,10 +119,10 @@ const MenuLink = styled(NextLink)<{ $active: boolean }>`
   font-weight: 700;
   letter-spacing: 0.04em;
   text-transform: uppercase;
-  color: ${(p) => (p.$active ? 'rgb(var(--accent))' : 'rgba(var(--ink), 0.8)')};
+  color: ${(p) => (p.$active ? 'rgb(var(--accent-text))' : 'rgba(var(--ink), 0.8)')};
 
   &:hover {
-    color: rgb(var(--accent));
+    color: rgb(var(--accent-text));
   }
 
   ${media('<desktop')} {
@@ -134,11 +139,12 @@ const Actions = styled.div`
 
 const CartButton = styled.button`
   position: relative;
+  min-height: 4.4rem;
   padding: 1rem 1.8rem;
   border: 0;
   border-radius: 0.4rem;
   background: rgb(var(--accent));
-  color: rgb(var(--bg));
+  color: rgb(var(--ink));
   font-size: 1.3rem;
   font-weight: 700;
   letter-spacing: 0.04em;
@@ -167,10 +173,11 @@ const Badge = styled.span`
 
 const Burger = styled.button`
   display: none;
-  width: 4rem;
-  height: 4rem;
+  width: 4.4rem;
+  height: 4.4rem;
   border: 0;
   background: none;
+  color: rgb(var(--ink));
   font-size: 2.4rem;
   line-height: 1;
   cursor: pointer;

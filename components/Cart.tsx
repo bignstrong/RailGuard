@@ -1,14 +1,15 @@
 import NextLink from 'next/link';
-import { FormEvent, useEffect, useState } from 'react';
+import { FormEvent, KeyboardEvent as ReactKeyboardEvent, useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 import Button from 'components/Button';
+import { CloseIcon, MinusIcon, PlusIcon } from 'components/Icons';
 import Input from 'components/Input';
 import { useCart } from 'contexts/cart.context';
 import { useToast } from 'contexts/toast.context';
 import { countEvent, readAttribution } from 'lib/attribution';
 import { formatPrice } from 'lib/catalog';
 import { formatPhone, phoneDigits } from 'lib/phone.mjs';
-import { ecommerce, track, ymClientId } from 'lib/track';
+import { track, ymClientId } from 'lib/track';
 import { media } from 'utils/media';
 
 const CONTACTS = [
@@ -18,31 +19,82 @@ const CONTACTS = [
 ] as const;
 
 export default function Cart() {
-  const { items, isCartOpen, totalPrice, totalOldPrice, removeItem, updateQuantity, toggleCart, clearCart } = useCart();
+  const { items, isCartOpen, totalPrice, totalOldPrice, removeItem, updateQuantity, replaceItems, toggleCart, clearCart } = useCart();
   const showToast = useToast();
   const [phone, setPhone] = useState('');
+  const [email, setEmail] = useState('');
   const [sending, setSending] = useState(false);
   const [orderId, setOrderId] = useState<string | null>(null);
+  const panelRef = useRef<HTMLDivElement>(null);
+  const lastFocus = useRef<HTMLElement | null>(null);
+  const itemsRef = useRef(items);
+  itemsRef.current = items;
 
   useEffect(() => {
     if (!isCartOpen) return;
     track('cart_open');
     countEvent('cart');
+    lastFocus.current = document.activeElement as HTMLElement | null;
     const onKey = (e: KeyboardEvent) => e.key === 'Escape' && toggleCart();
     window.addEventListener('keydown', onKey);
     document.body.style.overflow = 'hidden';
+    // Пока корзина открыта, остальное содержимое страницы недоступно для фокуса и скринридера.
+    const chrome = Array.from(document.querySelectorAll<HTMLElement>('header, main, footer, section')).filter(
+      (el) => !el.contains(panelRef.current),
+    );
+    chrome.forEach((el) => el.setAttribute('inert', ''));
+    panelRef.current?.focus();
     return () => {
       window.removeEventListener('keydown', onKey);
       document.body.style.overflow = '';
+      chrome.forEach((el) => el.removeAttribute('inert'));
+      const target = lastFocus.current?.isConnected ? lastFocus.current : document.querySelector<HTMLElement>('header button[aria-label^="Корзина"]');
+      target?.focus();
     };
   }, [isCartOpen, toggleCart]);
 
+  // Цены в localStorage могли устареть (правка в админке): при открытии корзины берём актуальные,
+  // закончившиеся товары убираем — сервер их всё равно не примет.
   useEffect(() => {
-    if (!isCartOpen) {
-      setOrderId(null);
-      setPhone('');
+    if (!isCartOpen) return;
+    let cancelled = false;
+    fetch('/api/site', { cache: 'no-store' })
+      .then((r) => r.json())
+      .then(({ products }: { products?: Record<string, { price: number; oldPrice: number; inStock: boolean }> }) => {
+        if (cancelled || !products) return;
+        const current = itemsRef.current;
+        const next = current
+          .filter((i) => products[i.id]?.inStock)
+          .map((i) => ({ ...i, price: products[i.id].price, oldPrice: products[i.id].oldPrice }));
+        const removed = next.length < current.length;
+        const repriced = current.some((i) => products[i.id]?.inStock && (i.price !== products[i.id].price || i.oldPrice !== products[i.id].oldPrice));
+        if (!removed && !repriced) return;
+        replaceItems(next);
+        if (removed) showToast('Товар закончился и удалён из корзины', 'error');
+        if (repriced) showToast('Цена обновилась — проверьте сумму', 'error');
+      })
+      .catch(() => {});
+    return () => {
+      cancelled = true;
+    };
+  }, [isCartOpen, replaceItems, showToast]);
+
+  function trapFocus(e: ReactKeyboardEvent<HTMLDivElement>) {
+    if (e.key !== 'Tab' || !panelRef.current) return;
+    const focusable = panelRef.current.querySelectorAll<HTMLElement>(
+      'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])',
+    );
+    if (!focusable.length) return;
+    const first = focusable[0];
+    const last = focusable[focusable.length - 1];
+    if (e.shiftKey && document.activeElement === first) {
+      e.preventDefault();
+      last.focus();
+    } else if (!e.shiftKey && document.activeElement === last) {
+      e.preventDefault();
+      first.focus();
     }
-  }, [isCartOpen]);
+  }
 
   if (!isCartOpen) return null;
 
@@ -66,11 +118,6 @@ export default function Cart() {
       if (!res.ok) return showToast(data.message || 'Не удалось оформить заказ. Попробуйте ещё раз.', 'error');
       clearCart();
       setOrderId(data.orderId);
-      ecommerce(
-        'purchase',
-        items.map((i) => ({ id: i.id, name: i.title, price: i.price, quantity: i.quantity })),
-        data.orderId,
-      );
       track('order_submit', {
         value: totalPrice,
         currency: 'RUB',
@@ -89,11 +136,11 @@ export default function Cart() {
 
   return (
     <Overlay onClick={toggleCart}>
-      <Panel onClick={(e) => e.stopPropagation()} role="dialog" aria-label="Корзина" aria-modal="true">
+      <Panel ref={panelRef} tabIndex={-1} onKeyDown={trapFocus} onClick={(e) => e.stopPropagation()} role="dialog" aria-label="Корзина" aria-modal="true">
         <Header>
           <h2>Корзина</h2>
           <IconButton type="button" aria-label="Закрыть" onClick={toggleCart}>
-            ✕
+            <CloseIcon />
           </IconButton>
         </Header>
         <Body>
@@ -132,11 +179,11 @@ export default function Cart() {
                   </div>
                   <Qty>
                     <IconButton type="button" aria-label="Меньше" onClick={() => (item.quantity > 1 ? updateQuantity(item.id, item.quantity - 1) : removeItem(item.id))}>
-                      −
+                      <MinusIcon />
                     </IconButton>
                     <span>{item.quantity}</span>
                     <IconButton type="button" aria-label="Больше" onClick={() => updateQuantity(item.id, item.quantity + 1)}>
-                      +
+                      <PlusIcon />
                     </IconButton>
                   </Qty>
                 </Item>
@@ -170,6 +217,7 @@ export default function Cart() {
                   <Input
                     type="tel"
                     inputMode="tel"
+                    autoComplete="tel"
                     required
                     placeholder="+7 (___) ___-__-__"
                     value={formatPhone(phone)}
@@ -178,7 +226,16 @@ export default function Cart() {
                 </label>
                 <label>
                   Email
-                  <Input type="email" name="email" required maxLength={120} placeholder="example@mail.com" />
+                  <Input
+                    type="email"
+                    name="email"
+                    autoComplete="email"
+                    required
+                    maxLength={120}
+                    placeholder="example@mail.com"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                  />
                 </label>
                 <Consent>
                   <input type="checkbox" name="consent" required />
@@ -189,6 +246,13 @@ export default function Cart() {
                     </NextLink>
                   </span>
                 </Consent>
+                <Trust>
+                  <span>Доставка 1–3 дня по центральным регионам. Бесплатно от 5 000 ₽.</span>
+                  <span>Возврат неустановленного товара — 14 дней.</span>
+                  <NextLink href="/delivery" onClick={toggleCart}>
+                    Условия доставки и оплаты
+                  </NextLink>
+                </Trust>
                 <Button type="submit" disabled={sending}>
                   {sending ? 'Отправляем…' : 'Оформить заказ'}
                 </Button>
@@ -219,6 +283,10 @@ const Panel = styled.div`
   flex-direction: column;
   background: rgb(var(--bg));
   border-left: var(--line);
+
+  &:focus {
+    outline: none;
+  }
 `;
 
 const Header = styled.div`
@@ -234,8 +302,11 @@ const Header = styled.div`
 `;
 
 const IconButton = styled.button`
-  width: 3.2rem;
-  height: 3.2rem;
+  width: 4.4rem;
+  height: 4.4rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   border: var(--line);
   border-radius: 0.4rem;
   background: none;
@@ -245,8 +316,8 @@ const IconButton = styled.button`
   cursor: pointer;
 
   &:hover {
-    border-color: rgb(var(--accent));
-    color: rgb(var(--accent));
+    border-color: rgb(var(--accent-text));
+    color: rgb(var(--accent-text));
   }
 `;
 
@@ -273,7 +344,7 @@ const Center = styled.div`
 
 const OrderId = styled.code`
   font-weight: 700;
-  color: rgb(var(--accent));
+  color: rgb(var(--accent-text));
   user-select: all;
 `;
 
@@ -299,13 +370,13 @@ const Item = styled.div`
 `;
 
 const Price = styled.span`
-  color: rgb(var(--accent));
+  color: rgb(var(--accent-text));
   font-weight: 700;
 
   s {
     margin-left: 0.6rem;
     font-weight: 400;
-    color: rgba(var(--ink), 0.5);
+    color: rgba(var(--ink), 0.6);
   }
 `;
 
@@ -378,12 +449,12 @@ const Contacts = styled.div`
     font-weight: 400;
 
     &:has(input:checked) {
-      border-color: rgb(var(--accent));
-      color: rgb(var(--accent));
+      border-color: rgb(var(--accent-text));
+      color: rgb(var(--accent-text));
     }
   }
   input {
-    accent-color: rgb(var(--accent));
+    accent-color: rgb(var(--accent-text));
   }
 `;
 
@@ -397,9 +468,25 @@ const Consent = styled.label`
 
   input {
     margin-top: 0.3rem;
-    accent-color: rgb(var(--accent));
+    accent-color: rgb(var(--accent-text));
   }
   a {
     border-bottom: 1px solid currentColor;
+  }
+`;
+
+const Trust = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  padding-top: 1.2rem;
+  border-top: var(--line);
+  font-size: 1.3rem;
+  line-height: 1.4;
+  color: rgba(var(--ink), 0.75);
+
+  a {
+    color: rgb(var(--accent-text));
+    text-decoration: underline;
   }
 `;

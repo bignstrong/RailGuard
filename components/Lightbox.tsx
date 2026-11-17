@@ -1,13 +1,28 @@
-import { useEffect, useRef } from 'react';
+import { KeyboardEvent as ReactKeyboardEvent, useEffect, useRef } from 'react';
 import styled from 'styled-components';
+import { ChevronLeftIcon, ChevronRightIcon, CloseIcon } from 'components/Icons';
 import { useLightbox } from 'contexts/lightbox.context';
 import { media } from 'utils/media';
 
 // Полноэкранный просмотр: Esc/стрелки, свайп на тач-устройствах, клик по фону закрывает.
 export default function Lightbox() {
-  const { images, index, close, step } = useLightbox();
-  const touchX = useRef<number | null>(null);
+  const { images, index, alt, close, step } = useLightbox();
   const isOpen = images.length > 0;
+  const touchX = useRef<number | null>(null);
+  const overlayRef = useRef<HTMLDivElement>(null);
+  const closeRef = useRef<HTMLButtonElement>(null);
+  const lastFocus = useRef<HTMLElement | null>(null);
+
+  useEffect(() => {
+    if (!isOpen) return;
+    lastFocus.current = document.activeElement as HTMLElement | null;
+    document.body.style.overflow = 'hidden';
+    closeRef.current?.focus();
+    return () => {
+      document.body.style.overflow = '';
+      if (lastFocus.current?.isConnected) lastFocus.current.focus();
+    };
+  }, [isOpen]);
 
   useEffect(() => {
     if (!isOpen) return;
@@ -22,8 +37,28 @@ export default function Lightbox() {
 
   if (!isOpen) return null;
 
+  function trapFocus(e: ReactKeyboardEvent<HTMLDivElement>) {
+    if (e.key !== 'Tab') return;
+    const focusable = overlayRef.current?.querySelectorAll<HTMLElement>('button');
+    if (!focusable?.length) return;
+    const first = focusable[0];
+    const last = focusable[focusable.length - 1];
+    if (e.shiftKey && document.activeElement === first) {
+      e.preventDefault();
+      last.focus();
+    } else if (!e.shiftKey && document.activeElement === last) {
+      e.preventDefault();
+      first.focus();
+    }
+  }
+
   return (
     <Overlay
+      ref={overlayRef}
+      role="dialog"
+      aria-modal="true"
+      aria-label={alt || 'Просмотр изображения'}
+      onKeyDown={trapFocus}
       onClick={(e) => e.target === e.currentTarget && close()}
       onTouchStart={(e) => (touchX.current = e.touches[0].clientX)}
       onTouchEnd={(e) => {
@@ -32,17 +67,17 @@ export default function Lightbox() {
       }}
     >
       {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img src={images[index]} alt="" />
-      <Close type="button" aria-label="Закрыть" onClick={close}>
-        ✕
+      <img src={images[index]} alt={alt} />
+      <Close ref={closeRef} type="button" aria-label="Закрыть" onClick={close}>
+        <CloseIcon />
       </Close>
       {images.length > 1 && (
         <>
           <Arrow type="button" aria-label="Назад" $left onClick={() => step(-1)}>
-            ‹
+            <ChevronLeftIcon />
           </Arrow>
           <Arrow type="button" aria-label="Вперёд" onClick={() => step(1)}>
-            ›
+            <ChevronRightIcon />
           </Arrow>
         </>
       )}
@@ -73,6 +108,9 @@ const Close = styled.button`
   right: 2rem;
   width: 4.4rem;
   height: 4.4rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   border: 0;
   background: none;
   color: rgb(var(--bg));
@@ -87,6 +125,9 @@ const Arrow = styled.button<{ $left?: boolean }>`
   transform: translateY(-50%);
   width: 4.8rem;
   height: 4.8rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   border: 0;
   border-radius: 50%;
   background: rgb(var(--bg));
@@ -97,7 +138,7 @@ const Arrow = styled.button<{ $left?: boolean }>`
 
   &:hover {
     background: rgb(var(--accent));
-    color: rgb(var(--bg));
+    color: rgb(var(--ink));
   }
 
   ${media('<=tablet')} {

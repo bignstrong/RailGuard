@@ -10,12 +10,13 @@ const Input = styled.input`
   font-size: 1.6rem;
 
   &::placeholder {
-    color: rgba(var(--ink), 0.4);
+    color: rgba(var(--ink), 0.6);
   }
 
   &:focus {
-    outline: none;
-    border-color: rgb(var(--accent));
+    outline: 2px solid rgb(var(--accent-text));
+    outline-offset: 1px;
+    border-color: rgb(var(--accent-text));
   }
 `;
 

@@ -37,7 +37,8 @@ export default function CookieConsent() {
       {choice === 'unknown' && (
         <Bar role="dialog" aria-live="polite" aria-label="Использование cookies">
           <Text>
-            Мы используем cookies и Яндекс.Метрику для аналитики. Подробнее в <NextLink href="/cookies-policy">политике cookies</NextLink>.
+            Мы используем cookies и сервисы аналитики (Яндекс.Метрика, Google Analytics за пределами России). Подробнее в{' '}
+            <NextLink href="/cookies-policy">политике cookies</NextLink>.
           </Text>
           <Buttons>
             <Btn type="button" onClick={() => choose('rejected')}>
@@ -86,10 +87,12 @@ const Buttons = styled.div`
 `;
 
 const Btn = styled.button<{ $primary?: boolean }>`
+  min-height: 4.4rem;
   padding: 0.8rem 1.6rem;
   border-radius: 0.4rem;
   border: 1px solid ${(p) => (p.$primary ? 'rgb(var(--accent))' : 'rgba(var(--bg), 0.5)')};
   background: ${(p) => (p.$primary ? 'rgb(var(--accent))' : 'transparent')};
-  color: rgb(var(--bg));
+  color: ${(p) => (p.$primary ? 'rgb(var(--ink))' : 'rgb(var(--bg))')};
+  font-size: 1.4rem;
   cursor: pointer;
 `;

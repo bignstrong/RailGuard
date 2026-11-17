@@ -41,6 +41,7 @@ const structuredData = {
 export default function MyApp({ Component, pageProps }: AppProps) {
   const { pathname } = useRouter();
   const isAdmin = pathname.startsWith('/admin');
+  const hideNewsletter = ['/privacy-policy', '/terms-of-use', '/cookies-policy'].includes(pathname);
   useEffect(() => {
     if (!isAdmin) startSession();
   }, [isAdmin]);
@@ -68,7 +69,7 @@ export default function MyApp({ Component, pageProps }: AppProps) {
           <main>
             <Component {...pageProps} />
           </main>
-          <Newsletter />
+          {!hideNewsletter && <Newsletter />}
           <Footer />
           <Cart />
           <Lightbox />

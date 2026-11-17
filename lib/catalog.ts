@@ -26,4 +26,5 @@ export const PRODUCT_DESCRIPTIONS: Record<ProductId, string> = {
 
 export const isProductId = (id: string): id is ProductId => Object.hasOwn(CATALOG, id);
 
-export const formatPrice = (n: number) => `${n.toLocaleString('ru-RU')}₽`;
+// Неразрывный пробел перед знаком: цена не переносится одна на новую строку.
+export const formatPrice = (n: number) => `${n.toLocaleString('ru-RU')} ₽`;

@@ -3,6 +3,7 @@ import Head from 'next/head';
 import NextLink from 'next/link';
 import styled from 'styled-components';
 import Button from 'components/Button';
+import { CheckIcon } from 'components/Icons';
 import { formatPrice } from 'lib/catalog';
 import { refreshPayment } from 'lib/payments';
 import type { PayStatus } from 'lib/paymentsShared';
@@ -38,7 +39,9 @@ export default function PayResult({ status, amount, order, url }: Props) {
         <meta name="robots" content="noindex, nofollow" />
         {status === 'pending' && <meta httpEquiv="refresh" content="5" />}
       </Head>
-      <Mark $ok={status === 'succeeded'}>{status === 'succeeded' ? '✓' : status === 'pending' ? '…' : '!'}</Mark>
+      <Mark $ok={status === 'succeeded'}>
+        {status === 'succeeded' ? <CheckIcon /> : status === 'pending' ? '…' : '!'}
+      </Mark>
       <h1>{title}</h1>
       <p>
         Заказ #{order} · {formatPrice(amount)}
@@ -85,6 +88,11 @@ const Mark = styled.div<{ $ok: boolean }>`
   border-radius: 50%;
   font-size: 3.4rem;
   font-weight: 700;
-  color: ${(p) => (p.$ok ? 'rgb(var(--bg))' : 'rgb(var(--accent))')};
+  color: ${(p) => (p.$ok ? 'rgb(var(--ink))' : 'rgb(var(--accent-text))')};
   background: ${(p) => (p.$ok ? 'rgb(var(--accent))' : 'rgba(var(--accent), 0.12)')};
+
+  svg {
+    width: 3.4rem;
+    height: 3.4rem;
+  }
 `;

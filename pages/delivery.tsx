@@ -121,7 +121,7 @@ const Block = styled.section`
     margin-bottom: 1.6rem;
   }
   a {
-    color: rgb(var(--accent));
+    color: rgb(var(--accent-text));
     border-bottom: 1px solid currentColor;
   }
 `;

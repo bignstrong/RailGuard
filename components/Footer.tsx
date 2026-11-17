@@ -1,6 +1,8 @@
 import NextLink from 'next/link';
+import { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import Container from 'components/Container';
+import { getSiteInfo, SiteInfo } from 'lib/siteClient';
 import { media } from 'utils/media';
 import { NAV_ITEMS } from './Navbar';
 
@@ -16,6 +18,14 @@ const LEGAL = [
 ];
 
 export default function Footer() {
+  const [contacts, setContacts] = useState<SiteInfo['contacts'] | null>(null);
+
+  useEffect(() => {
+    getSiteInfo().then((d) => setContacts(d.contacts));
+  }, []);
+
+  const hasContacts = !!contacts && !!(contacts.phone || contacts.email || contacts.telegram || contacts.hours);
+
   return (
     <Wrapper>
       <Container>
@@ -44,8 +54,19 @@ export default function Footer() {
               </NextLink>
             ))}
           </Column>
+          {hasContacts && contacts && (
+            <Column>
+              <Heading>Контакты</Heading>
+              {contacts.phone && <a href={`tel:${contacts.phone.replace(/[^+\d]/g, '')}`}>{contacts.phone}</a>}
+              {contacts.email && <a href={`mailto:${contacts.email}`}>{contacts.email}</a>}
+              {contacts.telegram && <a href={contacts.telegram}>{contacts.telegram.replace('https://t.me/', '@')}</a>}
+              {contacts.hours && <span>{contacts.hours}</span>}
+            </Column>
+          )}
         </Columns>
-        <Copyright>© {new Date().getFullYear()} RailGuard</Copyright>
+        <Copyright>
+          © {new Date().getFullYear()} RailGuard{contacts?.legal && ` · ${contacts.legal}`}
+        </Copyright>
       </Container>
     </Wrapper>
   );

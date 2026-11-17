@@ -28,7 +28,7 @@ const Wrapper = styled.div`
 const Code = styled.h1`
   font-size: 9rem;
   font-weight: 700;
-  color: rgb(var(--accent));
+  color: rgb(var(--accent-text));
   letter-spacing: 0.05em;
 `;
 
