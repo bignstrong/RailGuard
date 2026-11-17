@@ -51,7 +51,7 @@ export default function Navbar() {
           ))}
         </Menu>
         <Actions>
-          <CartButton type="button" onClick={toggleCart} aria-label="Корзина">
+          <CartButton type="button" onClick={toggleCart} aria-label={totalItems > 0 ? `Корзина ${totalItems}` : 'Корзина'}>
             Корзина{totalItems > 0 && <Badge aria-hidden="true">{totalItems}</Badge>}
           </CartButton>
           <Burger type="button" aria-label="Меню" aria-expanded={open} aria-controls="site-menu" onClick={() => setOpen((v) => !v)}>
