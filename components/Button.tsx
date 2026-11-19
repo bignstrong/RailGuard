@@ -12,8 +12,8 @@ const Button = styled.button<{ $outline?: boolean }>`
   border: 2px solid ${(p) => (p.$outline ? 'rgb(var(--accent-text))' : 'rgb(var(--accent))')};
   border-radius: 0.4rem;
   background: ${(p) => (p.$outline ? 'transparent' : 'rgb(var(--accent))')};
-  /* Белый на оранжевом — 2,86:1. Тёмный текст на заливке — 6,58:1. */
-  color: ${(p) => (p.$outline ? 'rgb(var(--accent-text))' : 'rgb(var(--ink))')};
+  /* Белый текст на заливке: требование владельца (2026-11-20). Контраст 2,86:1, ниже AA. */
+  color: ${(p) => (p.$outline ? 'rgb(var(--accent-text))' : 'rgb(var(--bg))')};
   font-size: 1.4rem;
   font-weight: 700;
   letter-spacing: 0.04em;

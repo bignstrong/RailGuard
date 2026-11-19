@@ -74,7 +74,7 @@ const Bar = styled.header`
 const Announcement = styled.p`
   padding: 0.8rem 2rem;
   background: rgb(var(--accent));
-  color: rgb(var(--ink));
+  color: rgb(var(--bg));
   font-size: 1.4rem;
   font-weight: 700;
   text-align: center;
@@ -144,7 +144,7 @@ const CartButton = styled.button`
   border: 0;
   border-radius: 0.4rem;
   background: rgb(var(--accent));
-  color: rgb(var(--ink));
+  color: rgb(var(--bg));
   font-size: 1.3rem;
   font-weight: 700;
   letter-spacing: 0.04em;

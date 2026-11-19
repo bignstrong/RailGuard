@@ -42,7 +42,7 @@ const Box = styled.div<{ $error: boolean }>`
   padding: 1.2rem 1.6rem;
   border-radius: 0.4rem;
   background: ${(p) => (p.$error ? 'rgb(var(--accent))' : 'rgb(var(--ink))')};
-  color: ${(p) => (p.$error ? 'rgb(var(--ink))' : 'rgb(var(--bg))')};
+  color: rgb(var(--bg));
   font-size: 1.4rem;
   cursor: ${(p) => (p.onClick ? 'pointer' : 'default')};
 `;

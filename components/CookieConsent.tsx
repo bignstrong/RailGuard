@@ -92,7 +92,7 @@ const Btn = styled.button<{ $primary?: boolean }>`
   border-radius: 0.4rem;
   border: 1px solid ${(p) => (p.$primary ? 'rgb(var(--accent))' : 'rgba(var(--bg), 0.5)')};
   background: ${(p) => (p.$primary ? 'rgb(var(--accent))' : 'transparent')};
-  color: ${(p) => (p.$primary ? 'rgb(var(--ink))' : 'rgb(var(--bg))')};
+  color: rgb(var(--bg));
   font-size: 1.4rem;
   cursor: pointer;
 `;

@@ -189,7 +189,7 @@ const Badge = styled.span`
   padding: 0.4rem 1rem;
   border-radius: 0.4rem;
   background: rgb(var(--accent));
-  color: rgb(var(--ink));
+  color: rgb(var(--bg));
   font-size: 1.4rem;
   font-weight: 700;
 `;

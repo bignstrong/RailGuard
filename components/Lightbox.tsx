@@ -138,7 +138,7 @@ const Arrow = styled.button<{ $left?: boolean }>`
 
   &:hover {
     background: rgb(var(--accent));
-    color: rgb(var(--ink));
+    color: rgb(var(--bg));
   }
 
   ${media('<=tablet')} {
